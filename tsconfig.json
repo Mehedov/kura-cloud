@@ -1,0 +1,48 @@
+{
+	"compilerOptions": {
+		"target": "ES2017",
+		"lib": ["dom", "dom.iterable", "esnext"],
+		"allowJs": true,
+		"skipLibCheck": true,
+		"strict": true,
+		"noEmit": true,
+		"esModuleInterop": true,
+		"module": "esnext",
+		"moduleResolution": "bundler",
+		"resolveJsonModule": true,
+		"isolatedModules": true,
+		"jsx": "react-jsx",
+		"incremental": true,
+		"plugins": [
+			{
+				"name": "next"
+			}
+		],
+		"paths": {
+			"@/*": ["./src/*"],
+			"@/app/*": ["./src/app/*"],
+			"@/components/*": ["./src/components/*"],
+			"@/hooks/*": ["./src/hooks/*"],
+			"@/store/*": ["./src/store/*"],
+			"@/utils/*": ["./src/utils/*"],
+			"@/services/*": ["./src/services/*"],
+			"@/providers/*": ["./src/providers/*"],
+			"@/constants/*": ["./src/constants/*"],
+			"@/config/*": ["./src/config/*"],
+			"@/assets/*": ["./src/assets/*"],
+			"@/external/*": ["./src/external/*"],
+			"@/graphql/*": ["./src/graphql/*"],
+			"@/shared/*": ["./src/shared/*"],
+			"@/types/*": ["./src/types/*"]
+		}
+	},
+	"include": [
+		"next-env.d.ts",
+		"**/*.ts",
+		"**/*.tsx",
+		".next/types/**/*.ts",
+		".next/dev/types/**/*.ts",
+		"**/*.mts"
+	],
+	"exclude": ["node_modules"]
+}
