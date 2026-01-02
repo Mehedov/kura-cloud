@@ -5,6 +5,7 @@ import { Check, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { FolderList } from '../elements/folder-list/folder-list'
 import { Breadcrumbs } from '../ui/breadcrumbs/breadcrumbs'
 import InDev from '../ui/in-dev/in-dev'
 import { ListingType } from '../ui/ListingType'
@@ -123,7 +124,7 @@ export function FoldersTemplate({
 	}
 
 	return (
-		<section className='h-full flex flex-col'>
+		<section className='h-full'>
 			<div className='flex items-center justify-between mb-5'>
 				<Breadcrumbs routes={breadcrumbsRoutes} />
 			</div>
@@ -160,9 +161,7 @@ export function FoldersTemplate({
 
 				<ListingType activeBtn={activeBtn} setActiveBtn={setActiveBtn} />
 			</div>
-			<div className='flex gap-3 flex-wrap items-start mt-2'>
-				{activeBtn === 'menu' ? renderFoldersTypeMenu() : renderFoldersByGrid()}
-			</div>
+			<FolderList activeBtn={activeBtn} />
 		</section>
 	)
 }
