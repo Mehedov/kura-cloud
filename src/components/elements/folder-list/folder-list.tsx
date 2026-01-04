@@ -4,32 +4,13 @@ import { usePathname } from 'next/navigation'
 
 interface Props {
 	activeBtn: 'menu' | 'grid'
+	folderNames: string[]
 }
 
-export function FolderList({ activeBtn }: Props) {
+export function FolderList({ activeBtn, folderNames }: Props) {
 	const pathname = usePathname()
 	// Массив для генерации случайных данных
-	const folderNames = [
-		'UI UX Design',
-		'Documentation',
-		'Marketing MaterialsMaterials',
-		'Financial Reports',
-		'Client Presentations',
-		'Source Code',
-		'Database Backups',
-		'API Documentation',
-		'User Research',
-		'Meeting Notes',
-		'Design Assets',
-		'Quality Assurance',
-		'Deployment Scripts',
-		'Configuration Files',
-		'Test Results',
-		'Analytics Reports',
-		'Security Policies',
-		'User Manuals',
-		'Training Materials',
-	]
+
 	const renderFoldersTypeMenu = () => {
 		return folderNames.map((folder, index) => {
 			const slug = folder
@@ -79,11 +60,11 @@ export function FolderList({ activeBtn }: Props) {
 	}
 
 	return activeBtn === 'menu' ? (
-		<div className='flex flex-col gap-3  items-start mt-2'>
+		<div className='flex flex-col gap-3  items-start mt-2 h-full'>
 			{renderFoldersTypeMenu()}
 		</div>
 	) : (
-		<div className='grid grid-cols-10 gap-5 mt-2'>
+		<div className='grid grid-cols-11 mt-2 h-full'>
 			{renderFoldersTypeGrid()}
 		</div>
 	)
