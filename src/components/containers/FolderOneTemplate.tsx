@@ -206,16 +206,16 @@ export function FolderOneTemplate({
 						</PopoverTrigger>
 						<PopoverContent className='w-45 '>
 							<div className='flex flex-col gap-3 items-start w-full'>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<Check size={20} className='text-neutral-600' /> Названию
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									Типу
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									Размеру
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									Дате изменения
 								</div>
 							</div>
@@ -261,22 +261,22 @@ export function FolderOneTemplate({
 									</div>
 									<Check size={20} className='text-neutral-600' />
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<FileImage size={20} className='text-red-600' />
 									Изображения
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<FileText size={20} className='text-red-600' />
 									Файлы PDF
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<File size={20} className='text-neutral-600' />
 									Файлы
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<FilePlay size={20} className='text-green-600' /> Видео
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<FilePen size={20} className='text-blue-600' />
 									Документы
 								</div>

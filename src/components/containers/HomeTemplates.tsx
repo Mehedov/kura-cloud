@@ -13,6 +13,7 @@ import {
 import Link from 'next/link'
 import { Title } from '../ui/Title'
 import { YourTable } from '../ui/YourTable'
+import { Button } from '../ui/button/Button'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -73,15 +74,15 @@ export const HomeTemplates = ({
 				/>
 
 				<div className='flex flex-wrap gap-3'>
-					<button className='cursor-pointer flex items-center justify-center gap-2 w-[170px] rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-neutral-50 transition hover:bg-neutral-100'>
+					<Button variant='primary' className='w-42.5'>
 						<Plus size={20} /> Create
-					</button>
-					<button className='cursor-pointer flex items-center justify-center gap-2 w-[190px] rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-neutral-50 transition hover:bg-neutral-100'>
+					</Button>
+					<Button variant='primary' className='w-47.5'>
 						<UploadCloud size={20} /> Upload or drop
-					</button>
-					<button className='cursor-pointer flex items-center justify-center gap-2 w-[170px] rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-gray-50 transition hover:bg-neutral-100'>
+					</Button>
+					<Button variant='primary' className='w-42.5'>
 						<FolderPlus size={20} /> Create folder
-					</button>
+					</Button>
 				</div>
 			</section>
 			<section>
@@ -127,18 +128,19 @@ export const HomeTemplates = ({
 				<h2 className='text-md text-neutral-900 font-medium mb-4'>Your File</h2>
 				<div className='flex items-center justify-between mb-4'>
 					<div className='flex items-center gap-5'>
-						<button className='cursor-pointer flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-neutral-50 transition hover:bg-neutral-100'>
+						<Button variant='primary'>
 							<Clock size={20} /> Recent
-						</button>
-						<button className='cursor-pointer flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-neutral-50 transition hover:bg-neutral-100'>
+						</Button>
+						<Button variant='primary'>
 							<Star size={20} /> Starred
-						</button>
+						</Button>
 					</div>
 					<div className='flex items-center gap-5'>
-						<button className='cursor-pointer flex items-center justify-center gap-2 rounded-lg border border-gray-200 px-5 py-2 text-md font-medium text-neutral-700 bg-neutral-50 transition hover:bg-neutral-100'>
+						<Button variant='primary'>
 							<Funnel size={20} /> Filter
-						</button>
-						<div className='flex items-center gap-2 border-2 bg-neutral-50 text-neutral-700 border-gray-200 px-2 py-2 w-[200px] rounded-lg'>
+						</Button>
+
+						<div className='flex items-center gap-2 border bg-neutral-50 text-neutral-700 border-gray-200 px-2 py-2 w-60 rounded-lg'>
 							<Search className='text-neutral-700' />
 							<input
 								type='text'

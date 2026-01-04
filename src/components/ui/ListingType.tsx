@@ -8,7 +8,7 @@ interface Props {
 
 export function ListingType({ activeBtn, setActiveBtn }: Props) {
 	return (
-		<div className='w-25 flex items-center border-2 border-neutral-200 rounded-lg h-full overflow-hidden'>
+		<div className='w-25 flex items-center border border-neutral-200 rounded-lg h-full overflow-hidden'>
 			<button
 				className={`w-[50%] h-full flex items-center justify-center p-2 cursor-pointer ${
 					activeBtn === 'menu' ? 'bg-neutral-600' : 'bg-transparent'

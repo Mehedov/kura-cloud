@@ -7,7 +7,7 @@ export function Header({}: Props) {
 	return (
 		<header className='mb-6'>
 			<div className='flex items-center justify-between'>
-				<div className='flex items-center gap-2 border-2 border-neutral-200 p-2 w-[45%] rounded-lg'>
+				<div className='flex items-center gap-2 border border-neutral-200 p-2 w-[45%] rounded-lg'>
 					<Search className='text-neutral-400' />
 					<input
 						type='text'
@@ -16,7 +16,7 @@ export function Header({}: Props) {
 					/>
 				</div>
 				<div className='flex items-center gap-3'>
-					<button className='p-2 border-2 border-neutral-200 rounded-lg'>
+					<button className='p-2 border border-neutral-200 rounded-lg'>
 						<Bell className='text-neutral-600' />
 					</button>
 					<InDev>
