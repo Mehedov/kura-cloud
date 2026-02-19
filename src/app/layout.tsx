@@ -8,6 +8,7 @@ import { Sidebar } from '@/components/elements/sidebar/Sidebar'
 import type { Metadata } from 'next'
 import { Geist, Geist_Mono } from 'next/font/google'
 import './globals.css'
+import DragAndDropModal from '@/components/ui/dropzone/dropzone'
 
 const geistSans = Geist({
 	variable: '--font-geist-sans',
@@ -40,6 +41,7 @@ export default function RootLayout({
 					<section className='flex-1 overflow-auto p-layout'>
 						<Header />
 						<div className='flex  flex-col'>{children}</div>
+						<DragAndDropModal/>
 					</section>
 				</main>
 			</body>
