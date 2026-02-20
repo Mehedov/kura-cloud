@@ -3,89 +3,111 @@
 import { useEffect, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Card } from '../Card/card'
-import { Plus } from 'lucide-react'
+import { Plus, FileText, X } from 'lucide-react'
 
 const DragAndDropModal = () => {
 	const [isOpen, setIsOpen] = useState(false)
-	// Используем useRef для счетчика, чтобы избежать лишних ререндеров
+	const [uploadFiles, setUploadFiles] = useState<File[]>([])
+
 	const dragCounter = useRef(0)
 
-	const onDrop = acceptedFiles => {
-		console.log('Файлы приняты:', acceptedFiles)
-		dragCounter.current = 0 // Сбрасываем счетчик
-		setIsOpen(false)
-	}
-
-	const onDragLeave = e => {
-		e.preventDefault()
-		dragCounter.current--
-
-		// Если счетчик равен 0, значит мы реально вышли за пределы окна браузера
-		if (dragCounter.current === 0) {
-			setIsOpen(false)
-		}
+	const onDrop = (acceptedFiles: File[]) => {
+		setUploadFiles(prev => [...prev, ...acceptedFiles])
+		dragCounter.current = 0
 	}
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
 		noClick: false,
-		onDragLeave,
 	})
 
 	useEffect(() => {
-		const handleDragEnter = e => {
+		const handleWindowDragEnter = (e: DragEvent) => {
 			e.preventDefault()
-			if (e.dataTransfer.types.includes('Files')) {
+			if (e.dataTransfer?.types.includes('Files')) {
 				dragCounter.current++
 				setIsOpen(true)
 			}
 		}
 
-		const handleDrop = e => {
+		const handleWindowDragLeave = (e: DragEvent) => {
 			e.preventDefault()
-			dragCounter.current = 0
-			setIsOpen(false)
+			dragCounter.current--
+
+			if (dragCounter.current === 0 && uploadFiles.length === 0) {
+				setIsOpen(false)
+			}
 		}
 
-		// Слушаем события на уровне всего окна
-		window.addEventListener('dragenter', handleDragEnter)
-		window.addEventListener('dragleave', onDragLeave)
-		window.addEventListener('drop', handleDrop) // Важно сбросить, если файл бросили мимо
+		const handleWindowDrop = (e: DragEvent) => {
+			dragCounter.current = 0
+		}
+
+		window.addEventListener('dragenter', handleWindowDragEnter)
+		window.addEventListener('dragleave', handleWindowDragLeave)
+		window.addEventListener('drop', handleWindowDrop)
 
 		return () => {
-			window.removeEventListener('dragenter', handleDragEnter)
-			window.removeEventListener('dragleave', onDragLeave)
-			window.removeEventListener('drop', handleDrop)
+			window.removeEventListener('dragenter', handleWindowDragEnter)
+			window.removeEventListener('dragleave', handleWindowDragLeave)
+			window.removeEventListener('drop', handleWindowDrop)
 		}
-	}, [])
+	}, [uploadFiles.length]) 
 
 	if (!isOpen) return null
 
 	return (
-		<div className='fixed inset-0 z-1000 bg-black/30 flex items-center justify-center pointer-events-none'>
-			{/* Добавляем pointer-events-auto только к самой карточке, чтобы она ловила drop */}
-			<div className='pointer-events-auto'>
-				<Card {...getRootProps()}>
-					<div className='w-100 h-50 border-2 border-dashed border-neutral-300 rounded-lg flex items-center justify-center bg-white'>
-						<input {...getInputProps()} />
-						{isDragActive ? (
-							<p className='animate-pulse text-neutral-600 font-bold'>
-								Отпустите файл здесь...
-							</p>
-						) : (
-							<div className='flex flex-col items-center justify-center p-6'>
-								<div className='w-16 h-16 flex items-center justify-center bg-neutral-100 rounded-full mb-3'>
-									<Plus size={32} className='text-neutral-600' />
-								</div>
-								<p className='font-medium text-md text-center'>
-									Click or drag files to upload
-								</p>
-								<p className='text-sm text-neutral-400 mt-1'>
-									.csv or .xls (Max 20MB)
-								</p>
-							</div>
-						)}
+		<div className='fixed inset-0 z-1000 bg-black/10 flex items-center justify-center p-4 overflow-y-auto'>
+			<div className='pointer-events-auto w-full max-w-md'>
+				<Card>
+					<div className='flex justify-end mb-2'>
+						<button
+							onClick={() => {
+								setIsOpen(false)
+								setUploadFiles([])
+							}}
+							className='text-neutral-400 hover:text-neutral-600'
+						>
+							<X size={20} />
+						</button>
 					</div>
+
+					<div
+						{...getRootProps()}
+						className={`w-full h-48 border-2 border-dashed rounded-lg flex flex-col items-center justify-center duration-200 ease-in-out transition-colors ${isDragActive ? 'border-neutral-500' : 'border-neutral-300 bg-neutral-50 cursor-pointer hover:border-neutral-500'}`}
+					>
+						<input {...getInputProps()} />
+
+						<div className='w-12 h-12 flex items-center justify-center bg-neutral-200 rounded-full mb-3'>
+							<Plus size={24} className='text-neutral-700' />
+						</div>
+
+						<p className='font-medium text-md text-center'>
+							Click or drag files to upload
+						</p>
+						<p className='text-sm text-neutral-400'>.csv or .xls (Max 20MB)</p>
+					</div>
+
+					{uploadFiles.length > 0 && (
+						<div className='mt-4 space-y-2'>
+							<div className='max-h-40 overflow-y-auto space-y-2 pr-2'>
+								{uploadFiles.map((file, index) => (
+									<div
+										key={index}
+										className='flex items-center p-2  border border-neutral-200 rounded-md'
+									>
+										<FileText size={16} className='text-blue-500 mr-2' />
+										<span className='text-sm text-neutral-700 truncate flex-1'>
+											{file.name}
+										</span>
+										<span className='text-[10px] text-neutral-400'>
+											{(file.size / 1024).toFixed(1)} KB
+										</span>
+									</div>
+								))}
+							</div>
+						</div>
+					)}
 				</Card>
 			</div>
 		</div>
