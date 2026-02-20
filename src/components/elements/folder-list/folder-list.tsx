@@ -1,6 +1,7 @@
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import { FolderGrid, FolderLine } from './folder'
 
 interface Props {
 	activeBtn: 'menu' | 'grid'
@@ -9,7 +10,6 @@ interface Props {
 
 export function FolderList({ activeBtn, folderNames }: Props) {
 	const pathname = usePathname()
-	// Массив для генерации случайных данных
 
 	const renderFoldersTypeMenu = () => {
 		return folderNames.map((folder, index) => {
@@ -19,21 +19,7 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 				.replace(/[^a-z0-9-]/g, '')
 
 			return (
-				<Link
-					href={`${pathname}/${slug}`}
-					key={index}
-					className='w-full flex items-center'
-				>
-					<div className='w-[60%] flex items-center gap-2'>
-						<FolderIcon size={35} />
-						<span className='line-clamp-2 leading-snug text-sm break-all'>
-							{folder}
-						</span>
-					</div>
-
-					<span className='w-[10%] text-sm text-neutral-400'>20.20.2005</span>
-					<span className='w-[20%] text-sm text-neutral-400'>20 GB</span>
-				</Link>
+				<FolderLine pathname={pathname} slug={slug} name={folder} key={index} />
 			)
 		})
 	}
@@ -45,16 +31,7 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 				.replace(/[^a-z0-9-]/g, '')
 
 			return (
-				<Link
-					href={`${pathname}/${slug}`}
-					key={index}
-					className='w-30 flex flex-col items-center duration-200 ease-in-out hover:-translate-y-1'
-				>
-					<FolderIcon size={100} />
-					<p className='text-center line-clamp-2 leading-snug text-sm break-keep'>
-						{folder}
-					</p>
-				</Link>
+				<FolderGrid pathname={pathname} slug={slug} name={folder} key={index} />
 			)
 		})
 	}
