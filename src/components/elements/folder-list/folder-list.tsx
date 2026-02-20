@@ -39,7 +39,7 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 			{renderFoldersTypeMenu()}
 		</div>
 	) : (
-		<div className='grid grid-cols-11 mt-2 h-full'>
+		<div className='inline-grid grid-cols-13 mt-2 h-full'>
 			{renderFoldersTypeGrid()}
 		</div>
 	)
