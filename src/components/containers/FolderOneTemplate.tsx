@@ -1,9 +1,8 @@
 /**
- * 
+ *
  * TODO:
  * - Название файлов по типу my...folder.pdf
  */
-
 
 'use client'
 
@@ -82,7 +81,7 @@ export function FolderOneTemplate({
 			const start = new Date(2020, 0, 1)
 			const end = new Date()
 			const randomDate = new Date(
-				start.getTime() + Math.random() * (end.getTime() - start.getTime())
+				start.getTime() + Math.random() * (end.getTime() - start.getTime()),
 			)
 			return randomDate.toLocaleDateString('ru-RU')
 		}
@@ -200,7 +199,7 @@ export function FolderOneTemplate({
 				<div className='flex gap-3 items-baseline'>
 					<Popover>
 						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-medium'>
+							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
 								По названию <ChevronDown size={15} />
 							</button>
 						</PopoverTrigger>
@@ -224,7 +223,7 @@ export function FolderOneTemplate({
 					<Popover>
 						<PopoverTrigger>
 							<InDev>
-								<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-medium'>
+								<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
 									Люди <ChevronDown size={15} />
 								</button>
 							</InDev>
@@ -248,7 +247,7 @@ export function FolderOneTemplate({
 					</Popover>
 					<Popover>
 						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-medium'>
+							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
 								<File size={18} className='text-neutral-600' />
 								Тип <ChevronDown size={15} />
 							</button>
@@ -257,7 +256,7 @@ export function FolderOneTemplate({
 							<div className='flex flex-col gap-3 items-start w-full'>
 								<div className='flex justify-between items-center bg-neutral-100  hover:bg-neutral-100 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									<div className='flex items-center gap-2'>
-										<FolderIcon size={20} color='#525252'/> Папки
+										<FolderIcon size={20} color='#525252' /> Папки
 									</div>
 									<Check size={20} className='text-neutral-600' />
 								</div>
@@ -290,14 +289,14 @@ export function FolderOneTemplate({
 			{activeBtn === 'menu' ? (
 				<div className='flex flex-col'>
 					<div className='w-full border-b border-neutral-400 p-3 flex'>
-						<div className='w-[40%] font-medium'>Название</div>
-						<div className='w-[20%] font-medium'>Владелец</div>
-						<div className='w-[15%] font-medium'>Дата изменения</div>
-						<div className='w-[15%] font-medium'>Размер</div>
+						<div className='w-[40%] font-normal'>Название</div>
+						<div className='w-[20%] font-normal'>Владелец</div>
+						<div className='w-[15%] font-normal'>Дата изменения</div>
+						<div className='w-[15%] font-normal'>Размер</div>
 						<div className='w-[10%]'>
 							<Popover>
 								<PopoverTrigger>
-									<button className='flex items-center gap-2 cursor-pointer font-medium'>
+									<button className='flex items-center gap-2 cursor-pointer font-normal'>
 										<TextAlignStart />
 										Сортировка
 									</button>

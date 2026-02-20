@@ -5,14 +5,14 @@ export const YourTable = () => {
 		return [...new Array(10)].map((_, index) => (
 			<div
 				key={index}
-				className='flex  border-b border-neutral-200 divide-x-2 divide-neutral-200'
+				className='flex border-b border-neutral-200 divide-x-2 divide-neutral-200'
 			>
-				<div className='w-[25%] not-last:border-r border-neutral-200 flex items-center gap-2 p-2 text-sm'>
+				<div className='w-[25%] not-last:border-r border-neutral-200 flex items-center gap-2 p-2 text-md font-medium'>
 					<File className='w-5 h-5' />
 					<span>Design_Campaign.photo.JPG</span>
 				</div>
 				<div className='w-[25%] p-2 flex items-center gap-2 not-last:border-r border-neutral-200'>
-					<div className='w-10 h-10 rounded-full overflow-hidden'>
+					<div className='w-10 h-10 rounded-full overflow-hidden flex items-center justify-center'>
 						{/* <Image src={avatar} alt='av' /> */}
 						<User />
 					</div>

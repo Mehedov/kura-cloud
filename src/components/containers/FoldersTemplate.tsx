@@ -88,7 +88,7 @@ export function FoldersTemplate({
 
 					<Popover>
 						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-medium'>
+							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
 								По названию <ChevronDown size={15} />
 							</button>
 						</PopoverTrigger>

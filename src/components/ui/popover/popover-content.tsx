@@ -1,30 +1,35 @@
-import { useContext } from 'react'
+import React, { forwardRef, useContext } from 'react'
 import { PopoverContext } from './popover'
 import { cn } from '@/utils/cn'
 
-interface Props {
-	className?: string
-	children: React.ReactNode
-}
+type Props = React.HTMLAttributes<HTMLElement>
 
-export function PopoverContent({ children, className }: Props) {
-	const context = useContext(PopoverContext)
+export const PopoverContent = forwardRef<HTMLElement, Props>(
+	({ className, children, ...props }, ref) => {
+		const context = useContext(PopoverContext)
 
-	if (!context) {
-		throw new Error('PopoverContent must be used within a Popover')
-	}
+		if (!context) {
+			throw new Error('PopoverContent must be used within a Popover')
+		}
 
-	const { open } = context
+		const { open } = context
 
-	return (
-		<div
-			className={cn(
-				className,
-				open ? 'opacity-100' : 'opacity-0',
-				`z-1000 p-2 border border-neutral-200 absolute bg-white duration-100 ease-in-out transition-opacity top-8.75 rounded-lg shadow-lg opacity-${open ? '100' : '0'}`,
-			)}
-		>
-			{children}
-		</div>
-	)
-}
+		if (!open) return null
+
+		return (
+			<div
+				ref={ref as React.RefObject<HTMLDivElement>}
+				className={cn(
+					'z-1000 p-2 border border-neutral-200 absolute bg-white transition-opacity duration-200 ease-in-out top-8.75 rounded-lg shadow-lg',
+					open ? 'opacity-100' : 'opacity-0',
+					className,
+				)}
+				{...props}
+			>
+				{children}
+			</div>
+		)
+	},
+)
+
+PopoverContent.displayName = 'PopoverContent'

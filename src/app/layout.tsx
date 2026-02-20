@@ -6,17 +6,17 @@
 import { Header } from '@/components/elements/header/Header'
 import { Sidebar } from '@/components/elements/sidebar/Sidebar'
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import DragAndDropModal from '@/components/ui/dropzone/dropzone'
 
-const geistSans = Geist({
-	variable: '--font-geist-sans',
-	subsets: ['latin'],
+const interSans = Inter({
+	variable: '--font-inter-sans',
+	subsets: ['latin', 'cyrillic'], // Добавь cyrillic, если нужен русский язык
 })
 
-const geistMono = Geist_Mono({
-	variable: '--font-geist-mono',
+const interMono = JetBrains_Mono({
+	variable: '--font-inter-mono',
 	subsets: ['latin'],
 })
 
@@ -33,7 +33,7 @@ export default function RootLayout({
 	return (
 		<html lang='en'>
 			<body
-				className={`${geistSans.variable} ${geistMono.variable} antialiased box-border h-full m-0`}
+				className={`${interSans.variable} ${interMono.variable} antialiased box-border h-full m-0`}
 			>
 				<main className='h-screen flex'>
 					{/** Sidebar  */}
@@ -41,7 +41,7 @@ export default function RootLayout({
 					<section className='flex-1 overflow-auto p-layout'>
 						<Header />
 						<div className='flex  flex-col'>{children}</div>
-						<DragAndDropModal/>
+						<DragAndDropModal />
 					</section>
 				</main>
 			</body>

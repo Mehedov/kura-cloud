@@ -8,6 +8,9 @@
 }
 
 @theme inline {
+	--font-sans: var(--font-inter-sans), ui-sans-serif, system-ui, sans-serif;
+	--font-mono: var(--font-inter-mono), ui-monospace, SFMono-Regular, monospace;
+
 	--radius-sm: calc(var(--radius) - 4px);
 	--radius-md: calc(var(--radius) - 2px);
 	--radius-lg: var(--radius);
@@ -44,7 +47,7 @@
 	--color-sidebar-border: var(--sidebar-border);
 	--color-sidebar-ring: var(--sidebar-ring);
 
-	--color-folders: #FFC92A
+	--color-folders: #ffc92a;
 }
 
 :root {
@@ -117,10 +120,10 @@
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
+	* {
+		@apply border-border outline-ring/50;
 	}
-  body {
-    @apply bg-background text-foreground;
+	body {
+		@apply bg-background text-foreground font-sans;
 	}
 }

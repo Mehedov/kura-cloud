@@ -19,7 +19,7 @@ export function Sidebar() {
 			<Link href='/'>
 				<div className='flex items-center gap-1.5 border-b border-neutral-200 pb-4 mb-3'>
 					<CloudyIcon size={30} />
-					<span className='font-bold text-black text-xl'>Kura Cloud</span>
+					<span className='font-medium text-black text-xl'>Kura Cloud</span>
 				</div>
 			</Link>
 
@@ -44,7 +44,7 @@ export function Sidebar() {
 				<ul className='flex flex-col gap-1'>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center bg-neutral-700 text-white p-3 text-sm rounded-md font-medium'
+							className='flex gap-2.5 items-center bg-neutral-700 text-white p-3 text-sm rounded-md font-normal'
 							href='/'
 						>
 							<LayoutGrid className='text-white' size={20} /> All Files
@@ -52,7 +52,7 @@ export function Sidebar() {
 					</li>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-medium'
+							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
 							href='/'
 						>
 							<ImageIcon size={20} /> Photo
@@ -60,7 +60,7 @@ export function Sidebar() {
 					</li>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-medium'
+							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
 							href='/'
 						>
 							<Star size={20} /> Favorite
@@ -68,7 +68,7 @@ export function Sidebar() {
 					</li>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-medium'
+							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
 							href='/'
 						>
 							<Share size={20} /> Shared Files
@@ -76,7 +76,7 @@ export function Sidebar() {
 					</li>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-medium'
+							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
 							href='/'
 						>
 							<Trash2Icon size={20} /> Delete Files
@@ -84,7 +84,7 @@ export function Sidebar() {
 					</li>
 					<li>
 						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-medium'
+							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
 							href='/'
 						>
 							<Settings size={20} /> Settings
@@ -92,7 +92,7 @@ export function Sidebar() {
 					</li>
 				</ul>
 			</nav>
-			<div className='p-3 text-md text-neutral-400 font-medium mb-2'>
+			<div className='p-3 text-md text-neutral-400 font-normal mb-2'>
 				<div className='mb-4'>Folders</div>
 				<ul className='flex flex-col gap-2.5'>
 					<li>
@@ -127,7 +127,7 @@ export function Sidebar() {
 						<div className='flex items-center gap-2 text-[13px]'>
 							<Square size={15} className='text-red-600' /> Photo
 						</div>
-						<span className='text-[14px] font-bold text-neutral-500'>
+						<span className='text-[14px] font-medium text-neutral-500'>
 							11 GB
 						</span>
 					</div>
@@ -135,7 +135,7 @@ export function Sidebar() {
 						<div className='flex items-center gap-2 text-[13px]'>
 							<Square size={15} className='text-green-600' /> Video
 						</div>
-						<span className='text-[14px] font-bold text-neutral-500'>
+						<span className='text-[14px] font-medium text-neutral-500'>
 							19 GB
 						</span>
 					</div>
@@ -143,7 +143,7 @@ export function Sidebar() {
 						<div className='flex items-center gap-2 text-[13px]'>
 							<Square size={15} className='text-blue-600' /> Document
 						</div>
-						<span className='text-[14px] font-bold text-neutral-500'>
+						<span className='text-[14px] font-medium text-neutral-500'>
 							25 GB
 						</span>
 					</div>
@@ -151,7 +151,7 @@ export function Sidebar() {
 						<div className='flex items-center gap-2 text-[13px]'>
 							<Square size={15} className='text-neutral-600' /> Free Storage
 						</div>
-						<span className='text-[14px] font-bold text-neutral-500'>
+						<span className='text-[14px] font-medium text-neutral-500'>
 							45 GB
 						</span>
 					</div>

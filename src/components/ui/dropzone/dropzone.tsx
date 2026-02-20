@@ -1,76 +1,95 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
+import { Card } from '../Card/card'
+import { Plus } from 'lucide-react'
 
 const DragAndDropModal = () => {
 	const [isOpen, setIsOpen] = useState(false)
+	// Используем useRef для счетчика, чтобы избежать лишних ререндеров
+	const dragCounter = useRef(0)
 
-	// Обработчик для файлов, которые уже попали в dropzone
 	const onDrop = acceptedFiles => {
 		console.log('Файлы приняты:', acceptedFiles)
-		setIsOpen(false) // Закрываем модалку после загрузки
+		dragCounter.current = 0 // Сбрасываем счетчик
+		setIsOpen(false)
+	}
+
+	const onDragLeave = e => {
+		e.preventDefault()
+		dragCounter.current--
+
+		// Если счетчик равен 0, значит мы реально вышли за пределы окна браузера
+		if (dragCounter.current === 0) {
+			setIsOpen(false)
+		}
 	}
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
 		onDrop,
-		noClick: false, // Разрешаем клик, если модалка уже открыта
+		noClick: false,
+		onDragLeave,
 	})
 
-	// Эффект для отслеживания перетаскивания на все окно браузера
 	useEffect(() => {
-		const handleWindowDragEnter = e => {
-			// Проверяем, что перетаскиваются именно файлы
+		const handleDragEnter = e => {
+			e.preventDefault()
 			if (e.dataTransfer.types.includes('Files')) {
+				dragCounter.current++
 				setIsOpen(true)
 			}
 		}
 
-		window.addEventListener('dragenter', handleWindowDragEnter)
-		return () => window.removeEventListener('dragenter', handleWindowDragEnter)
+		const handleDrop = e => {
+			e.preventDefault()
+			dragCounter.current = 0
+			setIsOpen(false)
+		}
+
+		// Слушаем события на уровне всего окна
+		window.addEventListener('dragenter', handleDragEnter)
+		window.addEventListener('dragleave', onDragLeave)
+		window.addEventListener('drop', handleDrop) // Важно сбросить, если файл бросили мимо
+
+		return () => {
+			window.removeEventListener('dragenter', handleDragEnter)
+			window.removeEventListener('dragleave', onDragLeave)
+			window.removeEventListener('drop', handleDrop)
+		}
 	}, [])
 
 	if (!isOpen) return null
 
 	return (
-		<div style={modalOverlayStyle}>
-			<div {...getRootProps()} style={dropzoneStyle}>
-				<input {...getInputProps()} />
-				{isDragActive ? (
-					<p>Отпустите файл здесь...</p>
-				) : (
-					<p>Перетащите файлы сюда или кликните для выбора</p>
-				)}
-				<button onClick={() => setIsOpen(false)}>Отмена</button>
+		<div className='fixed inset-0 z-1000 bg-black/30 flex items-center justify-center pointer-events-none'>
+			{/* Добавляем pointer-events-auto только к самой карточке, чтобы она ловила drop */}
+			<div className='pointer-events-auto'>
+				<Card {...getRootProps()}>
+					<div className='w-100 h-50 border-2 border-dashed border-neutral-300 rounded-lg flex items-center justify-center bg-white'>
+						<input {...getInputProps()} />
+						{isDragActive ? (
+							<p className='animate-pulse text-neutral-600 font-bold'>
+								Отпустите файл здесь...
+							</p>
+						) : (
+							<div className='flex flex-col items-center justify-center p-6'>
+								<div className='w-16 h-16 flex items-center justify-center bg-neutral-100 rounded-full mb-3'>
+									<Plus size={32} className='text-neutral-600' />
+								</div>
+								<p className='font-medium text-md text-center'>
+									Click or drag files to upload
+								</p>
+								<p className='text-sm text-neutral-400 mt-1'>
+									.csv or .xls (Max 20MB)
+								</p>
+							</div>
+						)}
+					</div>
+				</Card>
 			</div>
 		</div>
 	)
-}
-
-// Стили для наглядности
-const modalOverlayStyle = {
-	position: 'fixed',
-	top: 0,
-	left: 0,
-	right: 0,
-	bottom: 0,
-	backgroundColor: 'rgba(0,0,0,0.5)',
-	display: 'flex',
-	alignItems: 'center',
-	justifyContent: 'center',
-	zIndex: 1000,
-}
-
-const dropzoneStyle = {
-	width: '400px',
-	height: '200px',
-	border: '2px dashed #fff',
-	borderRadius: '10px',
-	display: 'flex',
-	flexDirection: 'column',
-	alignItems: 'center',
-	justifyContent: 'center',
-	color: '#fff',
 }
 
 export default DragAndDropModal

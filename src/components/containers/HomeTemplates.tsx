@@ -74,13 +74,13 @@ export const HomeTemplates = ({
 				/>
 
 				<div className='flex flex-wrap gap-3'>
-					<Button variant='primary' className='w-42.5'>
+					<Button variant='primary' className=' h-13'>
 						<Plus size={20} /> Create
 					</Button>
-					<Button variant='primary' className='w-47.5'>
+					<Button variant='primary' className='h-13'>
 						<UploadCloud size={20} /> Upload or drop
 					</Button>
-					<Button variant='primary' className='w-42.5'>
+					<Button variant='primary' className='h-13'>
 						<FolderPlus size={20} /> Create folder
 					</Button>
 				</div>

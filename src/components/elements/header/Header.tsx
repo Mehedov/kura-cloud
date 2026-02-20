@@ -1,18 +1,16 @@
 import InDev from '@/components/ui/in-dev/in-dev'
 import { Bell, Plus, Search } from 'lucide-react'
 
-interface Props {}
-
-export function Header({}: Props) {
+export function Header() {
 	return (
 		<header className='mb-6'>
 			<div className='flex items-center justify-between'>
-				<div className='flex items-center gap-2 border border-neutral-200 p-2 w-[45%] rounded-lg'>
-					<Search className='text-neutral-400' />
+				<div className='flex items-center gap-1 border border-neutral-200 p-2 w-[45%] rounded-lg'>
+					<Search className='text-neutral-400' size={20} />
 					<input
 						type='text'
 						placeholder='Search'
-						className='text-neutral-600 text-md placeholder:font-medium w-full outline-0'
+						className='text-neutral-600 text-md w-full outline-0'
 					/>
 				</div>
 				<div className='flex items-center gap-3'>
