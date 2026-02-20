@@ -35,7 +35,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								ref={ref}
 								href={`${pathname}/${slug}`}
 								className={cn(
-									'w-30 flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1',
+									'w-28.5 flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1',
 									className,
 								)}
 								{...props}

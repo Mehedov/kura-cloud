@@ -35,11 +35,11 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 	}
 
 	return activeBtn === 'menu' ? (
-		<div className='flex flex-col gap-3  items-start mt-2 h-full'>
+		<div className='flex flex-col  items-start mt-2 h-full'>
 			{renderFoldersTypeMenu()}
 		</div>
 	) : (
-		<div className='inline-grid grid-cols-13 mt-2 h-full'>
+		<div className='inline-grid grid-cols-14 mt-2 h-full'>
 			{renderFoldersTypeGrid()}
 		</div>
 	)
