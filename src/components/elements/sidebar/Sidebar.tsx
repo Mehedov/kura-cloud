@@ -19,7 +19,7 @@ export function Sidebar() {
 			<Link href='/'>
 				<div className='flex items-center gap-1.5 border-b border-neutral-200 pb-4 mb-3'>
 					<CloudyIcon size={30} />
-					<span className='font-medium text-black text-xl'>Kura Cloud</span>
+					<span className='font-medium text-black text-xl'>Kura Drive</span>
 				</div>
 			</Link>
 
