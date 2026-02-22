@@ -17,11 +17,9 @@ export function Header() {
 					<button className='p-2 border border-neutral-200 rounded-lg'>
 						<Bell className='text-neutral-600' />
 					</button>
-					<InDev>
 						<button className='flex items-center gap-2 bg-neutral-700 text-white font-medium px-3 py-2 rounded-lg'>
 							<Plus /> Invite member
 						</button>
-					</InDev>
 				</div>
 			</div>
 		</header>

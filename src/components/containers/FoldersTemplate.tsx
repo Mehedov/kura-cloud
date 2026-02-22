@@ -80,11 +80,9 @@ export function FoldersTemplate({
 			</div>
 			<div className='flex items-center justify-between mb-3'>
 				<div className='flex items-center gap-3'>
-					<InDev>
-						<button className='flex items-center gap-2 border border-neutral-400 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100'>
-							Люди <ChevronDown size={15} />
-						</button>
-					</InDev>
+					<button className='flex items-center gap-2 border border-neutral-400 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100'>
+						Люди <ChevronDown size={15} />
+					</button>
 
 					<Popover>
 						<PopoverTrigger>

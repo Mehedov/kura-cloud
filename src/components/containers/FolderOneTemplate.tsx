@@ -196,10 +196,10 @@ export function FolderOneTemplate({
 				<Breadcrumbs routes={breadcrumbsRoutes} />
 			</div>
 			<div className='flex justify-between items-center mb-2'>
-				<div className='flex gap-3 items-baseline'>
+				<div className='flex gap-2 items-center'>
 					<Popover>
 						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
+							<button className='w-40 flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
 								По названию <ChevronDown size={15} />
 							</button>
 						</PopoverTrigger>
@@ -222,11 +222,9 @@ export function FolderOneTemplate({
 					</Popover>
 					<Popover>
 						<PopoverTrigger>
-							<InDev>
-								<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
-									Люди <ChevronDown size={15} />
-								</button>
-							</InDev>
+							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
+								Люди <ChevronDown size={15} />
+							</button>
 						</PopoverTrigger>
 						<PopoverContent className='w-60 '>
 							<div className='grid gap-4'>
