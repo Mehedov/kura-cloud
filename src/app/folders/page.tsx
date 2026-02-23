@@ -1,7 +1,6 @@
 import { FoldersTemplate } from '@/components/containers/FoldersTemplate'
 
-interface Props {}
 
-export default function page({}: Props) {
+export default function page() {
 	return <FoldersTemplate breadcrumbsRoutes={['folders']} />
 }
