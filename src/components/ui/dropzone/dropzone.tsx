@@ -4,9 +4,10 @@ import { useEffect, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
 import { Card } from '../Card/card'
 import { Plus, FileText, X } from 'lucide-react'
+import useDropzoneStore from '@/store/store'
 
 const DragAndDropModal = () => {
-	const [isOpen, setIsOpen] = useState(false)
+	const {isOpenDropzone, setIsOpenDropzone} = useDropzoneStore(state => state)
 	const [uploadFiles, setUploadFiles] = useState<File[]>([])
 
 	const dragCounter = useRef(0)
@@ -26,7 +27,7 @@ const DragAndDropModal = () => {
 			e.preventDefault()
 			if (e.dataTransfer?.types.includes('Files')) {
 				dragCounter.current++
-				setIsOpen(true)
+				setIsOpenDropzone(true)
 			}
 		}
 
@@ -35,7 +36,7 @@ const DragAndDropModal = () => {
 			dragCounter.current--
 
 			if (dragCounter.current === 0 && uploadFiles.length === 0) {
-				setIsOpen(false)
+				setIsOpenDropzone(false)
 			}
 		}
 
@@ -52,9 +53,9 @@ const DragAndDropModal = () => {
 			window.removeEventListener('dragleave', handleWindowDragLeave)
 			window.removeEventListener('drop', handleWindowDrop)
 		}
-	}, [uploadFiles.length]) 
+	}, [uploadFiles.length, setIsOpenDropzone]) 
 
-	if (!isOpen) return null
+	if (!isOpenDropzone) return null
 
 	return (
 		<div className='fixed inset-0 z-1000 bg-black/10 flex items-center justify-center p-4 overflow-y-auto'>
@@ -63,7 +64,7 @@ const DragAndDropModal = () => {
 					<div className='flex justify-end mb-2'>
 						<button
 							onClick={() => {
-								setIsOpen(false)
+								setIsOpenDropzone(false)
 								setUploadFiles([])
 							}}
 							className='text-neutral-400 hover:text-neutral-600'

@@ -44,7 +44,7 @@ export function Popover({
 
 	return (
 		<PopoverContext.Provider value={{ open, setOpen, coords, setCoords }}>
-			<div ref={containerRef} className={cn('relative w-full', className)}>
+			<div ref={containerRef} className={cn('relative', className)}>
 				{children}
 			</div>
 		</PopoverContext.Provider>

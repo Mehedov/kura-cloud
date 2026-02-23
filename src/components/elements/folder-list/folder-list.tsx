@@ -1,5 +1,5 @@
+import { FolderGrid, FolderLine } from '@/components/ui/folder/folder'
 import { usePathname } from 'next/navigation'
-import { FolderGrid, FolderLine } from './folder'
 
 interface Props {
 	activeBtn: 'menu' | 'grid'

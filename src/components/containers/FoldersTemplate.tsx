@@ -71,7 +71,6 @@ export function FoldersTemplate({
 	breadcrumbsRoutes = [],
 }: FoldersTemplateProps) {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
-	const [currentPage, setCurrentPage] = useState(1)
 
 	return (
 		<section className='relative h-full flex flex-col'>

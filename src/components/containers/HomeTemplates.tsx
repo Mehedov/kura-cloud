@@ -1,8 +1,8 @@
+'use client'
+
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import {
 	Clock,
-	EllipsisVertical,
-	FolderClosed,
 	FolderPlus,
 	Funnel,
 	Plus,
@@ -14,6 +14,8 @@ import Link from 'next/link'
 import { Title } from '../ui/Title'
 import { YourTable } from '../ui/YourTable'
 import { Button } from '../ui/button/Button'
+import useDropzone from '@/store/store'
+import { FolderGrid } from '../ui/folder/folder'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -22,7 +24,7 @@ interface HomeTemplatesProps {
 const folderNames = [
 	'UI UX Design',
 	'Documentation',
-	'Marketing MaterialsMaterials',
+	'Marketing MaterialsMaterialsаываываываываываыв',
 	'Financial Reports',
 	'Client Presentations',
 	'Source Code',
@@ -45,23 +47,10 @@ const folderNames = [
 export const HomeTemplates = ({
 	breadcrumbsRoutes = [],
 }: HomeTemplatesProps) => {
+	const { setIsOpenDropzone } = useDropzone(state => state)
 	const foldersRender = () => {
 		return folderNames.slice(0, 10).map((_, index) => {
-			return (
-				<Link
-					href={`/folders/${_.toLowerCase()
-						.replace(/\s+/g, '-')
-						.replace(/[^a-z0-9-]/g, '')}`}
-					key={index}
-					className='flex justify-between items-center w-[256px] bg-neutral-50 rounded-lg border border-gray-200 px-4 py-3'
-				>
-					<div className='flex items-center gap-2'>
-						<FolderClosed size={20} />
-						<span className='text-neutral-700 line-clamp-1'>{_}</span>
-					</div>
-					<EllipsisVertical className='text-neutral-700' />
-				</Link>
-			)
+			return <FolderGrid name={_} key={index} size={100} />
 		})
 	}
 
@@ -77,7 +66,11 @@ export const HomeTemplates = ({
 					<Button variant='primary' className=' h-13'>
 						<Plus size={20} /> Create
 					</Button>
-					<Button variant='primary' className='h-13'>
+					<Button
+						variant='primary'
+						className='h-13'
+						onClick={() => setIsOpenDropzone(true)}
+					>
 						<UploadCloud size={20} /> Upload or drop
 					</Button>
 					<Button variant='primary' className='h-13'>

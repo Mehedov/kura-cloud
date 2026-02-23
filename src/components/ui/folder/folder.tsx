@@ -4,30 +4,41 @@ import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { Popover, PopoverContext } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { cn } from '@/utils/cn'
+import { DownloadCloudIcon, FolderInput, SquarePen, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { forwardRef } from 'react'
+import React, { forwardRef, memo } from 'react'
 
-type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
-	pathname: string
-	slug: string
+export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
+	pathname?: string
+	slug?: string
 	name: string
+	size?: number
 }
 
-const ContextMenuContent = () => (
+export const ContextMenuContent: React.FC = memo(() => (
 	<div className='flex flex-col text-sm'>
-		<button className='text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
-			Открыть
+		<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<DownloadCloudIcon size={20} /> Скачать
 		</button>
-		<button className='text-left px-3 py-1.5 hover:bg-neutral-100 rounded text-red-500'>
-			Удалить
+		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<SquarePen size={20} />
+			Переименовать
+		</button>
+		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<FolderInput size={20} /> Переместить
+		</button>
+		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<Trash2 /> Удалить
 		</button>
 	</div>
-)
+))
+
+ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, pathname, slug, name, ...props }, ref) => {
+	({ className, pathname, slug, name, size, ...props }, ref) => {
 		return (
-			<Popover className='w-full'>
+			<Popover>
 				<PopoverContext.Consumer>
 					{context => (
 						<>
@@ -35,9 +46,10 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								ref={ref}
 								href={`${pathname}/${slug}`}
 								className={cn(
-									'w-28.5 flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1',
+									`flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1`,
 									className,
 								)}
+								style={{ width: size ? `${size}px` : '100px' }}
 								{...props}
 								onContextMenu={e => {
 									e.preventDefault()
@@ -45,8 +57,10 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 									context?.setOpen(true)
 								}}
 							>
-								<FolderIcon size={100} />
-								<p className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full'>
+								<FolderIcon size={size || 100} />
+								<p
+									className={`text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full w-[${size}px]`}
+								>
 									{name}
 								</p>
 							</Link>
