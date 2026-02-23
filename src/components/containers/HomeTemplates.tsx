@@ -16,6 +16,8 @@ import { YourTable } from '../ui/YourTable'
 import { Button } from '../ui/button/Button'
 import useDropzone from '@/store/store'
 import { FolderGrid } from '../ui/folder/folder'
+import { usePathname } from 'next/navigation'
+import { PAGES } from '@/config/page.config'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -44,13 +46,13 @@ const folderNames = [
 	'Training Materials',
 ]
 
-export const HomeTemplates = ({
-	breadcrumbsRoutes = [],
-}: HomeTemplatesProps) => {
+export const HomeTemplates = () => {
 	const { setIsOpenDropzone } = useDropzone(state => state)
 	const foldersRender = () => {
 		return folderNames.slice(0, 10).map((_, index) => {
-			return <FolderGrid name={_} key={index} size={100} />
+			return (
+				<FolderGrid name={_} key={index} size={100} pathname={PAGES.folders} />
+			)
 		})
 	}
 

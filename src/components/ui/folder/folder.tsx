@@ -36,7 +36,11 @@ export const ContextMenuContent: React.FC = memo(() => (
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, pathname, slug, name, size, ...props }, ref) => {
+	({ className, name, pathname, size, ...props }, ref) => {
+		const slug = name
+			.toLowerCase()
+			.replace(/\s+/g, '-')
+			.replace(/[^a-z0-9-]/g, '')
 		return (
 			<Popover>
 				<PopoverContext.Consumer>
@@ -78,7 +82,11 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 FolderGrid.displayName = 'FolderGrid'
 
 export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, pathname, slug, name, ...props }, ref) => {
+	({ className, pathname, name, ...props }, ref) => {
+		const slug = name
+			.toLowerCase()
+			.replace(/\s+/g, '-')
+			.replace(/[^a-z0-9-]/g, '')
 		return (
 			<Popover>
 				<PopoverContext.Consumer>

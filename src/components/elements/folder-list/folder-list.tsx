@@ -11,26 +11,12 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 
 	const renderFoldersTypeMenu = () => {
 		return folderNames.map((folder, index) => {
-			const slug = folder
-				.toLowerCase()
-				.replace(/\s+/g, '-')
-				.replace(/[^a-z0-9-]/g, '')
-
-			return (
-				<FolderLine pathname={pathname} slug={slug} name={folder} key={index} />
-			)
+			return <FolderLine pathname={pathname} name={folder} key={index} />
 		})
 	}
 	const renderFoldersTypeGrid = () => {
 		return folderNames.map((folder, index) => {
-			const slug = folder
-				.toLowerCase()
-				.replace(/\s+/g, '-')
-				.replace(/[^a-z0-9-]/g, '')
-
-			return (
-				<FolderGrid pathname={pathname} slug={slug} name={folder} key={index} />
-			)
+			return <FolderGrid pathname={pathname} name={folder} key={index} />
 		})
 	}
 
