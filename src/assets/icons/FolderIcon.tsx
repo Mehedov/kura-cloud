@@ -1,5 +1,3 @@
-import { COLORS } from '@/constants/colors'
-
 interface Props {
 	size: number
 	color?: string

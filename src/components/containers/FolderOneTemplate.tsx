@@ -15,13 +15,11 @@ import {
 	FilePen,
 	FilePlay,
 	FileText,
-	Folder,
 	TextAlignStart,
 	User,
 } from 'lucide-react'
 import { useState } from 'react'
 import { Breadcrumbs } from '../ui/breadcrumbs/breadcrumbs'
-import InDev from '../ui/in-dev/in-dev'
 import { ListingType } from '../ui/ListingType'
 import { Popover } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
@@ -32,7 +30,6 @@ interface FoldersTemplateProps {
 	breadcrumbsRoutes?: string[]
 }
 
-const sortBy = []
 
 export function FolderOneTemplate({
 	breadcrumbsRoutes = [],
@@ -40,7 +37,6 @@ export function FolderOneTemplate({
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('menu')
 
 	const renderFolders = () => {
-		// Массив для генерации случайных данных
 		const folderNames = [
 			'UI UX Design',
 			'Documentation',
