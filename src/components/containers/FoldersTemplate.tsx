@@ -109,12 +109,6 @@ export function FoldersTemplate({
 			<div className='flex-1 overflow-auto'>
 				<FolderList activeBtn={activeBtn} folderNames={folderNames} />
 			</div>
-			{/* <Pagination
-				totalPages={10}
-				currentPage={currentPage}
-				setCurrentPage={setCurrentPage}
-				className='mt-auto'
-			/> */}
 		</section>
 	)
 }

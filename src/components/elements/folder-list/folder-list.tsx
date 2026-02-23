@@ -16,7 +16,9 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 	}
 	const renderFoldersTypeGrid = () => {
 		return folderNames.map((folder, index) => {
-			return <FolderGrid pathname={pathname} name={folder} key={index} />
+			return (
+				<FolderGrid pathname={pathname} name={folder} key={index} size={90} />
+			)
 		})
 	}
 
@@ -25,7 +27,14 @@ export function FolderList({ activeBtn, folderNames }: Props) {
 			{renderFoldersTypeMenu()}
 		</div>
 	) : (
-		<div className='inline-grid grid-cols-14 mt-2 h-full'>
+		<div
+			className='w-full gap-4 p-4'
+			style={{
+				display: 'grid',
+				gridTemplateColumns: 'repeat(auto-fill, minmax(5rem, 1fr))',
+				gridAutoRows: 'min-content',
+			}}
+		>
 			{renderFoldersTypeGrid()}
 		</div>
 	)
