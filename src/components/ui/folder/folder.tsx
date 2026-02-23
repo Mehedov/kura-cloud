@@ -28,7 +28,7 @@ export const ContextMenuContent: React.FC = memo(() => (
 			<FolderInput size={20} /> Переместить
 		</button>
 		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
-			<Trash2 /> Удалить
+			<Trash2 size={20} /> Удалить
 		</button>
 	</div>
 ))
@@ -88,7 +88,7 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 			.replace(/\s+/g, '-')
 			.replace(/[^a-z0-9-]/g, '')
 		return (
-			<Popover>
+			<Popover className='w-full'>
 				<PopoverContext.Consumer>
 					{context => (
 						<>
