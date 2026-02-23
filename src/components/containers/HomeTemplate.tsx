@@ -5,19 +5,20 @@ import {
 	Clock,
 	FolderPlus,
 	Funnel,
-	Plus,
 	Search,
 	Star,
 	UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
-import { Title } from '../ui/Title'
 import { YourTable } from '../ui/YourTable'
 import { Button } from '../ui/button/Button'
 import useDropzone from '@/store/store'
-import { FolderGrid } from '../ui/folder/folder'
-import { usePathname } from 'next/navigation'
+import { FolderGrid } from '../elements/folder/folder'
 import { PAGES } from '@/config/page.config'
+import { Popover } from '../ui/popover/popover'
+import { PopoverTrigger } from '../ui/popover/popover-trigger'
+import { PopoverContent } from '../ui/popover/popover-content'
+import Input from '../ui/input/input'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -26,7 +27,7 @@ interface HomeTemplatesProps {
 const folderNames = [
 	'UI UX Design',
 	'Documentation',
-	'Marketing MaterialsMaterialsаываываываываываыв',
+	'Marketing Materials',
 	'Financial Reports',
 	'Client Presentations',
 	'Source Code',
@@ -46,12 +47,12 @@ const folderNames = [
 	'Training Materials',
 ]
 
-export const HomeTemplates = () => {
+export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone } = useDropzone(state => state)
 	const foldersRender = () => {
 		return folderNames.slice(0, 10).map((_, index) => {
 			return (
-				<FolderGrid name={_} key={index} size={100} pathname={PAGES.folders} />
+				<FolderGrid name={_} key={index} size={90} pathname={PAGES.folders} />
 			)
 		})
 	}
@@ -59,15 +60,16 @@ export const HomeTemplates = () => {
 	return (
 		<section className='flex flex-col gap-8 w-full'>
 			<section className='flex flex-wrap items-center justify-between gap-4'>
-				<Title
-					title='Welcome back, Mehedov Nikolay'
-					description='Welcome back! Let’s continue your activity on the dashboard.'
-				/>
+				<div>
+					<h1 className='text-2xl font-semibold text-neutral-700'>
+						Welcome back, Mehedov Nikolay
+					</h1>
+					<p className='text-sm text-neutral-500'>
+						Welcome back! Let’s continue your activity on the dashboard.
+					</p>
+				</div>
 
 				<div className='flex flex-wrap gap-3'>
-					<Button variant='primary' className=' h-13'>
-						<Plus size={20} /> Create
-					</Button>
 					<Button
 						variant='primary'
 						className='h-13'
@@ -75,9 +77,17 @@ export const HomeTemplates = () => {
 					>
 						<UploadCloud size={20} /> Upload or drop
 					</Button>
-					<Button variant='primary' className='h-13'>
-						<FolderPlus size={20} /> Create folder
-					</Button>
+					<Popover>
+						<PopoverTrigger>
+							<Button variant='primary' className='h-13'>
+								<FolderPlus size={20} /> Create folder
+							</Button>
+						</PopoverTrigger>
+						<PopoverContent className='w-full'>
+							<label id='create-input'></label>
+							<Input />
+						</PopoverContent>
+					</Popover>
 				</div>
 			</section>
 			<section>

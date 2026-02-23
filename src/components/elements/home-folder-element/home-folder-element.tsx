@@ -1,12 +1,12 @@
 'use client'
 
 import React, { forwardRef } from 'react'
-import { PopoverContent } from '../popover/popover-content'
+import { PopoverContent } from '../../ui/popover/popover-content'
 import { EllipsisVertical, FolderClosed } from 'lucide-react'
 import Link from 'next/link'
-import { Popover, PopoverContext } from '../popover/popover'
+import { Popover, PopoverContext } from '../../ui/popover/popover'
 import { cn } from '@/utils/cn'
-import { PopoverTrigger } from '../popover/popover-trigger'
+import { PopoverTrigger } from '../../ui/popover/popover-trigger'
 import { ContextMenuContent, FolderProps } from '../folder/folder'
 
 const HomeFolderElement = forwardRef<HTMLAnchorElement, FolderProps>(

@@ -1,5 +1,5 @@
-import { HomeTemplates } from '@/components/containers/HomeTemplates'
+import HomeTemplate from '@/components/containers/HomeTemplate'
 
 export default function Home() {
-	return <HomeTemplates breadcrumbsRoutes={[]} />
+	return <HomeTemplate breadcrumbsRoutes={[]} />
 }

@@ -8,7 +8,8 @@ import { Sidebar } from '@/components/elements/sidebar/Sidebar'
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import DragAndDropModal from '@/components/ui/dropzone/dropzone'
+import DragAndDropModal from '@/components/ui/drag-drop/drag-drop'
+import Upload from '@/components/elements/upload/upload'
 
 const interSans = Inter({
 	variable: '--font-inter-sans',
@@ -41,7 +42,7 @@ export default function RootLayout({
 					<section className='flex-1 overflow-auto p-layout'>
 						<Header />
 						<div className='flex  flex-col'>{children}</div>
-						<DragAndDropModal />
+						<Upload />
 					</section>
 				</main>
 			</body>

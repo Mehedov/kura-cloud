@@ -1,4 +1,4 @@
-import { FolderGrid, FolderLine } from '@/components/ui/folder/folder'
+import { FolderGrid, FolderLine } from '@/components/elements/folder/folder'
 import { usePathname } from 'next/navigation'
 
 interface Props {
