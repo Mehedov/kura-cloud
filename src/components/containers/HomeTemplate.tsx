@@ -19,6 +19,7 @@ import { Popover } from '../ui/popover/popover'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { PopoverContent } from '../ui/popover/popover-content'
 import Input from '../ui/input/input'
+import useDropzoneStore from '@/store/store'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -49,6 +50,7 @@ const folderNames = [
 
 export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone } = useDropzone(state => state)
+	const { setIsOpenCreateFolder } = useDropzoneStore(state => state)
 	const foldersRender = () => {
 		return folderNames.slice(0, 10).map((_, index) => {
 			return (
@@ -77,17 +79,13 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 					>
 						<UploadCloud size={20} /> Upload or drop
 					</Button>
-					<Popover>
-						<PopoverTrigger>
-							<Button variant='primary' className='h-13'>
-								<FolderPlus size={20} /> Create folder
-							</Button>
-						</PopoverTrigger>
-						<PopoverContent className='w-full'>
-							<label id='create-input'></label>
-							<Input />
-						</PopoverContent>
-					</Popover>
+					<Button
+						variant='primary'
+						className='h-13'
+						onClick={() => setIsOpenCreateFolder(true)}
+					>
+						<FolderPlus size={20} /> Create folder
+					</Button>
 				</div>
 			</section>
 			<section>

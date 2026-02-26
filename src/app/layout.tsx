@@ -10,6 +10,7 @@ import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
 import DragAndDropModal from '@/components/ui/drag-drop/drag-drop'
 import Upload from '@/components/elements/upload/upload'
+import CreateFolder from '@/components/elements/create-folder/create-folder'
 
 const interSans = Inter({
 	variable: '--font-inter-sans',
@@ -43,6 +44,7 @@ export default function RootLayout({
 						<Header />
 						<div className='flex  flex-col'>{children}</div>
 						<Upload />
+						<CreateFolder />
 					</section>
 				</main>
 			</body>

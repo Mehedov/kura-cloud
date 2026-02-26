@@ -2,10 +2,11 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useDropzone } from 'react-dropzone'
-import {  FileText, X } from 'lucide-react'
+import { FileText, X } from 'lucide-react'
 import useDropzoneStore from '@/store/store'
-import { Card } from '@/components/ui/card/card'
 import DragAndDrop from '@/components/ui/drag-drop/drag-drop'
+import { Card } from '@/components/ui/Card/card'
+import ModalContainer from '../modal-container/modal-container'
 
 const Upload = () => {
 	const { isOpenDropzone, setIsOpenDropzone } = useDropzoneStore(state => state)
@@ -59,7 +60,7 @@ const Upload = () => {
 	if (!isOpenDropzone) return null
 
 	return (
-		<div className='fixed inset-0 z-1000 bg-black/10 flex items-center justify-center p-4 overflow-y-auto'>
+		<ModalContainer>
 			<div className='pointer-events-auto w-full max-w-md'>
 				<Card>
 					<div className='flex justify-end mb-2'>
@@ -102,7 +103,7 @@ const Upload = () => {
 					)}
 				</Card>
 			</div>
-		</div>
+		</ModalContainer>
 	)
 }
 
