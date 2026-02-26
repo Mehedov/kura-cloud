@@ -60,9 +60,9 @@ const Upload = () => {
 	if (!isOpenDropzone) return null
 
 	return (
-		<ModalContainer>
+		<ModalContainer isOpen={isOpenDropzone} onClose={setIsOpenDropzone}>
 			<div className='pointer-events-auto w-full max-w-md'>
-				<Card>
+				<Card className='w-100'>
 					<div className='flex justify-end mb-2'>
 						<button
 							onClick={() => {

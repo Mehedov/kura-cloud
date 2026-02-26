@@ -5,28 +5,35 @@ import { ComponentPropsWithRef, forwardRef } from 'react'
 interface Props extends ComponentPropsWithRef<'input'> {
 	variant?: 'outline' | 'primary'
 	Icon?: LucideIcon
+	size?: number
 }
 
 const VARIANTS = {
-	outline: 'text-neutral-600 text-sm w-full outline-0',
+	outline: 'text-neutral-600 text-sm',
 	primary:
-		'border border-gray-200 bg-neutral-50 transition hover:bg-neutral-100',
+		'border border-gray-200 bg-neutral-50 transition hover:bg-neutral-100 outline-0',
 }
 
 const Input = forwardRef<HTMLInputElement, Props>(
-	({ className, placeholder, variant = 'outline', Icon }, ref) => {
+	({ className, placeholder, variant = 'outline', Icon, size }, ref) => {
 		return (
 			<div
 				className={cn(
-					'flex items-center gap-1 border border-neutral-200 px-3 py-2 rounded-lg',
+					'w-full flex items-center gap-1 border border-neutral-200 px-3 py-2 rounded-lg',
 					className,
 				)}
+				style={{
+					height: size,
+				}}
 			>
 				{Icon && <Icon className='text-neutral-400' size={20} />}
 				<input
 					ref={ref}
 					type='text'
-					className={cn('text-neutral-600 text-md w-full', VARIANTS[variant])}
+					className={cn(
+						'text-neutral-600 text-lg w-full outline-0',
+						VARIANTS[variant],
+					)}
 					placeholder={placeholder}
 				/>
 			</div>

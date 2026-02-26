@@ -73,14 +73,14 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 
 				<div className='flex flex-wrap gap-3'>
 					<Button
-						variant='primary'
+						variant='secondary'
 						className='h-13'
 						onClick={() => setIsOpenDropzone(true)}
 					>
 						<UploadCloud size={20} /> Upload or drop
 					</Button>
 					<Button
-						variant='primary'
+						variant='secondary'
 						className='h-13'
 						onClick={() => setIsOpenCreateFolder(true)}
 					>
@@ -131,15 +131,15 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 				<h2 className='text-md text-neutral-900 font-medium mb-4'>Your File</h2>
 				<div className='flex items-center justify-between mb-4'>
 					<div className='flex items-center gap-5'>
-						<Button variant='primary'>
+						<Button variant='secondary'>
 							<Clock size={20} /> Recent
 						</Button>
-						<Button variant='primary'>
+						<Button variant='secondary'>
 							<Star size={20} /> Starred
 						</Button>
 					</div>
 					<div className='flex items-center gap-5'>
-						<Button variant='primary'>
+						<Button variant='secondary'>
 							<Funnel size={20} /> Filter
 						</Button>
 
