@@ -1,5 +1,5 @@
 
-import { FolderOneTemplate } from '@/components/containers/FolderOneTemplate'
+import { FolderOneTemplate } from '@/components/containers/folder-one-template'
 
 interface Props {
 	params: {

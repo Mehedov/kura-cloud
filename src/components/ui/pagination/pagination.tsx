@@ -14,7 +14,6 @@ export function Pagination({
 	setCurrentPage,
 }: Props) {
 	const getPaginationRange = (currentPage: number, totalPages: number) => {
-		console.log(currentPage)
 		const delta = 1
 		const range = []
 

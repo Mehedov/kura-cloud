@@ -1,5 +1,6 @@
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { PAGES } from '@/config/page.config'
+import { cn } from '@/utils/cn'
 import {
 	ChevronRightIcon,
 	CloudyIcon,
@@ -13,8 +14,38 @@ import {
 	User,
 } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export function Sidebar() {
+	const NAV_ITEMS = [
+		{
+			href: '/',
+			label: 'All files',
+			icon: LayoutGrid,
+		},
+		{
+			href: '/photos',
+			label: 'Photo',
+			icon: ImageIcon,
+		},
+		{ href: '/favorite', label: 'Favorite', icon: Star },
+		{
+			href: '/shared',
+			label: 'Shared Files',
+			icon: Share,
+		},
+		{
+			href: '/basket',
+			label: 'Delete files',
+			icon: Trash2Icon,
+		},
+		{
+			href: '/settings',
+			label: 'Settings',
+			icon: Settings,
+		},
+	] as const
+	const pathname = usePathname()
 	return (
 		<aside className='p-layout bg-neutral-50 w-2xs h-full flex flex-col overflow-auto'>
 			<Link href={PAGES.home}>
@@ -43,58 +74,27 @@ export function Sidebar() {
 			</div>
 			<nav className='border-b border-neutral-200 pb-2'>
 				<ul className='flex flex-col gap-1'>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center bg-neutral-700 text-white p-3 text-sm rounded-md font-normal'
-							href='/'
-						>
-							<LayoutGrid className='text-white' size={20} /> All Files
-						</Link>
-					</li>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
-							href='/'
-						>
-							<ImageIcon size={20} /> Photo
-						</Link>
-					</li>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
-							href='/'
-						>
-							<Star size={20} /> Favorite
-						</Link>
-					</li>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
-							href='/'
-						>
-							<Share size={20} /> Shared Files
-						</Link>
-					</li>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
-							href='/'
-						>
-							<Trash2Icon size={20} /> Delete Files
-						</Link>
-					</li>
-					<li>
-						<Link
-							className='flex gap-2.5 items-center text-neutral-400 p-3 text-md font-normal'
-							href='/'
-						>
-							<Settings size={20} /> Settings
-						</Link>
-					</li>
+					{NAV_ITEMS.map(item => (
+						<li key={item.label}>
+							<Link
+								className={cn(
+									'flex gap-2.5 items-center text-neutral-400 p-3 text-md rounded-md font-medium',
+									pathname === item.href && ' bg-neutral-700 text-white',
+								)}
+								href={item.href}
+							>
+								<item.icon
+									className={pathname === item.href ? 'text-white' : ''}
+									size={20}
+								/>
+								{item.label}
+							</Link>
+						</li>
+					))}
 				</ul>
 			</nav>
 			<div className='p-3 text-md text-neutral-400 font-normal mb-2'>
-				<div className='mb-4'>Folders</div>
+				<div className='mb-4 font-medium'>Folders</div>
 				<ul className='flex flex-col gap-2.5'>
 					<li>
 						<Link className='flex items-center gap-2.5' href='/'>
@@ -159,11 +159,9 @@ export function Sidebar() {
 				</div>
 
 				<div className='text-[13px] mb-1'>
-					<span className='text-neutral-900 font-medium'>
-						<span>56GB</span> used
-					</span>{' '}
-					<span className='text-neutral-400'>
-						of <span>100GB</span>
+					<span className='text-neutral-400 font-medium'>
+						<span className='text-neutral-900'>56GB used </span>
+						of 100GB
 					</span>
 				</div>
 				<div className='w-full h-2 bg-linear-to-r from-neutral-500 to-neutral-800 rounded-4xl'></div>

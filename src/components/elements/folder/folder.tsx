@@ -1,5 +1,3 @@
-'use client'
-
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { Popover, PopoverContext } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
