@@ -11,6 +11,7 @@ import './globals.css'
 import DragAndDropModal from '@/components/ui/drag-drop/drag-drop'
 import Upload from '@/components/elements/upload/upload'
 import CreateFolder from '@/components/elements/create-folder/create-folder'
+import MainContainer from '@/components/containers/main-container'
 
 const interSans = Inter({
 	variable: '--font-inter-sans',
@@ -37,16 +38,7 @@ export default function RootLayout({
 			<body
 				className={`${interSans.variable} ${interMono.variable} antialiased box-border h-full m-0`}
 			>
-				<main className='h-screen flex'>
-					{/** Sidebar  */}
-					<Sidebar />
-					<section className='flex-1 overflow-auto p-layout'>
-						<Header />
-						<div className='flex  flex-col'>{children}</div>
-						<Upload />
-						<CreateFolder />
-					</section>
-				</main>
+				<MainContainer>{children}</MainContainer>
 			</body>
 		</html>
 	)
