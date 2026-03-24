@@ -15,7 +15,10 @@ const VARIANTS = {
 }
 
 const Input = forwardRef<HTMLInputElement, Props>(
-	({ className, placeholder, variant = 'outline', Icon, size }, ref) => {
+	(
+		{ className, placeholder, variant = 'outline', Icon, size, ...props },
+		ref,
+	) => {
 		return (
 			<div
 				className={cn(
@@ -35,6 +38,7 @@ const Input = forwardRef<HTMLInputElement, Props>(
 						VARIANTS[variant],
 					)}
 					placeholder={placeholder}
+					{...props}
 				/>
 			</div>
 		)

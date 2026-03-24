@@ -1,7 +1,14 @@
 import { FolderIcon } from '@/assets/icons/FolderIcon'
-import { Popover, PopoverContext } from '@/components/ui/popover/popover'
+import {
+	Popover,
+	PopoverContext,
+	PopoverContextProps,
+} from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
+import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { hardDeleteFolder } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DownloadCloudIcon, FolderInput, SquarePen, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { forwardRef, memo } from 'react'
@@ -11,9 +18,11 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	slug?: string
 	name: string
 	size?: number
+	id: string
+	context: PopoverContextProps | undefined
 }
 
-export const ContextMenuContent: React.FC = memo(() => (
+export const ContextMenuContent: React.FC = memo(({ onDelete, folderId }) => (
 	<div className='flex flex-col text-sm'>
 		<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
 			<DownloadCloudIcon size={20} /> Скачать
@@ -25,7 +34,10 @@ export const ContextMenuContent: React.FC = memo(() => (
 		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
 			<FolderInput size={20} /> Переместить
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+		<button
+			className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'
+			onClick={() => onDelete(folderId)}
+		>
 			<Trash2 size={20} /> Удалить
 		</button>
 	</div>
@@ -34,11 +46,24 @@ export const ContextMenuContent: React.FC = memo(() => (
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, name, pathname, size, ...props }, ref) => {
+	({ className, name, pathname, id, size, ...props }, ref) => {
+		const queryClient = useQueryClient()
+
 		const slug = name
 			.toLowerCase()
 			.replace(/\s+/g, '-')
 			.replace(/[^a-z0-9-]/g, '')
+		const deleteFolder = useMutation({
+			mutationFn: hardDeleteFolder,
+			onSuccess: () => {
+				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.all })
+			},
+		})
+		const onDeleteFolder = (folderId: string) => {
+			if (folderId) {
+				deleteFolder.mutate({ id: folderId, type: 'folder' })
+			}
+		}
 		return (
 			<Popover>
 				<PopoverContext.Consumer>
@@ -67,7 +92,11 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								</p>
 							</Link>
 							<PopoverContent isContextMenu>
-								<ContextMenuContent />
+								<ContextMenuContent
+									folderId={id}
+									onDelete={onDeleteFolder}
+									context={context}
+								/>
 							</PopoverContent>
 						</>
 					)}

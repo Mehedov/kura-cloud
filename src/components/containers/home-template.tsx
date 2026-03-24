@@ -20,6 +20,9 @@ import useAuthStore from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Cookies from 'js-cookie'
+import { useQuery } from '@tanstack/react-query'
+import { getMyFolders } from '@/services/folder.service'
+import HomeFolders from '../elements/home-folders/home-folders'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -52,13 +55,6 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone } = useDropzone(state => state)
 	const { setIsOpenCreateFolder } = useDropzoneStore(state => state)
 
-	const foldersRender = () => {
-		return folderNames.slice(0, 10).map((_, index) => {
-			return (
-				<FolderGrid name={_} key={index} size={90} pathname={PAGES.folders} />
-			)
-		})
-	}
 
 	const { checkAuth, user } = useAuthStore()
 	const router = useRouter()
@@ -71,7 +67,6 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 			router.push('/auth')
 		}
 	}, [checkAuth, router])
-
 	return (
 		<section className='flex flex-col gap-8 w-full'>
 			<section className='flex flex-wrap items-center justify-between gap-4'>
@@ -101,22 +96,7 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 					</Button>
 				</div>
 			</section>
-			<section>
-				<h2 className='text-md text-neutral-900 font-medium mb-4'>
-					Folders
-					{folderNames.length > 10 && (
-						<Link
-							href='/folders'
-							className='ml-3 text-xs text-neutral-500 duration-200 ease-in-out hover:text-neutral-600'
-						>
-							more {folderNames.length - 10}...
-						</Link>
-					)}
-				</h2>
-				<div className='flex items-center flex-wrap gap-4'>
-					{foldersRender()}
-				</div>
-			</section>
+			<HomeFolders/>
 			<section>
 				<h2 className='text-md text-neutral-900 font-medium mb-4'>
 					Suggested from your activity

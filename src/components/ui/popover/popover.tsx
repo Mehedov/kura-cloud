@@ -9,7 +9,7 @@ import {
 	useState,
 } from 'react'
 
-interface PopoverContextProps {
+export interface PopoverContextProps {
 	open: boolean
 	setOpen: React.Dispatch<React.SetStateAction<boolean>>
 	coords: { x: number; y: number }
