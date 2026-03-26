@@ -20,7 +20,7 @@ export const createFolder = (data: ICreateFolder) => {
 }
 export const hardDeleteFolder = (payload: IDeleteFolder) => {
 	try {
-		return $api.delete('/storage/hard-delete', { data: payload })
+		return $api.post('/storage/hard-delete',  payload )
 	} catch (e) {
 		console.error('Get user error:', e)
 		throw e

@@ -1,5 +1,8 @@
+'use client'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { PAGES } from '@/config/page.config'
+import useAuthStore from '@/store/auth'
+import useDropzoneStore from '@/store/store'
 import { cn } from '@/utils/cn'
 import {
 	ChevronRightIcon,
@@ -17,6 +20,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
 export function Sidebar() {
+	const { user } = useAuthStore()
 	const NAV_ITEMS = [
 		{
 			href: '/',
@@ -46,6 +50,8 @@ export function Sidebar() {
 		},
 	] as const
 	const pathname = usePathname()
+	const { setIsOpenProfile } = useDropzoneStore(state => state)
+
 	return (
 		<aside className='p-layout bg-neutral-50 w-2xs h-full flex flex-col overflow-auto'>
 			<Link href={PAGES.home}>
@@ -55,16 +61,19 @@ export function Sidebar() {
 				</div>
 			</Link>
 
-			<div className='flex items-center justify-between mb-5 border-b border-neutral-200 pb-4'>
+			<div
+				className='flex items-center justify-between mb-5 border-b border-neutral-200 pb-4'
+				onClick={() => setIsOpenProfile(true)}
+			>
 				<div className='flex items-center gap-2'>
 					<div className='w-10 h-10 rounded-full overflow-hidden border border-neutral-400 flex items-center justify-center'>
 						{/* <Image src={avatar} alt='avatar' className='object-cover' /> */}
 						<User />
 					</div>
 					<div>
-						<div className='font-medium text-sm'>Mehedov Nikolay</div>
+						<div className='font-medium text-sm'>{user?.name}</div>
 						<div className='text-neutral-600 text-xs font-medium'>
-							mehedov.dev@yandex.ru
+							{user?.email}
 						</div>
 					</div>
 				</div>
@@ -72,6 +81,7 @@ export function Sidebar() {
 					<ChevronRightIcon className='text-neutral-500' size={20} />
 				</button>
 			</div>
+
 			<nav className='border-b border-neutral-200 pb-2'>
 				<ul className='flex flex-col gap-1'>
 					{NAV_ITEMS.map(item => (

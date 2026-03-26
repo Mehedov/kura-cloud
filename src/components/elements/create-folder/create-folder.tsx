@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button/Button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFolder } from '@/services/folder.service'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
-import { FormEvent, useState } from 'react'
+import {  useState } from 'react'
 export default function CreateFolder() {
 	const queryClient = useQueryClient()
 

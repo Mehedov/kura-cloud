@@ -7,16 +7,34 @@ import useDropzoneStore from '@/store/store'
 import DragAndDrop from '@/components/ui/drag-drop/drag-drop'
 import { Card } from '@/components/ui/Card/card'
 import ModalContainer from '../modal-container/modal-container'
+import UploadFolderSelect from '../upload-folder-select/upload-folder-select'
+import { upload } from '@/services/upload.service'
+import { useMutation } from '@tanstack/react-query'
+import { Button } from '@/components/ui/button/Button'
 
 const Upload = () => {
+	const [selectFolderId, setSelectFolderId] = useState('')
 	const { isOpenDropzone, setIsOpenDropzone } = useDropzoneStore(state => state)
 	const [uploadFiles, setUploadFiles] = useState<File[]>([])
+	const onUpload = useMutation({
+		mutationFn: upload,
+		onSuccess: () => {
+			setSelectFolderId('')
+			setUploadFiles([])
+		},
+	})
 
 	const dragCounter = useRef(0)
 
 	const onDrop = (acceptedFiles: File[]) => {
 		setUploadFiles(prev => [...prev, ...acceptedFiles])
+
 		dragCounter.current = 0
+	}
+	const handleUpload = () => {
+		if (selectFolderId && uploadFiles) {
+			onUpload.mutate({ file: uploadFiles[0], folderId: selectFolderId })
+		}
 	}
 
 	const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -99,7 +117,17 @@ const Upload = () => {
 									</div>
 								))}
 							</div>
+
+							<UploadFolderSelect
+								selectFolderId={selectFolderId}
+								setSelectFolderId={setSelectFolderId}
+							/>
 						</div>
+					)}
+					{uploadFiles && selectFolderId !== '' && (
+						<Button onClick={handleUpload} className='w-full'>
+							Загрузить
+						</Button>
 					)}
 				</Card>
 			</div>

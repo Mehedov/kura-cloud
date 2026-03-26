@@ -34,7 +34,7 @@ interface FoldersTemplateProps {
 export function FolderOneTemplate({
 	breadcrumbsRoutes = [],
 }: FoldersTemplateProps) {
-	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('menu')
+	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
 
 	const renderFolders = () => {
 		const folderNames = [

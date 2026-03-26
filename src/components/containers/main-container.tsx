@@ -6,6 +6,7 @@ import { Header } from '../elements/header/Header'
 import Upload from '../elements/upload/upload'
 import CreateFolder from '../elements/create-folder/create-folder'
 import useAuthStore from '@/store/auth'
+import Profile from '../elements/profile-modal/profile-modal'
 
 export default function MainContainer({ children }: PropsWithChildren) {
 	const { isAuth } = useAuthStore()
@@ -20,6 +21,7 @@ export default function MainContainer({ children }: PropsWithChildren) {
 						<div className='flex  flex-col'>{children}</div>
 						<Upload />
 						<CreateFolder />
+						<Profile />
 					</section>
 				</>
 			) : (

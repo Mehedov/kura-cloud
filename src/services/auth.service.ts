@@ -25,11 +25,11 @@ export const register = async (
 	}
 }
 
-export const logout = async (): Promise<void> => {
+export const logout = () => {
 	try {
-		await $api.post('/auth/logout')
-		Cookies.remove('token')
+		return $api.post('/auth/logout')
 	} catch (e) {
-		console.log(e)
+		console.error('Get user error:', e)
+		throw e
 	}
 }

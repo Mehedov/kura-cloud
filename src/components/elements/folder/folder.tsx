@@ -19,7 +19,7 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	name: string
 	size?: number
 	id: string
-	context: PopoverContextProps | undefined
+	context?: PopoverContextProps | undefined
 }
 
 export const ContextMenuContent: React.FC = memo(({ onDelete, folderId }) => (

@@ -9,52 +9,23 @@ import {
 	Star,
 	UploadCloud,
 } from 'lucide-react'
-import Link from 'next/link'
 import { YourTable } from '../ui/YourTable'
 import { Button } from '../ui/button/Button'
 import useDropzone from '@/store/store'
-import { FolderGrid } from '../elements/folder/folder'
-import { PAGES } from '@/config/page.config'
 import useDropzoneStore from '@/store/store'
 import useAuthStore from '@/store/auth'
 import { useRouter } from 'next/navigation'
 import { useEffect } from 'react'
 import Cookies from 'js-cookie'
-import { useQuery } from '@tanstack/react-query'
-import { getMyFolders } from '@/services/folder.service'
 import HomeFolders from '../elements/home-folders/home-folders'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
 }
 
-const folderNames = [
-	'UI UX Design',
-	'Documentation',
-	'Marketing Materials',
-	'Financial Reports',
-	'Client Presentations',
-	'Source Code',
-	'Database Backups',
-	'API Documentation',
-	'User Research',
-	'Product Roadmap',
-	'Meeting Notes',
-	'Design Assets',
-	'Quality Assurance',
-	'Deployment Scripts',
-	'Configuration Files',
-	'Test Results',
-	'Analytics Reports',
-	'Security Policies',
-	'User Manuals',
-	'Training Materials',
-]
-
 export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone } = useDropzone(state => state)
 	const { setIsOpenCreateFolder } = useDropzoneStore(state => state)
-
 
 	const { checkAuth, user } = useAuthStore()
 	const router = useRouter()
@@ -96,7 +67,7 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 					</Button>
 				</div>
 			</section>
-			<HomeFolders/>
+			<HomeFolders />
 			<section>
 				<h2 className='text-md text-neutral-900 font-medium mb-4'>
 					Suggested from your activity

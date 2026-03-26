@@ -1,9 +1,6 @@
 import { create } from 'zustand'
 import Cookies from 'js-cookie'
-import { redirect } from 'next/navigation'
-import { getUserInfo } from '@/services/user.service'
 import { IAuthResponse, ILogin, IRegister } from '@/types/auth.type'
-import { AxiosResponse } from 'axios'
 import $api from '@/http/http'
 
 export interface IUser {
@@ -19,6 +16,7 @@ interface IAuth {
 	isAuth: boolean
 	user: IUser | null
 	isLoading: boolean
+	setIsAuth: (bool: boolean) => void
 	checkAuth: () => Promise<void>
 	login: (userData: ILogin) => Promise<void>
 	register: (userData: IRegister) => Promise<void>
@@ -29,6 +27,7 @@ const useAuthStore = create<IAuth>(set => ({
 	isAuth: false,
 	user: null,
 	isLoading: true,
+	setIsAuth: value => set({ isAuth: value }),
 	checkAuth: async () => {
 		try {
 			const response = await $api.get(

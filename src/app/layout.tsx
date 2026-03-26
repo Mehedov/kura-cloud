@@ -1,18 +1,10 @@
-// TODO:
-// 	Бесконечные маршруты по папкам наверно не будут работать
-// 	Кривые папки в Folders
-// Реализовать Popup
 
-import { Header } from '@/components/elements/header/Header'
-import { Sidebar } from '@/components/elements/sidebar/Sidebar'
 import type { Metadata } from 'next'
 import { Inter, JetBrains_Mono } from 'next/font/google'
 import './globals.css'
-import DragAndDropModal from '@/components/ui/drag-drop/drag-drop'
-import Upload from '@/components/elements/upload/upload'
-import CreateFolder from '@/components/elements/create-folder/create-folder'
+
 import MainContainer from '@/components/containers/main-container'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+
 import QueryProvider from '@/providers/query-provider'
 
 const interSans = Inter({
