@@ -1,115 +1,49 @@
-import { Slot } from '@radix-ui/react-slot'
-import { ChevronRight, MoreHorizontal } from 'lucide-react'
-import * as React from 'react'
-
-import { cn } from '@/utils/cn'
-
-function Breadcrumb({ ...props }: React.ComponentProps<'nav'>) {
-	return <nav aria-label='breadcrumb' data-slot='breadcrumb' {...props} />
-}
-
-function BreadcrumbList({ className, ...props }: React.ComponentProps<'ol'>) {
-	return (
-		<ol
-			data-slot='breadcrumb-list'
-			className={cn(
-				'text-muted-foreground flex flex-wrap items-center gap-1.5 text-sm wrap-break-word sm:gap-1.5',
-				className,
-			)}
-			{...props}
-		/>
-	)
-}
-
-function BreadcrumbItem({ className, ...props }: React.ComponentProps<'li'>) {
-	return (
-		<li
-			data-slot='breadcrumb-item'
-			className={cn('inline-flex items-center gap-1.5', className)}
-			{...props}
-		/>
-	)
-}
-
-function BreadcrumbLink({
-	asChild,
-	className,
-	...props
-}: React.ComponentProps<'a'> & {
-	asChild?: boolean
-}) {
-	const Comp = asChild ? Slot : 'a'
-
-	return (
-		<Comp
-			data-slot='breadcrumb-link'
-			className={cn(
-				'hover:text-foreground transition-colors text-lg capitalize',
-				className,
-			)}
-			{...props}
-		/>
-	)
-}
-
-function BreadcrumbPage({ className, ...props }: React.ComponentProps<'span'>) {
-	return (
-		<span
-			data-slot='breadcrumb-page'
-			role='link'
-			aria-disabled='true'
-			aria-current='page'
-			className={cn(
-				'text-foreground font-normal text-lg capitalize',
-				className,
-			)}
-			{...props}
-		/>
-	)
-}
-
-function BreadcrumbSeparator({
-	children,
-	className,
-	...props
-}: React.ComponentProps<'li'>) {
-	return (
-		<li
-			data-slot='breadcrumb-separator'
-			role='presentation'
-			aria-hidden='true'
-			className={cn('[&>svg]:size-4.5', className)}
-			{...props}
-		>
-			{children ?? <ChevronRight />}
-		</li>
-	)
-}
-
-function BreadcrumbEllipsis({
-	className,
-	...props
-}: React.ComponentProps<'span'>) {
-	return (
-		<span
-			data-slot='breadcrumb-ellipsis'
-			role='presentation'
-			aria-hidden='true'
-			className={cn('flex size-9 items-center justify-center', className)}
-			{...props}
-		>
-			<MoreHorizontal className='size-4' />
-			<span className='sr-only'>More</span>
-		</span>
-	)
-}
-
-export {
+import {
 	Breadcrumb,
-	BreadcrumbEllipsis,
 	BreadcrumbItem,
 	BreadcrumbLink,
 	BreadcrumbList,
 	BreadcrumbPage,
 	BreadcrumbSeparator,
+} from '@/components/ui/breadcrumb'
+import { usePathname } from 'next/navigation'
+import React from 'react'
+
+export function BreadcrumbBasic() {
+	const pathname = usePathname()
+	const pathSegments = pathname.split('/').filter(segment => segment !== '')
+
+	return (
+		<Breadcrumb>
+			<BreadcrumbList>
+				<BreadcrumbItem>
+					<BreadcrumbLink href='/'>Home</BreadcrumbLink>
+				</BreadcrumbItem>
+				{pathSegments.length > 0 && <BreadcrumbSeparator />}
+				{pathSegments.map((segment, index) => {
+					const href = `/${pathSegments.slice(0, index + 1).join('/')}`
+					const isLast = index === pathSegments.length - 1
+
+					const decodedSegment = decodeURIComponent(segment)
+
+					const title =
+						decodedSegment.charAt(0) +
+						decodedSegment.slice(1).replace(/-/g, ' ')
+
+					return (
+						<React.Fragment key={href}>
+							<BreadcrumbItem>
+								{isLast ? (
+									<BreadcrumbPage>{title}</BreadcrumbPage>
+								) : (
+									<BreadcrumbLink href={href}>{title}</BreadcrumbLink>
+								)}
+							</BreadcrumbItem>
+							{!isLast && <BreadcrumbSeparator />}
+						</React.Fragment>
+					)
+				})}
+			</BreadcrumbList>
+		</Breadcrumb>
+	)
 }
