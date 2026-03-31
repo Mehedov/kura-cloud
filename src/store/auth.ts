@@ -28,26 +28,22 @@ const useAuthStore = create<IAuth>(set => ({
 	user: null,
 	isLoading: true,
 	setIsAuth: value => set({ isAuth: value }),
+
 	checkAuth: async () => {
+		set({ isLoading: true })
 		try {
 			const response = await $api.get(
-				`${process.env.NEXT_PUBLIC_SERVER_URL + '/auth/refresh'}`,
+				`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/refresh`,
 			)
 			Cookies.set('token', response.data.accessToken)
 			set({ isAuth: true, user: response.data.user })
-		} catch (e) {}
-	},
-	login: async (userData: ILogin) => {
-		try {
-			const response = await $api.post<IAuthResponse>('/auth/login', userData)
-			Cookies.set('token', response.data.accessToken)
-			set({ isAuth: true, user: response.data.user })
 		} catch (e) {
-			console.error('Login error:', e)
-			throw e
+			set({ isAuth: false, user: null })
+			Cookies.remove('token')
+		} finally {
+			set({ isLoading: false })
 		}
 	},
-
 	register: async (userData: IRegister) => {
 		try {
 			const response = await $api.post<IAuthResponse>(
@@ -62,13 +58,22 @@ const useAuthStore = create<IAuth>(set => ({
 		}
 	},
 
+	login: async (userData: ILogin) => {
+		try {
+			const response = await $api.post<IAuthResponse>('/auth/login', userData)
+			Cookies.set('token', response.data.accessToken)
+			set({ isAuth: true, user: response.data.user })
+		} finally {
+			set({ isLoading: false })
+		}
+	},
+
 	logout: async () => {
 		try {
-			const response = await $api.post('/auth/logout')
+			await $api.post('/auth/logout')
+		} finally {
 			Cookies.remove('token')
-			set({ isAuth: false, user: {} as IUser })
-		} catch (e) {
-			console.log(e)
+			set({ isAuth: false, user: null, isLoading: false })
 		}
 	},
 }))
