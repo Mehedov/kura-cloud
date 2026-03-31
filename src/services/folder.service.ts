@@ -1,5 +1,5 @@
 import $api from '@/http/http'
-import { ICreateFolder, IDeleteFolder } from '@/types/folder.type'
+import { ICreateFolder, IDeleteFolder, IFolderContent } from '@/types/folder.type'
 
 export const getMyFolders = () => {
 	try {
@@ -18,9 +18,19 @@ export const createFolder = (data: ICreateFolder) => {
 		throw e
 	}
 }
+
+export const getFolderContent = (folderId: string) => {
+	try {
+		return $api.get<IFolderContent>('/storage/content', { params: { folderId } })
+	} catch (e) {
+		console.error('Get user error:', e)
+		throw e
+	}
+}
+
 export const hardDeleteFolder = (payload: IDeleteFolder) => {
 	try {
-		return $api.post('/storage/hard-delete',  payload )
+		return $api.post('/storage/hard-delete', payload)
 	} catch (e) {
 		console.error('Get user error:', e)
 		throw e

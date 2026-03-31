@@ -1,9 +1,3 @@
-/**
- *
- * TODO:
- * - Название файлов по типу my...folder.pdf
- */
-
 'use client'
 
 import {
@@ -18,127 +12,115 @@ import {
 	TextAlignStart,
 	User,
 } from 'lucide-react'
-import { useState } from 'react'
-import { Breadcrumbs } from '../ui/breadcrumbs/breadcrumbs'
+import { useEffect, useState } from 'react'
 import { ListingType } from '../ui/ListingType'
-import { Popover } from '../ui/popover/popover'
+import { Popover, PopoverContext } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
+import { useParams, useSearchParams } from 'next/navigation'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { getFolderContent, hardDeleteFolder } from '@/services/folder.service'
+import { ContextMenuContent } from '../elements/folder/folder'
+import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { FileGrid } from '../elements/file/file'
+import { Breadcrumb } from '../ui/breadcrumb'
+import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
 interface FoldersTemplateProps {
 	breadcrumbsRoutes?: string[]
 }
 
-
 export function FolderOneTemplate({
 	breadcrumbsRoutes = [],
 }: FoldersTemplateProps) {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
+	const searchParams = useSearchParams()
+	const params = useParams()
+	const folderId = searchParams.get('id')
+	console.log(params)
+	const { data: folderContent, isLoading } = useQuery({
+		queryKey: ['FILES'],
+		queryFn: () => getFolderContent(folderId),
+	})
 
 	const renderFolders = () => {
-		const folderNames = [
-			'UI UX Design',
-			'Documentation',
-			'Marketing Materials',
-			'Financial Reports',
-			'Client Presentations',
-			'Source Code',
-			'Database Backups',
-			'API Documentation',
-			'User Research',
-			'Product Roadmap',
-			'Meeting Notes',
-			'Design Assets',
-			'Quality Assurance',
-			'Deployment Scripts',
-			'Configuration Files',
-			'Test Results',
-			'Analytics Reports',
-			'Security Policies',
-			'User Manuals',
-			'Training Materials',
-		]
+		// const folderNames = [
+		// 	'UI UX Design',
+		// 	'Documentation',
+		// 	'Marketing Materials',
+		// 	'Financial Reports',
+		// 	'Client Presentations',
+		// 	'Source Code',
+		// 	'Database Backups',
+		// 	'API Documentation',
+		// 	'User Research',
+		// 	'Product Roadmap',
+		// 	'Meeting Notes',
+		// 	'Design Assets',
+		// 	'Quality Assurance',
+		// 	'Deployment Scripts',
+		// 	'Configuration Files',
+		// 	'Test Results',
+		// 	'Analytics Reports',
+		// 	'Security Policies',
+		// 	'User Manuals',
+		// 	'Training Materials',
+		// ]
 
-		const fileExtensions = [
-			'.pdf',
-			'.docx',
-			'.xlsx',
-			'.jpg',
-			'.png',
-			'.svg',
-			'.zip',
-			'.txt',
-			'.mp4',
-			'.mp3',
-		]
+		// const fileExtensions = [
+		// 	'.pdf',
+		// 	'.docx',
+		// 	'.xlsx',
+		// 	'.jpg',
+		// 	'.png',
+		// 	'.svg',
+		// 	'.zip',
+		// 	'.txt',
+		// 	'.mp4',
+		// 	'.mp3',
+		// ]
 
-		const getRandomDate = () => {
-			const start = new Date(2020, 0, 1)
-			const end = new Date()
-			const randomDate = new Date(
-				start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-			)
-			return randomDate.toLocaleDateString('ru-RU')
-		}
+		// const getRandomDate = () => {
+		// 	const start = new Date(2020, 0, 1)
+		// 	const end = new Date()
+		// 	const randomDate = new Date(
+		// 		start.getTime() + Math.random() * (end.getTime() - start.getTime()),
+		// 	)
+		// 	return randomDate.toLocaleDateString('ru-RU')
+		// }
 
-		const getRandomSize = () => {
-			const units = ['KB', 'MB', 'GB']
-			const size = (Math.random() * 1000).toFixed(1)
-			const unit = units[Math.floor(Math.random() * units.length)]
-			return `${size} ${unit}`
-		}
+		// const getRandomSize = () => {
+		// 	const units = ['KB', 'MB', 'GB']
+		// 	const size = (Math.random() * 1000).toFixed(1)
+		// 	const unit = units[Math.floor(Math.random() * units.length)]
+		// 	return `${size} ${unit}`
+		// }
 
-		const getRandomName = () => {
-			const names = [
-				'Я',
-				'Алексей П.С',
-				'Мария Г.Р',
-				'Дмитрий Н.И',
-				'Елена',
-				'Сергей',
-				'Ольга',
-				'Иван',
-				'Анна',
-				'Константин',
-			]
-			return names[Math.floor(Math.random() * names.length)]
-		}
+		// const getRandomName = () => {
+		// 	const names = [
+		// 		'Я',
+		// 		'Алексей П.С',
+		// 		'Мария Г.Р',
+		// 		'Дмитрий Н.И',
+		// 		'Елена',
+		// 		'Сергей',
+		// 		'Ольга',
+		// 		'Иван',
+		// 		'Анна',
+		// 		'Константин',
+		// 	]
+		// 	return names[Math.floor(Math.random() * names.length)]
+		// }
 
-		return [...new Array(20)].map((_, index) => {
-			const folderName = folderNames[index]
-			const fileName = `${folderName}${
-				fileExtensions[Math.floor(Math.random() * fileExtensions.length)]
-			}`
-			const date = getRandomDate()
-			const size = getRandomSize()
-			const owner = getRandomName()
+		return folderContent?.data.files.map((file, index) => {
+			const fileName = file.name
+			const date = file.createdAt
+			const size = file.size
+			const owner = file.name
 
 			if (activeBtn == 'grid') {
-				return (
-					<div
-						key={index}
-						className='w-25 flex flex-col items-center duration-200 ease-in-out hover:-translate-y-1 cursor-pointer'
-					>
-						{fileName.endsWith('.jpg') ||
-						fileName.endsWith('.png') ||
-						fileName.endsWith('.svg') ? (
-							<FileImage size={55} className='text-red-600' />
-						) : fileName.endsWith('.docx') ? (
-							<FilePen size={55} className='text-blue-600' />
-						) : fileName.endsWith('.pdf') ? (
-							<FileText size={55} className='text-red-600' />
-						) : fileName.endsWith('.mp4') || fileName.endsWith('.mp3') ? (
-							<FilePlay size={55} className='text-green-600' />
-						) : (
-							<File size={55} className='text-neutral-600' />
-						)}
-
-						<div className='text-center line-clamp-2 overflow-wrap break-keep'>
-							{fileName}
-						</div>
-					</div>
-				)
+				return <FileGrid name={file.name} id={file.id} key={file.id} />
 			}
 
 			return (
@@ -186,10 +168,12 @@ export function FolderOneTemplate({
 		})
 	}
 
+	if (isLoading) return 'Loading..'
+
 	return (
 		<section className='h-full flex flex-col'>
 			<div className='flex items-center justify-between mb-5'>
-				<Breadcrumbs routes={breadcrumbsRoutes} />
+				<BreadcrumbBasic/>
 			</div>
 			<div className='flex justify-between items-center mb-2'>
 				<div className='flex gap-2 items-center'>
