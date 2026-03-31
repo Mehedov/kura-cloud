@@ -16,7 +16,7 @@ export function Header() {
 						<Bell className='text-neutral-600' />
 					</Button>
 					<Button className='flex items-center gap-2 bg-neutral-700 text-white font-medium px-3 py-2 rounded-lg'>
-						<Plus /> Добавить участника
+						<Plus /> Invite member
 					</Button>
 				</div>
 			</div>

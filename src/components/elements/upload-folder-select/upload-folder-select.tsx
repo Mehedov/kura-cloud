@@ -55,7 +55,7 @@ export default function UploadFolderSelect({
 			<h2 className='text-md text-neutral-900 font-medium mb-4'>
 				Select folders
 			</h2>
-			<div className='flex items-center flex-wrap gap-2'>{foldersRender}</div>
+			<div className='flex items-center flex-wrap gap-1'>{foldersRender}</div>
 		</section>
 	)
 }

@@ -21,6 +21,7 @@ const Upload = () => {
 		onSuccess: () => {
 			setSelectFolderId('')
 			setUploadFiles([])
+			setIsOpenDropzone(false)
 		},
 	})
 

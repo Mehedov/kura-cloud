@@ -12,7 +12,7 @@ import {
 	TextAlignStart,
 	User,
 } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { ListingType } from '../ui/ListingType'
 import { Popover, PopoverContext } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
@@ -40,140 +40,37 @@ export function FolderOneTemplate({
 	const folderId = searchParams.get('id')
 	console.log(params)
 	const { data: folderContent, isLoading } = useQuery({
-		queryKey: ['FILES'],
+		queryKey: ['FILES', folderId],
 		queryFn: () => getFolderContent(folderId),
+		enabled: !!folderId,
 	})
 
-	const renderFolders = () => {
-		// const folderNames = [
-		// 	'UI UX Design',
-		// 	'Documentation',
-		// 	'Marketing Materials',
-		// 	'Financial Reports',
-		// 	'Client Presentations',
-		// 	'Source Code',
-		// 	'Database Backups',
-		// 	'API Documentation',
-		// 	'User Research',
-		// 	'Product Roadmap',
-		// 	'Meeting Notes',
-		// 	'Design Assets',
-		// 	'Quality Assurance',
-		// 	'Deployment Scripts',
-		// 	'Configuration Files',
-		// 	'Test Results',
-		// 	'Analytics Reports',
-		// 	'Security Policies',
-		// 	'User Manuals',
-		// 	'Training Materials',
-		// ]
-
-		// const fileExtensions = [
-		// 	'.pdf',
-		// 	'.docx',
-		// 	'.xlsx',
-		// 	'.jpg',
-		// 	'.png',
-		// 	'.svg',
-		// 	'.zip',
-		// 	'.txt',
-		// 	'.mp4',
-		// 	'.mp3',
-		// ]
-
-		// const getRandomDate = () => {
-		// 	const start = new Date(2020, 0, 1)
-		// 	const end = new Date()
-		// 	const randomDate = new Date(
-		// 		start.getTime() + Math.random() * (end.getTime() - start.getTime()),
-		// 	)
-		// 	return randomDate.toLocaleDateString('ru-RU')
-		// }
-
-		// const getRandomSize = () => {
-		// 	const units = ['KB', 'MB', 'GB']
-		// 	const size = (Math.random() * 1000).toFixed(1)
-		// 	const unit = units[Math.floor(Math.random() * units.length)]
-		// 	return `${size} ${unit}`
-		// }
-
-		// const getRandomName = () => {
-		// 	const names = [
-		// 		'Я',
-		// 		'Алексей П.С',
-		// 		'Мария Г.Р',
-		// 		'Дмитрий Н.И',
-		// 		'Елена',
-		// 		'Сергей',
-		// 		'Ольга',
-		// 		'Иван',
-		// 		'Анна',
-		// 		'Константин',
-		// 	]
-		// 	return names[Math.floor(Math.random() * names.length)]
-		// }
-
+	const renderFoldersArray = useMemo(() => {
 		return folderContent?.data.files.map((file, index) => {
-			const fileName = file.name
-			const date = file.createdAt
-			const size = file.size
-			const owner = file.name
+			// const fileName = file.name
+			// const date = file.createdAt
+			// const size = file.size
+			// const owner = file.name
 
 			if (activeBtn == 'grid') {
-				return <FileGrid name={file.name} id={file.id} key={file.id} />
+				return (
+					<FileGrid
+						name={file.name}
+						id={file.id}
+						key={file.id}
+						imagePreview={file.thumbnailUrl}
+					/>
+				)
 			}
-
-			return (
-				<div
-					key={index}
-					className='flex items-center w-full border-neutral-200 py-2 border-b px-4 hover:bg-neutral-100'
-				>
-					<div className='w-[40%] flex items-center gap-2'>
-						{fileName.endsWith('.jpg') ||
-						fileName.endsWith('.png') ||
-						fileName.endsWith('.svg') ? (
-							<FileImage size={25} className='text-red-600' />
-						) : fileName.endsWith('.docx') ? (
-							<FilePen size={25} className='text-blue-600' />
-						) : fileName.endsWith('.pdf') ? (
-							<FileText size={25} className='text-red-600' />
-						) : fileName.endsWith('.mp4') || fileName.endsWith('.mp3') ? (
-							<FilePlay size={25} className='text-green-600' />
-						) : (
-							<File size={25} className='text-neutral-600' />
-						)}
-						<div className='overflow-wrap'>{fileName}</div>
-					</div>
-
-					<div className='flex items-center gap-2 w-[20%]'>
-						<div className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border border-neutral-400'>
-							{/* <Image
-								src={avatar}
-								alt='avatar'
-								className='object-cover'
-								width={24}
-								height={24}
-							/> */}
-							<User size={24} />
-						</div>
-						<span>{owner}</span>
-					</div>
-					<div className='w-[15%]'>{date}</div>
-					<div className='w-[15%]'>{size}</div>
-					<div className='w-[10%] p-2 flex items-center justify-end text-center'>
-						<EllipsisVertical size={25} className='text-neutral-400' />
-					</div>
-				</div>
-			)
 		})
-	}
+	}, [activeBtn, folderContent])
 
 	if (isLoading) return 'Loading..'
 
 	return (
 		<section className='h-full flex flex-col'>
 			<div className='flex items-center justify-between mb-5'>
-				<BreadcrumbBasic/>
+				<BreadcrumbBasic />
 			</div>
 			<div className='flex justify-between items-center mb-2'>
 				<div className='flex gap-2 items-center'>
@@ -302,7 +199,7 @@ export function FolderOneTemplate({
 				</div>
 			) : (
 				<div className='flex items-start gap-6 flex-wrap mt-5'>
-					{renderFolders()}
+					{renderFoldersArray}
 				</div>
 			)}
 		</section>

@@ -7,7 +7,6 @@ const $api = axios.create({
 	baseURL: process.env.NEXT_PUBLIC_SERVER_URL,
 })
 
-// Интерцептор для добавления токена
 $api.interceptors.request.use(config => {
 	const token = Cookies.get('token')
 	if (token) {
@@ -16,7 +15,6 @@ $api.interceptors.request.use(config => {
 	return config
 })
 
-// Функция обновления токена
 const refreshAuthLogic = failedRequest =>
 	axios
 		.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/refresh`, {
@@ -30,7 +28,6 @@ const refreshAuthLogic = failedRequest =>
 			return Promise.resolve()
 		})
 
-// Инициализация
 createAuthRefreshInterceptor($api, refreshAuthLogic)
 
 export default $api

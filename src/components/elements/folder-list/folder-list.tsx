@@ -20,7 +20,14 @@ export function FolderList({ activeBtn }: Props) {
 
 	const renderFoldersTypeMenu = () => {
 		return folders.map((folder, index) => {
-			return <FolderLine pathname={pathname} name={folder.name} key={index} />
+			return (
+				<FolderLine
+					pathname={pathname}
+					name={folder.name}
+					key={index}
+					id={folder.id}
+				/>
+			)
 		})
 	}
 	const renderFoldersTypeGrid = () => {
