@@ -29,8 +29,8 @@ export type FileProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	size?: number
 	id: string
 	context?: PopoverContextProps | undefined
-	downloadUrl: string
-	imagePreview: string
+	downloadUrl?: string
+	imagePreview?: string
 }
 
 export const ContextMenuContent: React.FC = memo(

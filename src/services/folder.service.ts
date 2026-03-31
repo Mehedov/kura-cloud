@@ -1,5 +1,9 @@
 import $api from '@/http/http'
-import { ICreateFolder, IDeleteFolder, IFolderContent } from '@/types/folder.type'
+import {
+	ICreateFolder,
+	IDeleteFolder,
+	IFolderContent,
+} from '@/types/folder.type'
 
 export const getMyFolders = () => {
 	try {
@@ -19,9 +23,12 @@ export const createFolder = (data: ICreateFolder) => {
 	}
 }
 
-export const getFolderContent = (folderId: string) => {
+export const getFolderContent = (folderId: string | null) => {
 	try {
-		return $api.get<IFolderContent>('/storage/content', { params: { folderId } })
+		if (folderId)
+			return $api.get<IFolderContent>('/storage/content', {
+				params: { folderId },
+			})
 	} catch (e) {
 		console.error('Get user error:', e)
 		throw e

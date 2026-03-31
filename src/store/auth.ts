@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import Cookies from 'js-cookie'
 import { IAuthResponse, ILogin, IRegister } from '@/types/auth.type'
 import $api from '@/http/http'
+import { useQueryClient } from '@tanstack/react-query'
 
 export interface IUser {
 	id: string
@@ -73,6 +74,7 @@ const useAuthStore = create<IAuth>(set => ({
 			await $api.post('/auth/logout')
 		} finally {
 			Cookies.remove('token')
+			
 			set({ isAuth: false, user: null, isLoading: false })
 		}
 	},

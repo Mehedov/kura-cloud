@@ -1,6 +1,5 @@
 'use client'
 
-import { PAGES } from '@/config/page.config'
 import { getMyFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { FOLDER_KEYS } from '@/constants/queryKeys'

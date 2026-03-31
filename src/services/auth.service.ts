@@ -1,5 +1,6 @@
 import $api from '@/http/http'
 import { ILogin, IRegister, IAuthResponse } from '@/types/auth.type'
+import { useQueryClient } from '@tanstack/react-query'
 import { AxiosResponse } from 'axios'
 import Cookies from 'js-cookie'
 

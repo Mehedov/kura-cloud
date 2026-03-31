@@ -3,28 +3,23 @@
 import {
 	Check,
 	ChevronDown,
-	EllipsisVertical,
 	File,
 	FileImage,
 	FilePen,
 	FilePlay,
 	FileText,
 	TextAlignStart,
-	User,
 } from 'lucide-react'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { ListingType } from '../ui/ListingType'
-import { Popover, PopoverContext } from '../ui/popover/popover'
+import { Popover } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { useParams, useSearchParams } from 'next/navigation'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { getFolderContent, hardDeleteFolder } from '@/services/folder.service'
-import { ContextMenuContent } from '../elements/folder/folder'
-import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { useQuery } from '@tanstack/react-query'
+import { getFolderContent } from '@/services/folder.service'
 import { FileGrid } from '../elements/file/file'
-import { Breadcrumb } from '../ui/breadcrumb'
 import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
 interface FoldersTemplateProps {

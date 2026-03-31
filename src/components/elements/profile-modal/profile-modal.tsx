@@ -5,12 +5,14 @@ import Input from '@/components/ui/input/input'
 import { logout } from '@/services/auth.service'
 import useAuthStore from '@/store/auth'
 import useDropzoneStore from '@/store/store'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { User } from 'lucide-react'
 
 export default function Profile() {
 	const { isOpenProfile, setIsOpenProfile } = useDropzoneStore(state => state)
 	const { user, setIsAuth } = useAuthStore()
+	const queryClient = useQueryClient()
+
 	const onLogout = useMutation({
 		mutationFn: logout,
 		onSuccess: () => {
@@ -18,10 +20,12 @@ export default function Profile() {
 			setIsAuth(false)
 		},
 	})
-	if (!isOpenProfile) return null
+
 	const handleLogout = () => {
 		onLogout.mutate()
+		queryClient.clear()
 	}
+	if (!isOpenProfile) return null
 
 	return (
 		<section>

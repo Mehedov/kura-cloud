@@ -14,9 +14,6 @@ import { Button } from '../ui/button/Button'
 import useDropzone from '@/store/store'
 import useDropzoneStore from '@/store/store'
 import useAuthStore from '@/store/auth'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import Cookies from 'js-cookie'
 import HomeFolders from '../elements/home-folders/home-folders'
 
 interface HomeTemplatesProps {
