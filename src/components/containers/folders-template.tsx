@@ -3,11 +3,11 @@
 import { Check, ChevronDown } from 'lucide-react'
 import { useState } from 'react'
 import { FolderList } from '../elements/folder-list/folder-list'
-import { Breadcrumbs } from '../ui/breadcrumbs/breadcrumbs'
 import { ListingType } from '../ui/ListingType'
 import { Popover } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
+import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
 interface FoldersTemplateProps {
 	breadcrumbsRoutes?: string[]
@@ -73,7 +73,7 @@ export function FoldersTemplate({
 	return (
 		<section className='relative h-full flex flex-col'>
 			<div className='flex items-center justify-between mb-5'>
-				<Breadcrumbs routes={breadcrumbsRoutes} />
+				<BreadcrumbBasic />
 			</div>
 			<div className='flex items-center justify-between mb-3'>
 				<div className='flex items-center gap-3'>

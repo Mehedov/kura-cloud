@@ -22,7 +22,7 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	context?: PopoverContextProps | undefined
 }
 
-export const ContextMenuContent: React.FC = memo(({ onDelete, folderId }) => (
+export const ContextMenuContent: React.FC = memo(({ onDelete, itemId }) => (
 	<div className='flex flex-col text-sm'>
 		<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
 			<DownloadCloudIcon size={20} /> Скачать
@@ -36,7 +36,7 @@ export const ContextMenuContent: React.FC = memo(({ onDelete, folderId }) => (
 		</button>
 		<button
 			className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'
-			onClick={() => onDelete(folderId)}
+			onClick={() => onDelete(itemId)}
 		>
 			<Trash2 size={20} /> Удалить
 		</button>
@@ -49,10 +49,8 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 	({ className, name, pathname, id, size, ...props }, ref) => {
 		const queryClient = useQueryClient()
 
-		const slug = name
-			.toLowerCase()
-			.replace(/\s+/g, '-')
-			.replace(/[^a-z0-9-]/g, '')
+		const href = `${pathname}/${name}`
+
 		const deleteFolder = useMutation({
 			mutationFn: hardDeleteFolder,
 			onSuccess: () => {
@@ -71,9 +69,12 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 						<>
 							<Link
 								ref={ref}
-								href={`${pathname}/${slug}`}
+								href={{
+									pathname: href,
+									query: { id: id },
+								}}
 								className={cn(
-									`flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1`,
+									`flex flex-col items-center  rounded-xl duration-200 hover:-translate-y-1`,
 									className,
 								)}
 								style={{ width: size ? `${size}px` : '100px' }}
@@ -86,14 +87,14 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 							>
 								<FolderIcon size={size || 100} />
 								<p
-									className={`text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full w-[${size}px]`}
+									className={`text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full w-[${size}px] mt-1`}
 								>
 									{name}
 								</p>
 							</Link>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent
-									folderId={id}
+									itemId={id}
 									onDelete={onDeleteFolder}
 									context={context}
 								/>

@@ -41,7 +41,7 @@ export default function HomeFolders() {
 					Folders {folders.length > 10 && `more ${folders.length - 10}...`}
 				</Link>
 			</h2>
-			<div className='flex items-center flex-wrap gap-4'>{foldersRender}</div>
+			<div className='flex items-start flex-wrap gap-4'>{foldersRender}</div>
 		</section>
 	)
 }

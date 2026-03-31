@@ -7,6 +7,7 @@ import Upload from '../elements/upload/upload'
 import CreateFolder from '../elements/create-folder/create-folder'
 import useAuthStore from '@/store/auth'
 import Profile from '../elements/profile-modal/profile-modal'
+import { Breadcrumb } from '../ui/breadcrumb'
 
 export default function MainContainer({ children }: PropsWithChildren) {
 	const { isAuth } = useAuthStore()
@@ -18,7 +19,10 @@ export default function MainContainer({ children }: PropsWithChildren) {
 					<section className='flex-1 overflow-auto p-layout'>
 						<Header />
 
-						<div className='flex  flex-col'>{children}</div>
+						<div className='flex  flex-col'>
+							<Breadcrumb />
+							{children}
+						</div>
 						<Upload />
 						<CreateFolder />
 						<Profile />

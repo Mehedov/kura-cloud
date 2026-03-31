@@ -27,6 +27,7 @@ export function FolderList({ activeBtn }: Props) {
 		return folders.map((folder, index) => {
 			return (
 				<FolderGrid
+					id={folder.id}
 					pathname={pathname}
 					name={folder.name}
 					key={index}

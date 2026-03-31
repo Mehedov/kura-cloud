@@ -27,7 +27,7 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone } = useDropzone(state => state)
 	const { setIsOpenCreateFolder } = useDropzoneStore(state => state)
 
-	const { checkAuth, user } = useAuthStore()
+	const { checkAuth, user, isLoading, isAuth } = useAuthStore()
 	const router = useRouter()
 
 	useEffect(() => {
@@ -35,9 +35,16 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 		if (token) {
 			checkAuth()
 		} else {
+			useAuthStore.setState({ isLoading: false })
 			router.push('/auth')
 		}
 	}, [checkAuth, router])
+
+	useEffect(() => {
+		if (!isLoading && !isAuth) {
+			router.push('/auth')
+		}
+	}, [isAuth, isLoading, router])
 	return (
 		<section className='flex flex-col gap-8 w-full'>
 			<section className='flex flex-wrap items-center justify-between gap-4'>
