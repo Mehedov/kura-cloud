@@ -125,7 +125,7 @@ const Upload = () => {
 						</div>
 					)}
 					{uploadFiles && selectFolderId !== '' && (
-						<Button onClick={handleUpload} className='w-full'>
+						<Button onClick={handleUpload} className='w-full mt-5'>
 							Загрузить
 						</Button>
 					)}

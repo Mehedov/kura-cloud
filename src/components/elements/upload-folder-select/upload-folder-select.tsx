@@ -31,12 +31,12 @@ export default function UploadFolderSelect({
 					onClick={() => setSelectFolderId(folder.id)}
 					key={folder.id}
 					className={cn(
-						`flex flex-col items-center gap-2 p-2 rounded-xl duration-200 hover:-translate-y-1`,
+						`flex flex-col items-center gap-2 p-1 rounded-xl duration-200 hover:-translate-y-1`,
 						selectFolderId === folder.id && 'border-2 border-neutral-500',
 					)}
 					style={{ width: '100px' }}
 				>
-					<FolderIcon size={100} />
+					<FolderIcon size={50} />
 					<p
 						className={`text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full`}
 					>
@@ -55,7 +55,7 @@ export default function UploadFolderSelect({
 			<h2 className='text-md text-neutral-900 font-medium mb-4'>
 				Select folders
 			</h2>
-			<div className='flex items-center flex-wrap gap-4'>{foldersRender}</div>
+			<div className='flex items-center flex-wrap gap-2'>{foldersRender}</div>
 		</section>
 	)
 }
