@@ -1,26 +1,25 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
+import { isPublicRoute } from './src/config/routes'
 
-const authRoutes = ['/auth']
-
-export function middleware(request: NextRequest) {
-	const token = request.cookies.get('token')?.value
+export function proxy(request: NextRequest) {
+	const hasSession = Boolean(
+		request.cookies.get('accessToken')?.value ||
+			request.cookies.get('refreshToken')?.value,
+	)
 	const { pathname } = request.nextUrl
 
-	const isAuthRoute = authRoutes.includes(pathname)
-
-	if (!token && !isAuthRoute) {
+	if (!hasSession && !isPublicRoute(pathname)) {
 		return NextResponse.redirect(new URL('/auth', request.url))
 	}
 
-	if (token && isAuthRoute) {
+	if (hasSession && isPublicRoute(pathname)) {
 		return NextResponse.redirect(new URL('/', request.url))
 	}
 
 	return NextResponse.next()
 }
 
-// Указываем, на какие пути должен срабатывать middleware
 export const config = {
 	matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
 }

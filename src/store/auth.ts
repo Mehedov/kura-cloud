@@ -1,7 +1,6 @@
 import { create } from 'zustand'
-import Cookies from 'js-cookie'
 import { IAuthResponse, ILogin, IRegister } from '@/types/auth.type'
-import $api from '@/http/http'
+import $api, { authApi } from '@/http/http'
 
 export interface IUser {
 	id: string
@@ -32,14 +31,10 @@ const useAuthStore = create<IAuth>(set => ({
 	checkAuth: async () => {
 		set({ isLoading: true })
 		try {
-			const response = await $api.get(
-				`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/refresh`,
-			)
-			Cookies.set('token', response.data.accessToken)
+			const response = await authApi.get<IAuthResponse>('/auth/refresh')
 			set({ isAuth: true, user: response.data.user })
 		} catch {
 			set({ isAuth: false, user: null })
-			Cookies.remove('token')
 		} finally {
 			set({ isLoading: false })
 		}
@@ -50,7 +45,6 @@ const useAuthStore = create<IAuth>(set => ({
 				'/auth/register',
 				userData,
 			)
-			Cookies.set('token', response.data.accessToken)
 			set({ isAuth: true, user: response.data.user })
 		} catch (e) {
 			console.error('Registration error:', e)
@@ -61,7 +55,6 @@ const useAuthStore = create<IAuth>(set => ({
 	login: async (userData: ILogin) => {
 		try {
 			const response = await $api.post<IAuthResponse>('/auth/login', userData)
-			Cookies.set('token', response.data.accessToken)
 			set({ isAuth: true, user: response.data.user })
 		} finally {
 			set({ isLoading: false })
@@ -72,8 +65,6 @@ const useAuthStore = create<IAuth>(set => ({
 		try {
 			await $api.post('/auth/logout')
 		} finally {
-			Cookies.remove('token')
-			
 			set({ isAuth: false, user: null, isLoading: false })
 		}
 	},

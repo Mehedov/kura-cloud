@@ -1,7 +1,6 @@
 import { IUser } from '@/store/auth'
 
 export interface IAuthResponse {
-	accessToken: string
 	user: IUser
 }
 
