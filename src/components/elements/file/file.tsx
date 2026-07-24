@@ -1,4 +1,3 @@
-import { FolderIcon } from '@/assets/icons/FolderIcon'
 import {
 	Popover,
 	PopoverContext,
@@ -19,33 +18,35 @@ import {
 	Trash2,
 	File as FileIcon,
 } from 'lucide-react'
-import Link from 'next/link'
 import React, { forwardRef, memo } from 'react'
 import Image from 'next/image'
 
-export type FileProps = React.HTMLAttributes<HTMLAnchorElement> & {
-	pathname?: string
-	slug?: string
+export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
 	name: string
-	size?: number
 	id: string
 	context?: PopoverContextProps | undefined
-	downloadUrl?: string
 	imagePreview?: string
 }
 
-export const ContextMenuContent: React.FC = memo(
-	({ onDelete, itemId, downloadUrl }) => (
+interface ContextMenuContentProps {
+	onDelete?: () => void
+	downloadUrl?: string
+}
+
+export const ContextMenuContent = memo(
+	({ onDelete, downloadUrl }: ContextMenuContentProps) => (
 		<div className='flex flex-col text-sm'>
 			<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
 				<DownloadCloudIcon size={20} /> Просмотреть
 			</button>
-			<Link
-				href={downloadUrl}
-				className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'
-			>
-				<DownloadCloudIcon size={20} /> Скачать
-			</Link>
+			{downloadUrl ? (
+				<a
+					href={downloadUrl}
+					className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'
+				>
+					<DownloadCloudIcon size={20} /> Скачать
+				</a>
+			) : null}
 			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
 				<SquarePen size={20} />
 				Переименовать
@@ -55,7 +56,7 @@ export const ContextMenuContent: React.FC = memo(
 			</button>
 			<button
 				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'
-				onClick={() => onDelete(itemId)}
+				onClick={onDelete}
 			>
 				<Trash2 size={20} /> Удалить
 			</button>
@@ -66,13 +67,12 @@ export const ContextMenuContent: React.FC = memo(
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
-	({ className, name, pathname, id, size, imagePreview, ...props }, ref) => {
+	({ className, name, id, imagePreview, ...props }, ref) => {
 		const queryClient = useQueryClient()
 
-		const href = `${pathname}/${name}`
 		const fileId = id
 
-		const { data, isPending, isError, error } = useQuery({
+		const { data } = useQuery({
 			queryKey: ['downloadUrl', fileId],
 			queryFn: () => getDownloadUrl(fileId),
 			enabled: !!fileId,
@@ -97,7 +97,6 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 						<>
 							<div
 								ref={ref}
-								href={href}
 								onContextMenu={e => {
 									e.preventDefault()
 									context?.setCoords({ x: e.clientX, y: e.clientY })
@@ -109,9 +108,10 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 								)}
 								{...props}
 							>
-								{name.endsWith('.jpg') ||
-								name.endsWith('.png') ||
-								name.endsWith('.svg') ? (
+								{(name.endsWith('.jpg') ||
+									name.endsWith('.jpeg') ||
+									name.endsWith('.png') ||
+									name.endsWith('.svg')) && imagePreview ? (
 									<Image
 										src={imagePreview}
 										alt={name}
@@ -136,9 +136,7 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 							</div>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent
-									itemId={fileId}
 									onDelete={onDeleteFile}
-									context={context}
 									downloadUrl={data?.downloadUrl}
 								/>
 							</PopoverContent>

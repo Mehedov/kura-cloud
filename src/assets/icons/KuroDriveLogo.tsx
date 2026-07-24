@@ -7,8 +7,9 @@ interface Props {
 export function KuroDriveLogo({ className, width = 232, height = 78 }: Props) {
 	return (
 		<svg
-			width='173'
-			height='66'
+			width={width}
+			height={height}
+			className={className}
 			viewBox='0 0 173 66'
 			fill='none'
 			xmlns='http://www.w3.org/2000/svg'

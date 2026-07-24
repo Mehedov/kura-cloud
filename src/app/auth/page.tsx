@@ -3,6 +3,7 @@
 import { Button } from '@/components/ui/button/Button'
 import Input from '@/components/ui/input/input'
 import useAuthStore from '@/store/auth'
+import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -42,7 +43,11 @@ export default function Auth() {
 			router.refresh()
 		} catch (e) {
 			console.error('Auth error:', e)
-			setError(e.response?.data?.message || 'Произошла ошибка при входе')
+			setError(
+				axios.isAxiosError(e)
+					? (e.response?.data?.error ?? 'Произошла ошибка при входе')
+					: 'Произошла ошибка при входе',
+			)
 		}
 	}
 

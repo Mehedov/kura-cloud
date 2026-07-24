@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { type AxiosError } from 'axios'
 import Cookies from 'js-cookie'
 import createAuthRefreshInterceptor from 'axios-auth-refresh'
 
@@ -15,7 +15,7 @@ $api.interceptors.request.use(config => {
 	return config
 })
 
-const refreshAuthLogic = failedRequest =>
+const refreshAuthLogic = (failedRequest: AxiosError) =>
 	axios
 		.get(`${process.env.NEXT_PUBLIC_SERVER_URL}/auth/refresh`, {
 			withCredentials: true,
@@ -23,8 +23,10 @@ const refreshAuthLogic = failedRequest =>
 		.then(tokenRefreshResponse => {
 			const newToken = tokenRefreshResponse.data.accessToken
 			Cookies.set('token', newToken)
-			failedRequest.response.config.headers['Authorization'] =
-				'Bearer ' + newToken
+			if (failedRequest.response?.config.headers) {
+				failedRequest.response.config.headers.Authorization =
+					`Bearer ${newToken}`
+			}
 			return Promise.resolve()
 		})
 

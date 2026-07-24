@@ -9,65 +9,7 @@ import { PopoverContent } from '../ui/popover/popover-content'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
-interface FoldersTemplateProps {
-	breadcrumbsRoutes?: string[]
-}
-const folderNames = [
-	'UI UX Design',
-	'Documentation',
-	'Marketing MaterialsMaterials',
-	'Financial Reports',
-	'Client Presentations',
-	'Source Code',
-	'Database Backups',
-	'API Documentation',
-	'User Research',
-	'Meeting Notes',
-	'Design Assets',
-	'Quality Assurance',
-	'Deployment Scripts',
-	'Configuration Files',
-	'Test Results',
-	'Analytics Reports',
-	'Security Policies',
-	'User Manuals',
-	'Training Materials',
-	'UI UX Design',
-	'Documentation',
-	'Marketing MaterialsMaterials',
-	'Financial Reports',
-	'Client Presentations',
-	'Source Code',
-	'Database Backups',
-	'API Documentation',
-	'User Research',
-	'Meeting Notes',
-	'Design Assets',
-	'Quality Assurance',
-	'Deployment Scripts',
-	'Configuration Files',
-	'Test Results',
-	'Analytics Reports',
-	'Security Policies',
-	'User Manuals',
-	'Training Materials',
-	'User Manuals',
-	'Training Materials',
-	'Configuration Files',
-	'Test Results',
-	'Analytics Reports',
-	'Security Policies',
-	'User Manuals',
-	'Training Materials',
-	'User Manuals',
-	'Training Materials',
-	'User Manuals',
-	'Training Materials',
-]
-
-export function FoldersTemplate({
-	breadcrumbsRoutes = [],
-}: FoldersTemplateProps) {
+export function FoldersTemplate() {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
 
 	return (
@@ -107,7 +49,7 @@ export function FoldersTemplate({
 				<ListingType activeBtn={activeBtn} setActiveBtn={setActiveBtn} />
 			</div>
 			<div className='flex-1 overflow-auto'>
-				<FolderList activeBtn={activeBtn} folderNames={folderNames} />
+				<FolderList activeBtn={activeBtn} />
 			</div>
 		</section>
 	)

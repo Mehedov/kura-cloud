@@ -7,7 +7,8 @@ export interface IFolderSummary {
 	id: string
 	name: string
 	parentId: string | null
-	kind: 'folder'
+	createdAt?: string
+	updatedAt?: string
 }
 
 export interface ISuggestedFolder extends IFolderSummary {
@@ -25,7 +26,7 @@ export interface IDeleteFolder {
 	type: string
 }
 
-export interface IFolder {
+export interface IStorageFile {
 	createdAt: string
 	deletedAt: string | null
 	folderId: string
@@ -42,6 +43,6 @@ export interface IFolder {
 }
 
 export interface IFolderContent {
-	files: IFolder[]
-	folders: []
+	files: IStorageFile[]
+	folders: IFolderSummary[]
 }

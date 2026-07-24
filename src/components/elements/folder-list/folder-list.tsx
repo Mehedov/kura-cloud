@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation'
 
 interface Props {
 	activeBtn?: 'menu' | 'grid'
-	folderNames: string[]
 }
 
 export function FolderList({ activeBtn }: Props) {

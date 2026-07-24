@@ -8,9 +8,9 @@ export const Card = forwardRef<
 	return (
 		<div
 			ref={ref}
-			className={cn(
+		className={cn(
 				className,
-				'p-5 bg-neutral-50 rounded-lg border border-gray-200',
+				'rounded-lg border border-border bg-card p-5 text-card-foreground',
 			)}
 			{...props}
 		></div>

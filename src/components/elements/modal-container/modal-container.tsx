@@ -27,7 +27,7 @@ export default function ModalContainer({ children, isOpen, onClose }: Props) {
 	}, [isOpen, onClose])
 
 	return (
-		<div className='fixed inset-0 z-1000 bg-black/10 flex items-center justify-center p-4 overflow-y-auto'>
+		<div className='fixed inset-0 z-1000 flex items-center justify-center overflow-y-auto bg-foreground/20 p-4 backdrop-blur-[1px]'>
 			<div ref={modalRef}> {children}</div>
 		</div>
 	)

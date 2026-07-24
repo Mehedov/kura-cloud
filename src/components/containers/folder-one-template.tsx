@@ -10,55 +10,37 @@ import {
 	FileText,
 	TextAlignStart,
 } from 'lucide-react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { ListingType } from '../ui/ListingType'
 import { Popover } from '../ui/popover/popover'
 import { PopoverContent } from '../ui/popover/popover-content'
 import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useQuery } from '@tanstack/react-query'
 import { getFolderContent } from '@/services/folder.service'
 import { FileGrid } from '../elements/file/file'
 import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
-interface FoldersTemplateProps {
-	breadcrumbsRoutes?: string[]
-}
-
-export function FolderOneTemplate({
-	breadcrumbsRoutes = [],
-}: FoldersTemplateProps) {
+export function FolderOneTemplate() {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
 	const searchParams = useSearchParams()
-	const params = useParams()
 	const folderId = searchParams.get('id')
-	console.log(params)
 	const { data: folderContent, isLoading } = useQuery({
 		queryKey: ['FILES', folderId],
-		queryFn: () => getFolderContent(folderId),
+		queryFn: () => getFolderContent(folderId ?? ''),
 		enabled: !!folderId,
 	})
 
-	const renderFoldersArray = useMemo(() => {
-		return folderContent?.data.files.map((file, index) => {
-			// const fileName = file.name
-			// const date = file.createdAt
-			// const size = file.size
-			// const owner = file.name
-
-			if (activeBtn == 'grid') {
-				return (
-					<FileGrid
-						name={file.name}
-						id={file.id}
-						key={file.id}
-						imagePreview={file.thumbnailUrl}
-					/>
-				)
-			}
-		})
-	}, [activeBtn, folderContent])
+	const files = folderContent?.data.files ?? []
+	const fileCards = files.map(file => (
+		<FileGrid
+			name={file.name}
+			id={file.id}
+			key={file.id}
+			imagePreview={file.thumbnailUrl}
+		/>
+	))
 
 	if (isLoading) return 'Loading..'
 
@@ -190,11 +172,20 @@ export function FolderOneTemplate({
 							</Popover>
 						</div>
 					</div>
-					<div className='flex flex-col items-center'>{renderFolders()}</div>
+					<div className='flex w-full flex-col'>
+						{files.map(file => (
+							<div
+								key={file.id}
+								className='flex items-center border-b border-neutral-200 px-3 py-2 text-sm'
+							>
+								{file.name}
+							</div>
+						))}
+					</div>
 				</div>
 			) : (
 				<div className='flex items-start gap-6 flex-wrap mt-5'>
-					{renderFoldersArray}
+					{fileCards}
 				</div>
 			)}
 		</section>

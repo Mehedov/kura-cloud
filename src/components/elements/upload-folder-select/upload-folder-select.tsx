@@ -3,7 +3,6 @@
 import { getMyFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
-import { useMemo } from 'react'
 import { cn } from '@/utils/cn'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 
@@ -21,11 +20,7 @@ export default function UploadFolderSelect({
 		queryFn: getMyFolders,
 	})
 
-	const folders = data?.data || []
-
-	const foldersRender = useMemo(() => {
-		return folders.slice(0, 10).map((folder, index) => {
-			return (
+	const foldersRender = (data?.data ?? []).slice(0, 10).map(folder => (
 				<div
 					onClick={() => setSelectFolderId(folder.id)}
 					key={folder.id}
@@ -42,9 +37,7 @@ export default function UploadFolderSelect({
 						{folder.name}
 					</p>
 				</div>
-			)
-		})
-	}, [folders, selectFolderId, setSelectFolderId])
+			))
 
 	if (isPending) return <div>Загрузка...</div>
 	if (isError) return <div>Ошибка: {error.message}</div>

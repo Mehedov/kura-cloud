@@ -9,9 +9,9 @@ interface Props extends ComponentPropsWithRef<'input'> {
 }
 
 const VARIANTS = {
-	outline: 'text-neutral-600 text-sm',
+	outline: 'text-foreground text-sm',
 	primary:
-		'border border-gray-200 bg-neutral-50 transition hover:bg-neutral-100 outline-0',
+		'border border-border bg-secondary transition-colors hover:bg-accent outline-0',
 }
 
 const Input = forwardRef<HTMLInputElement, Props>(
@@ -22,19 +22,19 @@ const Input = forwardRef<HTMLInputElement, Props>(
 		return (
 			<div
 				className={cn(
-					'w-full flex items-center gap-1 border border-neutral-200 px-3 py-2 rounded-lg',
+					'w-full flex items-center gap-1 rounded-lg border border-input bg-background px-3 py-2 text-foreground focus-within:ring-2 focus-within:ring-ring',
 					className,
 				)}
 				style={{
 					height: size,
 				}}
 			>
-				{Icon && <Icon className='text-neutral-400' size={20} />}
+				{Icon && <Icon className='text-muted-foreground' size={20} />}
 				<input
 					ref={ref}
 					type='text'
 					className={cn(
-						'text-neutral-600 text-lg w-full outline-0',
+						'w-full bg-transparent text-lg text-foreground outline-0 placeholder:text-muted-foreground',
 						VARIANTS[variant],
 					)}
 					placeholder={placeholder}

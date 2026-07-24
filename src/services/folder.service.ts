@@ -3,10 +3,12 @@ import {
 	ICreateFolder,
 	IDeleteFolder,
 	IFolderContent,
+	IFolderSummary,
 	ISuggestedFoldersResponse,
 } from '@/types/folder.type'
+import type { AxiosResponse } from 'axios'
 
-export const getMyFolders = () => {
+export const getMyFolders = (): Promise<AxiosResponse<IFolderSummary[]>> => {
 	try {
 		return $api.get('/storage/folders')
 	} catch (e) {
@@ -30,12 +32,13 @@ export const createFolder = (data: ICreateFolder) => {
 	}
 }
 
-export const getFolderContent = (folderId: string | null) => {
+export const getFolderContent = (
+	folderId: string,
+): Promise<AxiosResponse<IFolderContent>> => {
 	try {
-		if (folderId)
-			return $api.get<IFolderContent>('/storage/content', {
-				params: { folderId },
-			})
+		return $api.get<IFolderContent>('/storage/content', {
+			params: { folderId },
+		})
 	} catch (e) {
 		console.error('Get user error:', e)
 		throw e

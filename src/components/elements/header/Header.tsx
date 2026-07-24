@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button/Button'
 import Input from '@/components/ui/input/input'
+import { ThemeToggle } from '@/components/elements/theme-toggle/theme-toggle'
 import { Bell, Plus, Search } from 'lucide-react'
 
 export function Header() {
@@ -9,13 +10,14 @@ export function Header() {
 				<Input Icon={Search} className='w-[45%]' placeholder='Search...' />
 
 				<div className='flex items-center gap-3'>
+					<ThemeToggle />
 					<Button
 						variant='outline'
-						className='p-2 border border-neutral-200 rounded-lg'
+						className='p-2'
 					>
-						<Bell className='text-neutral-600' />
+						<Bell />
 					</Button>
-					<Button className='flex items-center gap-2 bg-neutral-700 text-white font-medium px-3 py-2 rounded-lg'>
+					<Button className='px-3'>
 						<Plus /> Invite member
 					</Button>
 				</div>

@@ -26,7 +26,7 @@ export const PopoverContent = forwardRef<HTMLDivElement, Props>(
 				ref={ref}
 				style={{ ...contextStyles, ...style }}
 				className={cn(
-					'z-[1000] p-1 border border-neutral-200 absolute bg-white rounded-lg shadow-xl min-w-[150px]',
+					'absolute z-[1000] min-w-[150px] rounded-lg border border-border bg-popover p-1 text-popover-foreground shadow-xl',
 					!isContextMenu && 'top-full mt-2',
 					className,
 				)}
