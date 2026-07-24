@@ -53,9 +53,9 @@ export default function MainContainer({ children }: PropsWithChildren) {
 	if (!isAuth) return null
 
 	return (
-		<main className='h-screen flex'>
+		<main className='flex h-screen overflow-hidden bg-background text-foreground'>
 			<Sidebar />
-			<section className='flex-1 overflow-auto p-layout'>
+			<section className='min-w-0 flex-1 overflow-auto p-4 sm:p-layout'>
 				<Header />
 
 				<div className='flex flex-col'>
