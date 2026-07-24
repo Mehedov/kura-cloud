@@ -9,42 +9,23 @@ import useAuthStore from '@/store/auth'
 import Profile from '../elements/profile-modal/profile-modal'
 import { Breadcrumb } from '../ui/breadcrumb'
 import { useRouter } from 'next/navigation'
-import { usePathname } from 'next/navigation'
-import Cookies from 'js-cookie'
 
 export default function MainContainer({ children }: PropsWithChildren) {
 	const { checkAuth, isLoading, isAuth } = useAuthStore()
 	const router = useRouter()
-	const pathname = usePathname()
 	const hasCheckedAuth = useRef(false)
-	const isPublicRoute = pathname === '/auth'
 
 	useEffect(() => {
-		if (isPublicRoute || hasCheckedAuth.current) return
+		if (hasCheckedAuth.current) return
 		hasCheckedAuth.current = true
-
-		const token = Cookies.get('token')
-		if (token) {
-			checkAuth()
-		} else {
-			useAuthStore.setState({ isLoading: false })
-			router.replace('/auth')
-		}
-	}, [checkAuth, isPublicRoute, router])
+		checkAuth()
+	}, [checkAuth])
 
 	useEffect(() => {
-		if (!isPublicRoute && !isLoading && !isAuth) {
+		if (!isLoading && !isAuth) {
 			router.replace('/auth')
 		}
-	}, [isAuth, isLoading, isPublicRoute, router])
-
-	if (isPublicRoute) {
-		return (
-			<main className='min-h-screen bg-background p-4 text-foreground sm:p-layout'>
-				{children}
-			</main>
-		)
-	}
+	}, [isAuth, isLoading, router])
 
 	if (isLoading) {
 		return (

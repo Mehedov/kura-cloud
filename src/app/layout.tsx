@@ -2,8 +2,6 @@
 import type { Metadata } from 'next'
 import './globals.css'
 
-import MainContainer from '@/components/containers/main-container'
-
 import QueryProvider from '@/providers/query-provider'
 import { ThemeBootstrap } from '@/providers/theme-bootstrap'
 
@@ -32,9 +30,7 @@ export default function RootLayout({
 			</head>
 			<body className='antialiased box-border h-full m-0'>
 				<ThemeBootstrap />
-				<QueryProvider>
-					<MainContainer>{children}</MainContainer>
-				</QueryProvider>
+				<QueryProvider>{children}</QueryProvider>
 			</body>
 		</html>
 	)
