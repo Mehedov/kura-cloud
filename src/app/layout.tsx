@@ -9,7 +9,7 @@ import QueryProvider from '@/providers/query-provider'
 
 const interSans = Inter({
 	variable: '--font-inter-sans',
-	subsets: ['latin', 'cyrillic'], // Добавь cyrillic, если нужен русский язык
+	subsets: ['latin', 'cyrillic'],
 })
 
 const interMono = JetBrains_Mono({

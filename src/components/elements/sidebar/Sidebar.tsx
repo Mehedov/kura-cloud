@@ -55,8 +55,8 @@ export function Sidebar() {
 	return (
 		<aside className='p-layout bg-neutral-50 w-2xs h-full flex flex-col overflow-auto'>
 			<Link href={PAGES.home}>
-				<div className='flex items-center gap-1.5 border-b border-neutral-200 pb-4 mb-3'>
-					<CloudyIcon size={30} />
+				<div className='flex gap-1.5 border-b border-neutral-200 pb-4 mb-3'>
+					<CloudyIcon size={25} className='text-[#F0A84B]' />
 					<span className='font-medium text-black text-xl'>Kura Drive</span>
 				</div>
 			</Link>

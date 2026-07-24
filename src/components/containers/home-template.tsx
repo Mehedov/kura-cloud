@@ -1,6 +1,5 @@
 'use client'
 
-import { FolderIcon } from '@/assets/icons/FolderIcon'
 import {
 	Clock,
 	FolderPlus,
@@ -15,6 +14,7 @@ import useDropzone from '@/store/store'
 import useDropzoneStore from '@/store/store'
 import useAuthStore from '@/store/auth'
 import HomeFolders from '../elements/home-folders/home-folders'
+import SuggestedFolders from '../elements/suggested-folders/suggested-folders'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -56,29 +56,7 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 				</div>
 			</section>
 			<HomeFolders />
-			<section>
-				<h2 className='text-md text-neutral-900 font-medium mb-4'>
-					Suggested from your activity
-				</h2>
-				<div className='flex items-center justify-between'>
-					<div className='w-[23%] flex justify-center flex-col items-center p-5 bg-neutral-50 rounded-lg border border-gray-200'>
-						<FolderIcon size={150} />
-						<p className='text-center'>DOCX</p>
-					</div>
-					<div className='w-[23%] flex justify-center flex-col items-center p-5 bg-neutral-50 rounded-lg border border-gray-200'>
-						<FolderIcon size={150} />
-						<p>JPG</p>
-					</div>
-					<div className='w-[23%] flex justify-center flex-col items-center p-5 bg-neutral-50 rounded-lg border border-gray-200'>
-						<FolderIcon size={150} />
-						<p>PDF</p>
-					</div>
-					<div className='w-[23%] flex justify-center flex-col items-center p-5 bg-neutral-50 rounded-lg border border-gray-200'>
-						<FolderIcon size={150} />
-						<p>PNG</p>
-					</div>
-				</div>
-			</section>
+			<SuggestedFolders />
 			<section>
 				<h2 className='text-md text-neutral-900 font-medium mb-4'>Your File</h2>
 				<div className='flex items-center justify-between mb-4'>

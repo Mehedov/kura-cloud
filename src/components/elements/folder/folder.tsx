@@ -22,46 +22,67 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	context?: PopoverContextProps | undefined
 }
 
-export const ContextMenuContent: React.FC = memo(({ onDelete, itemId }) => (
+export const ContextMenuContent: React.FC<{
+	onDelete?: (itemId: string) => void
+	itemId?: string
+}> = memo(({ onDelete, itemId }) => (
 	<div className='flex flex-col text-sm'>
-		<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-neutral-100'>
 			<DownloadCloudIcon size={20} /> Скачать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'>
 			<SquarePen size={20} />
 			Переименовать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'>
 			<FolderInput size={20} /> Переместить
 		</button>
-		<button
-			className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'
-			onClick={() => onDelete(itemId)}
-		>
-			<Trash2 size={20} /> Удалить
-		</button>
+		{onDelete && itemId ? (
+			<button
+				className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'
+				onClick={() => onDelete(itemId)}
+			>
+				<Trash2 size={20} /> Удалить
+			</button>
+		) : null}
 	</div>
 ))
 
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, name, pathname, id, size, ...props }, ref) => {
+	(
+		{
+			className,
+			name,
+			pathname,
+			id,
+			size,
+			...props
+		},
+		ref,
+	) => {
 		const queryClient = useQueryClient()
-
-		const href = `${pathname}/${name}`
+		const itemSize = size || 100
+		const itemHref = {
+			pathname: `${pathname}/${name}`,
+			query: { id },
+		} as const
 
 		const deleteFolder = useMutation({
 			mutationFn: hardDeleteFolder,
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.all })
+				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
 			},
 		})
+
 		const onDeleteFolder = (folderId: string) => {
 			if (folderId) {
 				deleteFolder.mutate({ id: folderId, type: 'folder' })
 			}
 		}
+
 		return (
 			<Popover>
 				<PopoverContext.Consumer>
@@ -69,15 +90,12 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 						<>
 							<Link
 								ref={ref}
-								href={{
-									pathname: href,
-									query: { id: id },
-								}}
+								href={itemHref}
 								className={cn(
-									`flex flex-col items-center  rounded-xl duration-200 hover:-translate-y-1`,
+									'flex flex-col items-center rounded-xl duration-200 hover:-translate-y-1',
 									className,
 								)}
-								style={{ width: size ? `${size}px` : '100px' }}
+								style={{ width: `${itemSize}px` }}
 								{...props}
 								onContextMenu={e => {
 									e.preventDefault()
@@ -85,10 +103,8 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 									context?.setOpen(true)
 								}}
 							>
-								<FolderIcon size={size || 100} />
-								<p
-									className={`text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full w-[${size}px] mt-1`}
-								>
+								<FolderIcon size={itemSize} />
+								<p className='mt-1 w-full text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word'>
 									{name}
 								</p>
 							</Link>
@@ -96,7 +112,6 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								<ContextMenuContent
 									itemId={id}
 									onDelete={onDeleteFolder}
-									context={context}
 								/>
 							</PopoverContent>
 						</>
@@ -110,11 +125,20 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 FolderGrid.displayName = 'FolderGrid'
 
 export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
-	({ className, pathname, name, ...props }, ref) => {
+	(
+		{
+			className,
+			pathname,
+			name,
+			...props
+		},
+		ref,
+	) => {
 		const slug = name
 			.toLowerCase()
 			.replace(/\s+/g, '-')
 			.replace(/[^a-z0-9-]/g, '')
+
 		return (
 			<Popover className='w-full'>
 				<PopoverContext.Consumer>
@@ -129,12 +153,12 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									context?.setOpen(true)
 								}}
 								className={cn(
-									'w-full flex items-center p-2 hover:bg-neutral-50 rounded-lg',
+									'w-full flex items-center rounded-lg p-2 hover:bg-neutral-50',
 									className,
 								)}
 								{...props}
 							>
-								<div className='w-[60%] flex items-center gap-3'>
+								<div className='flex w-[60%] items-center gap-3'>
 									<FolderIcon size={30} />
 									<span className='line-clamp-1 text-sm'>{name}</span>
 								</div>
@@ -153,4 +177,5 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 		)
 	},
 )
+
 FolderLine.displayName = 'FolderLine'

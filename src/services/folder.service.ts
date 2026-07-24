@@ -3,6 +3,7 @@ import {
 	ICreateFolder,
 	IDeleteFolder,
 	IFolderContent,
+	ISuggestedFoldersResponse,
 } from '@/types/folder.type'
 
 export const getMyFolders = () => {
@@ -12,6 +13,12 @@ export const getMyFolders = () => {
 		console.error('Get user error:', e)
 		throw e
 	}
+}
+
+export const getSuggestedFolders = () => {
+	return $api.get<ISuggestedFoldersResponse>('/storage/suggested-folders', {
+		params: { limit: 5 },
+	})
 }
 
 export const createFolder = (data: ICreateFolder) => {

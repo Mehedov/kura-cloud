@@ -4,7 +4,6 @@ import { getMyFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
 import Link from 'next/link'
-import { useMemo } from 'react'
 
 export default function HomeFolders() {
 	const { data, isPending, isError, error } = useQuery({
@@ -14,19 +13,15 @@ export default function HomeFolders() {
 
 	const folders = data?.data || []
 
-	const foldersRender = useMemo(() => {
-		return folders.slice(0, 10).map((folder, index) => {
-			return (
-				<FolderGrid
-					id={folder.id}
-					name={folder.name}
-					key={index}
-					size={90}
-					pathname={PAGES.folders}
-				/>
-			)
-		})
-	}, [folders])
+	const foldersRender = folders.slice(0, 10).map(folder => (
+		<FolderGrid
+			id={folder.id}
+			name={folder.name}
+			key={folder.id}
+			size={90}
+			pathname={PAGES.folders}
+		/>
+	))
 
 	if (isPending) return <div>Загрузка...</div>
 	if (isError) return <div>Ошибка: {error.message}</div>

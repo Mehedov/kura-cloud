@@ -1,7 +1,9 @@
 'use client'
 
+import { Button } from '@/components/ui/button/Button'
+import Input from '@/components/ui/input/input'
 import useAuthStore from '@/store/auth'
-import { useRouter } from 'next/navigation' // Важно: для App Router используем это
+import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function Auth() {
@@ -78,14 +80,14 @@ export default function Auth() {
 						</div>
 					)}
 
-					<div>
+					<div className='space-y-1.5'>
 						<label
 							htmlFor='email'
 							className='block text-sm font-medium text-gray-700'
 						>
 							Электронная почта
 						</label>
-						<input
+						<Input
 							id='email'
 							type='email'
 							required
@@ -93,18 +95,17 @@ export default function Auth() {
 							onChange={e =>
 								setFormData({ ...formData, email: e.target.value })
 							}
-							className='mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2'
 						/>
 					</div>
 
-					<div>
+					<div className='space-y-1.5'>
 						<label
 							htmlFor='password'
 							className='block text-sm font-medium text-gray-700'
 						>
 							Пароль
 						</label>
-						<input
+						<Input
 							id='password'
 							type='password'
 							required
@@ -112,28 +113,20 @@ export default function Auth() {
 							onChange={e =>
 								setFormData({ ...formData, password: e.target.value })
 							}
-							className='mt-1 block w-full rounded-md border shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm p-2'
 						/>
 					</div>
 
-					<button
-						type='submit'
-						className='group relative flex w-full justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white hover:bg-indigo-700 transition-colors'
-					>
+					<Button className='w-full'>
 						{isLogin ? 'Войти' : 'Зарегистрироваться'}
-					</button>
+					</Button>
 				</form>
 
 				<div className='text-center mt-4'>
-					<button
-						type='button'
-						onClick={toggleForm}
-						className='text-indigo-600 hover:text-indigo-500 text-sm font-medium'
-					>
+					<Button variant='ghost' onClick={toggleForm} className='m-auto'>
 						{isLogin
 							? 'Нет аккаунта? Зарегистрируйтесь'
 							: 'Уже есть аккаунт? Войдите'}
-					</button>
+					</Button>
 				</div>
 			</div>
 		</div>

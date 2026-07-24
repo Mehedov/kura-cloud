@@ -19,30 +19,29 @@ export function FolderList({ activeBtn }: Props) {
 	const pathname = usePathname()
 
 	const renderFoldersTypeMenu = () => {
-		return folders.map((folder, index) => {
-			return (
-				<FolderLine
-					pathname={pathname}
-					name={folder.name}
-					key={index}
-					id={folder.id}
-				/>
-			)
-		})
+		return folders.map(folder => (
+			<FolderLine
+				pathname={pathname}
+				name={folder.name}
+				key={folder.id}
+				id={folder.id}
+			/>
+		))
 	}
 	const renderFoldersTypeGrid = () => {
-		return folders.map((folder, index) => {
-			return (
-				<FolderGrid
-					id={folder.id}
-					pathname={pathname}
-					name={folder.name}
-					key={index}
-					size={90}
-				/>
-			)
-		})
+		return folders.map(folder => (
+			<FolderGrid
+				id={folder.id}
+				pathname={pathname}
+				name={folder.name}
+				key={folder.id}
+				size={90}
+			/>
+		))
 	}
+
+	if (isPending) return <div className='mt-2 text-sm text-neutral-500'>Loading...</div>
+	if (isError) return <div className='mt-2 text-sm text-red-500'>Ошибка: {error.message}</div>
 
 	return activeBtn && activeBtn === 'menu' ? (
 		<div className='flex flex-col  items-start mt-2 h-full'>

@@ -20,6 +20,7 @@ export default function CreateFolder() {
 		mutationFn: createFolder,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.all })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
 			setIsOpenCreateFolder(false)
 			setName('')
 		},

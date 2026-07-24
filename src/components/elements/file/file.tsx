@@ -17,6 +17,7 @@ import {
 	FolderInput,
 	SquarePen,
 	Trash2,
+	File as FileIcon,
 } from 'lucide-react'
 import Link from 'next/link'
 import React, { forwardRef, memo } from 'react'
@@ -85,7 +86,9 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 		})
 
 		const onDeleteFile = () => {
-			deleteFile.mutate({ id: fileId, type: 'file' })
+			if (fileId) {
+				deleteFile.mutate({ id: fileId, type: 'file' })
+			}
 		}
 		return (
 			<Popover>
@@ -112,19 +115,19 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 									<Image
 										src={imagePreview}
 										alt={name}
-										width={200}
-										height={200}
+										width={70}
+										height={70}
 										unoptimized
 										className='rounded-md'
 									/>
 								) : name.endsWith('.docx') ? (
-									<FilePen size={55} className='text-blue-600' />
+									<FilePen size={70} className='text-blue-600' />
 								) : name.endsWith('.pdf') ? (
-									<FileText size={55} className='text-red-600' />
+									<FileText size={70} className='text-red-600' />
 								) : name.endsWith('.mp4') || name.endsWith('.mp3') ? (
-									<FilePlay size={55} className='text-green-600' />
+									<FilePlay size={70} className='text-green-600' />
 								) : (
-									<File size={55} className='text-neutral-600' />
+									<FileIcon size={70} className='text-neutral-600' />
 								)}
 
 								<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>

@@ -3,6 +3,23 @@ export interface ICreateFolder {
 	parentId?: string
 }
 
+export interface IFolderSummary {
+	id: string
+	name: string
+	parentId: string | null
+	kind: 'folder'
+}
+
+export interface ISuggestedFolder extends IFolderSummary {
+	lastActivityAt: string
+	reason: string
+}
+
+export interface ISuggestedFoldersResponse {
+	items: ISuggestedFolder[]
+	generatedAt: string
+}
+
 export interface IDeleteFolder {
 	id: string
 	type: string
@@ -14,7 +31,6 @@ export interface IFolder {
 	folderId: string
 	id: string
 	isDeleted: boolean
-	isFavorite: boolean
 	name: string
 	s3Key: string
 	size: string
