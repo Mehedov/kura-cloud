@@ -1,22 +1,19 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
-// Список путей, которые требуют авторизации
-const protectedRoutes = ['/']
-// Список путей только для неавторизованных (логин/регистрация)
 const authRoutes = ['/auth']
 
 export function middleware(request: NextRequest) {
 	const token = request.cookies.get('token')?.value
 	const { pathname } = request.nextUrl
 
-	// 1. Если пользователь не авторизован и идет на защищенный роут
-	if (!token && protectedRoutes.includes(pathname)) {
+	const isAuthRoute = authRoutes.includes(pathname)
+
+	if (!token && !isAuthRoute) {
 		return NextResponse.redirect(new URL('/auth', request.url))
 	}
 
-	// 2. Если пользователь авторизован и пытается зайти на страницу логина
-	if (token && authRoutes.includes(pathname)) {
+	if (token && isAuthRoute) {
 		return NextResponse.redirect(new URL('/', request.url))
 	}
 
