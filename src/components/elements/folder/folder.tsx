@@ -27,19 +27,19 @@ export const ContextMenuContent: React.FC<{
 	itemId?: string
 }> = memo(({ onDelete, itemId }) => (
 	<div className='flex flex-col text-sm'>
-		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-neutral-100'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'>
 			<DownloadCloudIcon size={20} /> Скачать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'>
 			<SquarePen size={20} />
 			Переименовать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'>
+		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'>
 			<FolderInput size={20} /> Переместить
 		</button>
 		{onDelete && itemId ? (
 			<button
-				className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-neutral-100'
+				className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
 				onClick={() => onDelete(itemId)}
 			>
 				<Trash2 size={20} /> Удалить
@@ -153,7 +153,7 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									context?.setOpen(true)
 								}}
 								className={cn(
-									'w-full flex items-center rounded-lg p-2 hover:bg-neutral-50',
+									'w-full flex items-center rounded-lg p-2 hover:bg-muted',
 									className,
 								)}
 								{...props}
@@ -162,10 +162,10 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									<FolderIcon size={30} />
 									<span className='line-clamp-1 text-sm'>{name}</span>
 								</div>
-								<span className='w-[20%] text-sm text-neutral-400'>
+								<span className='w-[20%] text-sm text-muted-foreground'>
 									20.02.2025
 								</span>
-								<span className='w-[20%] text-sm text-neutral-400'>20 GB</span>
+								<span className='w-[20%] text-sm text-muted-foreground'>20 GB</span>
 							</Link>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent />

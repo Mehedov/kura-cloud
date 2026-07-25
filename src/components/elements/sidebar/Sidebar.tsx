@@ -115,13 +115,13 @@ export function Sidebar() {
 					</div>
 					{!isSidebarCollapsed && <div>
 						<div className='font-medium text-sm'>{user?.name}</div>
-						<div className='text-neutral-600 text-xs font-medium'>
+						<div className='text-foreground text-xs font-medium'>
 							{user?.email}
 						</div>
 					</div>}
 				</div>
 				{!isSidebarCollapsed && (
-					<ChevronRightIcon className='text-neutral-500' size={20} />
+					<ChevronRightIcon className='text-muted-foreground' size={20} />
 				)}
 			</button>
 
@@ -139,7 +139,11 @@ export function Sidebar() {
 								title={isSidebarCollapsed ? item.label : undefined}
 							>
 								<item.icon
-									className={pathname === item.href ? 'text-white' : ''}
+									className={
+										pathname === item.href
+											? 'text-sidebar-primary-foreground'
+											: ''
+									}
 									size={20}
 								/>
 								{!isSidebarCollapsed && item.label}
@@ -205,7 +209,7 @@ export function Sidebar() {
 					</div>
 					<div className='flex items-center justify-between'>
 						<div className='flex items-center gap-2 text-[13px]'>
-							<Square size={15} className='text-neutral-600' /> Free Storage
+							<Square size={15} className='text-foreground' /> Free Storage
 						</div>
 						<span className='text-[14px] font-medium text-muted-foreground'>
 							45 GB

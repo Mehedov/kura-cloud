@@ -36,26 +36,26 @@ interface ContextMenuContentProps {
 export const ContextMenuContent = memo(
 	({ onDelete, downloadUrl }: ContextMenuContentProps) => (
 		<div className='flex flex-col text-sm'>
-			<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-muted rounded'>
 				<DownloadCloudIcon size={20} /> Просмотреть
 			</button>
 			{downloadUrl ? (
 				<a
 					href={downloadUrl}
-					className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-neutral-100 rounded'
+					className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-muted rounded'
 				>
 					<DownloadCloudIcon size={20} /> Скачать
 				</a>
 			) : null}
-			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'>
 				<SquarePen size={20} />
 				Переименовать
 			</button>
-			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'>
+			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'>
 				<FolderInput size={20} /> Переместить
 			</button>
 			<button
-				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-neutral-100 rounded'
+				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
 				onClick={onDelete}
 			>
 				<Trash2 size={20} /> Удалить
@@ -127,7 +127,7 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 								) : name.endsWith('.mp4') || name.endsWith('.mp3') ? (
 									<FilePlay size={70} className='text-green-600' />
 								) : (
-									<FileIcon size={70} className='text-neutral-600' />
+									<FileIcon size={70} className='text-foreground' />
 								)}
 
 								<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>
@@ -163,7 +163,7 @@ FileGrid.displayName = 'FileGrid'
 // 						<>
 // 							<div
 // 								key={index}
-// 								className='flex items-center w-full border-neutral-200 py-2 border-b px-4 hover:bg-neutral-100'
+// 								className='flex items-center w-full border-border py-2 border-b px-4 hover:bg-muted'
 // 							>
 // 								<div className='w-[40%] flex items-center gap-2'>
 // 									{fileName.endsWith('.jpg') ||
@@ -177,13 +177,13 @@ FileGrid.displayName = 'FileGrid'
 // 									) : fileName.endsWith('.mp4') || fileName.endsWith('.mp3') ? (
 // 										<FilePlay size={25} className='text-green-600' />
 // 									) : (
-// 										<File size={25} className='text-neutral-600' />
+// 										<File size={25} className='text-foreground' />
 // 									)}
 // 									<div className='overflow-wrap'>{fileName}</div>
 // 								</div>
 
 // 								<div className='flex items-center gap-2 w-[20%]'>
-// 									<div className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border border-neutral-400'>
+// 									<div className='w-8 h-8 rounded-full overflow-hidden flex items-center justify-center border border-border'>
 // 										{/* <Image
 // 								src={avatar}
 // 								alt='avatar'
@@ -198,7 +198,7 @@ FileGrid.displayName = 'FileGrid'
 // 								<div className='w-[15%]'>{date}</div>
 // 								<div className='w-[15%]'>{size}</div>
 // 								<div className='w-[10%] p-2 flex items-center justify-end text-center'>
-// 									<EllipsisVertical size={25} className='text-neutral-400' />
+// 									<EllipsisVertical size={25} className='text-muted-foreground' />
 // 								</div>
 // 							</div>
 // 							<PopoverContent isContextMenu>

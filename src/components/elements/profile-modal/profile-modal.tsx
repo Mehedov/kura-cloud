@@ -32,13 +32,13 @@ export default function Profile() {
 			<ModalContainer isOpen={isOpenProfile} onClose={setIsOpenProfile}>
 				<Card className='w-200'>
 					<div className='flex items-center gap-3 mb-10'>
-						<div className='w-20 h-20 rounded-full overflow-hidden border border-neutral-400 flex items-center justify-center'>
+						<div className='w-20 h-20 rounded-full overflow-hidden border border-border flex items-center justify-center'>
 							{/* <Image src={avatar} alt='avatar' className='object-cover' /> */}
 							<User size={40} />
 						</div>
 						<div className='flex flex-col gap-2'>
 							<div className='font-medium text-sm'>Profile photo</div>
-							<div className='text-neutral-600 text-xs font-medium'>
+							<div className='text-foreground text-xs font-medium'>
 								We support PNGs, JPEGs and GIFs under 10MB
 							</div>
 							<div>
@@ -55,7 +55,7 @@ export default function Profile() {
 						<div className='flex flex-col space-y-2'>
 							<label className='font-medium'>Username</label>
 							<Input
-								className='shadow-xs font-medium text-black'
+								className='shadow-xs font-medium'
 								value={user?.name}
 							/>
 						</div>

@@ -3,13 +3,18 @@ import { FOLDER_KEYS } from '@/constants/queryKeys'
 import { getMyFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+} from '@/components/ui/states/async-state'
 
 interface Props {
 	activeBtn?: 'menu' | 'grid'
 }
 
 export function FolderList({ activeBtn }: Props) {
-	const { data, isPending, isError, error } = useQuery({
+	const { data, isPending, isError, error, refetch } = useQuery({
 		queryKey: FOLDER_KEYS.all,
 		queryFn: getMyFolders,
 	})
@@ -39,8 +44,16 @@ export function FolderList({ activeBtn }: Props) {
 		))
 	}
 
-	if (isPending) return <div className='mt-2 text-sm text-neutral-500'>Loading...</div>
-	if (isError) return <div className='mt-2 text-sm text-red-500'>Ошибка: {error.message}</div>
+	if (isPending) return <LoadingState title='Загружаем папки' />
+	if (isError)
+		return <ErrorState description={error.message} onRetry={() => void refetch()} />
+	if (folders.length === 0)
+		return (
+			<EmptyState
+				title='Здесь пока нет папок'
+				description='Создайте первую папку, чтобы начать организовывать файлы.'
+			/>
+		)
 
 	return activeBtn && activeBtn === 'menu' ? (
 		<div className='flex flex-col  items-start mt-2 h-full'>

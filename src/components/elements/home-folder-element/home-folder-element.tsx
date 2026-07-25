@@ -23,7 +23,7 @@ const HomeFolderElement = forwardRef<HTMLAnchorElement, FolderProps>(
 									.replace(/\s+/g, '-')
 									.replace(/[^a-z0-9-]/g, '')}`}
 								className={cn(
-									'flex justify-between items-center w-[256px] bg-neutral-50 rounded-lg border border-gray-200 px-4 py-3',
+									'flex justify-between items-center w-[256px] bg-muted rounded-lg border border-border px-4 py-3',
 									className,
 								)}
 								onContextMenu={e => {
@@ -35,10 +35,10 @@ const HomeFolderElement = forwardRef<HTMLAnchorElement, FolderProps>(
 							>
 								<div className='flex items-center gap-2'>
 									<FolderClosed size={20} />
-									<span className='text-neutral-700 line-clamp-1'>{name}</span>
+									<span className='text-foreground line-clamp-1'>{name}</span>
 								</div>
 								<PopoverTrigger>
-									<EllipsisVertical className='text-neutral-700' />
+									<EllipsisVertical className='text-foreground' />
 								</PopoverTrigger>
 							</Link>
 							<PopoverContent isContextMenu>

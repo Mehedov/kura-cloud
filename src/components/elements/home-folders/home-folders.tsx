@@ -4,9 +4,14 @@ import { getMyFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
 import Link from 'next/link'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+} from '@/components/ui/states/async-state'
 
 export default function HomeFolders() {
-	const { data, isPending, isError, error } = useQuery({
+	const { data, isPending, isError, error, refetch } = useQuery({
 		queryKey: FOLDER_KEYS.all,
 		queryFn: getMyFolders,
 	})
@@ -23,15 +28,23 @@ export default function HomeFolders() {
 		/>
 	))
 
-	if (isPending) return <div>Загрузка...</div>
-	if (isError) return <div>Ошибка: {error.message}</div>
+	if (isPending) return <LoadingState title='Загружаем папки' />
+	if (isError)
+		return <ErrorState description={error.message} onRetry={() => void refetch()} />
+	if (folders.length === 0)
+		return (
+			<EmptyState
+				title='Создайте первую папку'
+				description='Она появится здесь и будет доступна на главной странице.'
+			/>
+		)
 
 	return (
 		<section>
-			<h2 className='text-md text-neutral-900 font-medium mb-4'>
+			<h2 className='text-md text-foreground font-medium mb-4'>
 				<Link
 					href='/folders'
-					className='text-md text-neutral-900 font-medium mb-4 duration-200 ease-in-out hover:text-neutral-600'
+					className='text-md text-foreground font-medium mb-4 duration-200 ease-in-out hover:text-foreground'
 				>
 					Folders {folders.length > 10 && `more ${folders.length - 10}...`}
 				</Link>

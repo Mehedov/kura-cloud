@@ -41,8 +41,8 @@ export function Pagination({
 						return (
 							<span
 								className={cn(
-									currentPage === _ && 'bg-neutral-100 font-medium',
-									'w-7 h-7  flex items-center justify-center rounded-sm duration-200 ease-in-out hover:bg-neutral-100 cursor-pointer',
+									currentPage === _ && 'bg-muted font-medium',
+									'w-7 h-7  flex items-center justify-center rounded-sm duration-200 ease-in-out hover:bg-muted cursor-pointer',
 								)}
 								key={index}
 								onClick={() =>
@@ -56,7 +56,7 @@ export function Pagination({
 					return (
 						<span
 							className={cn(
-								'bg-neutral-100 font-medium',
+								'bg-muted font-medium',
 								'w-7 h-7  flex items-center justify-center rounded-sm duration-200 ease-in-out',
 							)}
 							key={index}

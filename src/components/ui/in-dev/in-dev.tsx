@@ -23,7 +23,7 @@ const InDev: React.FC<UnderDevelopmentProps> = ({
 
 			{isActive && (
 				<div className='absolute inset-0 z-50 flex items-center justify-center pointer-events-none'>
-					<div className='absolute inset-0 bg-neutral-100 backdrop-blur-[2px]' />
+					<div className='absolute inset-0 bg-muted backdrop-blur-[2px]' />
 
 					<div
 						className='absolute inset-0 opacity-30'

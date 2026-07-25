@@ -30,10 +30,10 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 		<section className='flex flex-col gap-8 w-full'>
 			<section className='flex flex-wrap items-center justify-between gap-4'>
 				<div>
-					<h1 className='text-2xl font-semibold text-neutral-700'>
+					<h1 className='text-2xl font-semibold text-foreground'>
 						Welcome back, {user?.name}
 					</h1>
-					<p className='text-sm text-neutral-500'>
+					<p className='text-sm text-muted-foreground'>
 						Welcome back! Let’s continue your activity on the dashboard.
 					</p>
 				</div>
@@ -58,7 +58,7 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 			<HomeFolders />
 			<SuggestedFolders />
 			<section>
-				<h2 className='text-md text-neutral-900 font-medium mb-4'>Your File</h2>
+				<h2 className='text-md text-foreground font-medium mb-4'>Your File</h2>
 				<div className='flex items-center justify-between mb-4'>
 					<div className='flex items-center gap-5'>
 						<Button variant='secondary'>
@@ -73,12 +73,12 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 							<Funnel size={20} /> Filter
 						</Button>
 
-						<div className='flex items-center gap-2 border bg-neutral-50 text-neutral-700 border-gray-200 px-2 py-2 w-60 rounded-lg'>
-							<Search className='text-neutral-700' />
+						<div className='flex items-center gap-2 border bg-muted text-foreground border-border px-2 py-2 w-60 rounded-lg'>
+							<Search className='text-foreground' />
 							<input
 								type='text'
 								placeholder='Search file...'
-								className='text-neutral-700 text-md placeholder:font-medium placeholder:text-neutral-700 w-full outline-0'
+								className='text-foreground text-md placeholder:font-medium placeholder:text-foreground w-full outline-0'
 							/>
 						</div>
 					</div>

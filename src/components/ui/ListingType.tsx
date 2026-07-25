@@ -8,27 +8,35 @@ interface Props {
 
 export function ListingType({ activeBtn, setActiveBtn }: Props) {
 	return (
-		<div className='w-25 flex items-center border border-neutral-200 rounded-lg h-full overflow-hidden'>
+		<div className='flex h-full w-25 items-center overflow-hidden rounded-lg border border-border'>
 			<button
-				className={`w-[50%] h-full flex items-center justify-center p-2 cursor-pointer ${
-					activeBtn === 'menu' ? 'bg-neutral-600' : 'bg-transparent'
+				className={`flex h-full w-[50%] cursor-pointer items-center justify-center p-2 ${
+					activeBtn === 'menu' ? 'bg-primary' : 'bg-transparent'
 				}`}
 				onClick={() => setActiveBtn('menu')}
 			>
 				<Menu
 					size={15}
-					className={activeBtn === 'menu' ? 'text-white' : 'text-neutral-600'}
+					className={
+						activeBtn === 'menu'
+							? 'text-primary-foreground'
+							: 'text-muted-foreground'
+					}
 				/>
 			</button>
 			<button
-				className={`w-[50%] h-full flex items-center justify-center p-2 cursor-pointer ${
-					activeBtn === 'grid' ? 'bg-neutral-600' : 'bg-transparent'
+				className={`flex h-full w-[50%] cursor-pointer items-center justify-center p-2 ${
+					activeBtn === 'grid' ? 'bg-primary' : 'bg-transparent'
 				}`}
 				onClick={() => setActiveBtn('grid')}
 			>
 				<Grid2x2
 					size={15}
-					className={activeBtn === 'grid' ? 'text-white' : 'text-neutral-600'}
+					className={
+						activeBtn === 'grid'
+							? 'text-primary-foreground'
+							: 'text-muted-foreground'
+					}
 				/>
 			</button>
 		</div>

@@ -52,10 +52,10 @@ export default function Auth() {
 	}
 
 	return (
-		<div className='flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8'>
+		<div className='flex min-h-screen items-center justify-center bg-background py-12 px-4 sm:px-6 lg:px-8'>
 			<div className='w-full max-w-md space-y-8'>
 				<div>
-					<h2 className='mt-6 text-center text-3xl font-extrabold text-gray-900'>
+					<h2 className='mt-6 text-center text-3xl font-extrabold text-foreground'>
 						{isLogin ? 'Вход' : 'Регистрация'}
 					</h2>
 					{error && (
@@ -68,7 +68,7 @@ export default function Auth() {
 						<div>
 							<label
 								htmlFor='name'
-								className='block text-sm font-medium text-gray-700'
+								className='block text-sm font-medium text-foreground'
 							>
 								Имя
 							</label>
@@ -88,7 +88,7 @@ export default function Auth() {
 					<div className='space-y-1.5'>
 						<label
 							htmlFor='email'
-							className='block text-sm font-medium text-gray-700'
+							className='block text-sm font-medium text-foreground'
 						>
 							Электронная почта
 						</label>
@@ -106,7 +106,7 @@ export default function Auth() {
 					<div className='space-y-1.5'>
 						<label
 							htmlFor='password'
-							className='block text-sm font-medium text-gray-700'
+							className='block text-sm font-medium text-foreground'
 						>
 							Пароль
 						</label>

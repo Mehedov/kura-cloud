@@ -6,9 +6,14 @@ import { FOLDER_KEYS } from '@/constants/queryKeys'
 import { getSuggestedFolders } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+} from '@/components/ui/states/async-state'
 
 export default function SuggestedFolders() {
-	const { data, isPending, isError } = useQuery({
+	const { data, isPending, isError, refetch } = useQuery({
 		queryKey: FOLDER_KEYS.suggested,
 		queryFn: getSuggestedFolders,
 	})
@@ -17,16 +22,24 @@ export default function SuggestedFolders() {
 
 	return (
 		<section>
-			<h2 className='mb-4 text-md font-medium text-neutral-900'>
+			<h2 className='mb-4 text-md font-medium text-foreground'>
 				Suggested based on your activity
 			</h2>
 
 			{isPending ? (
-				<div className='text-sm text-neutral-500'>Загрузка...</div>
+				<LoadingState title='Подбираем папки' className='min-h-32' />
 			) : isError ? (
-				<div className='text-sm text-red-500'>Не удалось загрузить папки.</div>
+				<ErrorState
+					title='Не удалось подобрать папки'
+					onRetry={() => void refetch()}
+					className='min-h-32'
+				/>
 			) : folders.length === 0 ? (
-				<div className='text-sm text-neutral-500'>Недавних папок пока нет.</div>
+				<EmptyState
+					title='Недавних папок пока нет'
+					description='Откройте папку или добавьте в неё файл — она появится здесь.'
+					className='min-h-32'
+				/>
 			) : (
 				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5'>
 					{folders.map(folder => (
@@ -36,7 +49,7 @@ export default function SuggestedFolders() {
 								pathname: `${PAGES.folders}/${folder.name}`,
 								query: { id: folder.id },
 							}}
-							className='flex w-full flex-col items-center justify-center rounded-lg border border-gray-200 bg-neutral-50 p-5 transition-colors hover:bg-neutral-100'
+							className='flex w-full flex-col items-center justify-center rounded-lg border border-border bg-muted p-5 transition-colors hover:bg-muted'
 						>
 							<FolderIcon size={150} />
 							<p className='mt-2 w-full text-center line-clamp-2'>

@@ -43,7 +43,7 @@ const PHOTO_COLLECTIONS = [
 
 const PHOTO_ITEM_BADGES = {
 	Recent: 'bg-sky-100 text-sky-700',
-	Folder: 'bg-neutral-100 text-neutral-700',
+	Folder: 'bg-muted text-foreground',
 } as const
 
 export default function Photo() {
@@ -84,11 +84,11 @@ export default function Photo() {
 	if (isPending) {
 		return (
 			<section className='flex w-full flex-col gap-4 pb-6'>
-				<Card className='rounded-[28px] bg-white p-8'>
-					<div className='text-lg font-medium text-neutral-800'>
+				<Card className='rounded-[28px] bg-card p-8'>
+					<div className='text-lg font-medium text-foreground'>
 						Loading photo workspace...
 					</div>
-					<div className='mt-2 text-sm text-neutral-500'>
+					<div className='mt-2 text-sm text-muted-foreground'>
 						Preparing gallery and visual previews.
 					</div>
 				</Card>
@@ -99,11 +99,11 @@ export default function Photo() {
 	if (isError) {
 		return (
 			<section className='flex w-full flex-col gap-4 pb-6'>
-				<Card className='rounded-[28px] bg-white p-8'>
-					<div className='text-lg font-medium text-neutral-800'>
+				<Card className='rounded-[28px] bg-card p-8'>
+					<div className='text-lg font-medium text-foreground'>
 						Failed to load photos
 					</div>
-					<div className='mt-2 text-sm text-neutral-500'>
+					<div className='mt-2 text-sm text-muted-foreground'>
 						{error instanceof Error ? error.message : 'Unknown error'}
 					</div>
 				</Card>
@@ -113,7 +113,7 @@ export default function Photo() {
 
 	return (
 		<section className='flex w-full flex-col gap-8 pb-6'>
-			<section className='relative overflow-hidden rounded-[28px] border border-neutral-200 bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-700 px-7 py-7 text-white'>
+			<section className='relative overflow-hidden rounded-[28px] border border-border bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-700 px-7 py-7 text-white'>
 					<div className='absolute -top-12 right-10 h-44 w-44 rounded-full bg-white/10 blur-3xl' />
 					<div className='absolute bottom-0 right-0 h-52 w-52 translate-x-16 translate-y-16 rounded-full bg-amber-300/15 blur-3xl' />
 
@@ -143,13 +143,13 @@ export default function Photo() {
 							{PHOTO_COLLECTIONS.map(collection => (
 								<div
 									key={collection.title}
-									className={`rounded-2xl border border-white/10 bg-linear-to-br ${collection.accent} p-4 text-neutral-900 shadow-sm`}
+									className={`rounded-2xl border border-white/10 bg-linear-to-br ${collection.accent} p-4 text-foreground shadow-sm`}
 								>
-									<div className='mb-8 inline-flex rounded-xl bg-white/85 p-2 text-neutral-700'>
+									<div className='mb-8 inline-flex rounded-xl bg-card/85 p-2 text-foreground'>
 										<ImageIcon size={18} />
 									</div>
 									<div className='text-sm font-medium'>{collection.title}</div>
-									<div className='mt-1 text-xs text-neutral-600'>
+									<div className='mt-1 text-xs text-foreground'>
 										{collection.count}
 									</div>
 								</div>
@@ -160,15 +160,15 @@ export default function Photo() {
 
 			<section className='grid gap-4 md:grid-cols-2'>
 					{metrics.map(metric => (
-						<Card key={metric.label} className='bg-white p-4'>
+						<Card key={metric.label} className='bg-card p-4'>
 							<div className='flex items-start justify-between'>
 								<div>
-									<p className='text-sm text-neutral-500'>{metric.label}</p>
-									<p className='mt-2 text-3xl font-semibold text-neutral-800'>
+									<p className='text-sm text-muted-foreground'>{metric.label}</p>
+									<p className='mt-2 text-3xl font-semibold text-foreground'>
 										{metric.value}
 									</p>
 								</div>
-								<div className='rounded-2xl bg-neutral-100 p-3 text-neutral-700'>
+								<div className='rounded-2xl bg-muted p-3 text-foreground'>
 									<metric.icon size={18} />
 								</div>
 							</div>
@@ -176,13 +176,13 @@ export default function Photo() {
 					))}
 			</section>
 
-			<section className='flex flex-col gap-4 rounded-[24px] border border-neutral-200 bg-white p-5 shadow-[0_12px_40px_rgba(23,23,23,0.04)]'>
+			<section className='flex flex-col gap-4 rounded-[24px] border border-border bg-card p-5 shadow-[0_12px_40px_rgba(23,23,23,0.04)]'>
 					<div className='flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between'>
 						<div>
-							<h2 className='text-2xl font-semibold text-neutral-800'>
+							<h2 className='text-2xl font-semibold text-foreground'>
 								Photo gallery
 							</h2>
-							<p className='mt-1 text-sm text-neutral-500'>
+							<p className='mt-1 text-sm text-muted-foreground'>
 								A curated overview of visuals, previews and active design shots.
 							</p>
 						</div>
@@ -204,21 +204,21 @@ export default function Photo() {
 						<Input
 							Icon={Search}
 							placeholder='Search photo or tag...'
-							className='bg-neutral-50'
+							className='bg-muted'
 							value={searchValue}
 							onChange={e => setSearchValue(e.target.value)}
 						/>
 
-						<Card className='flex items-center justify-between gap-4 bg-neutral-50 p-4'>
+						<Card className='flex items-center justify-between gap-4 bg-muted p-4'>
 							<div>
-								<p className='text-xs uppercase tracking-[0.18em] text-neutral-400'>
+								<p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>
 									Storage
 								</p>
-								<p className='mt-1 text-sm font-medium text-neutral-700'>
+								<p className='mt-1 text-sm font-medium text-foreground'>
 									{formatBytes(storageUsed)} used in visual assets
 								</p>
 							</div>
-							<div className='flex h-11 w-11 items-center justify-center rounded-2xl bg-neutral-900 text-white'>
+							<div className='flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground'>
 								<ArrowUpRight size={18} />
 							</div>
 						</Card>
@@ -228,9 +228,9 @@ export default function Photo() {
 						{filteredPhotos.map(item => (
 							<div
 								key={item.id}
-								className='overflow-hidden rounded-[24px] border border-neutral-200 bg-white p-0 shadow-none'
+								className='overflow-hidden rounded-[24px] border border-border bg-card p-0 shadow-none'
 							>
-								<div className='group relative aspect-[4/3] overflow-hidden border-b border-neutral-200 bg-neutral-200'>
+								<div className='group relative aspect-[4/3] overflow-hidden border-b border-border bg-muted'>
 									{item.thumbnailUrl ? (
 										<Image
 											src={item.thumbnailUrl}
@@ -240,12 +240,12 @@ export default function Photo() {
 											className='rounded-md object-cover object-top transition duration-300 group-hover:scale-[1.03]'
 										/>
 									) : (
-										<div className='flex h-full w-full items-center justify-center bg-linear-to-br from-neutral-100 to-neutral-200 text-sm font-medium text-neutral-500'>
+										<div className='flex h-full w-full items-center justify-center bg-linear-to-br from-neutral-100 to-neutral-200 text-sm font-medium text-muted-foreground'>
 											No preview
 										</div>
 									)}
 									<div className='absolute inset-0 bg-linear-to-t from-neutral-950/40 via-transparent to-transparent' />
-									<div className='absolute left-4 top-4 rounded-full bg-white/90 px-3 py-1 text-xs font-medium text-neutral-700 backdrop-blur-xs'>
+									<div className='absolute left-4 top-4 rounded-full bg-card/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-xs'>
 										{item.name}
 									</div>
 								</div>
@@ -253,12 +253,12 @@ export default function Photo() {
 								<div className='space-y-3 p-4'>
 									<div className='flex items-start justify-between gap-3'>
 										<div>
-											<h3 className='text-base font-medium text-neutral-800'>
+											<h3 className='text-base font-medium text-foreground'>
 												{item.createdAt
 													? new Date(item.createdAt).toLocaleDateString()
 													: 'Recently updated'}
 											</h3>
-											<p className='mt-1 text-sm text-neutral-500'>
+											<p className='mt-1 text-sm text-muted-foreground'>
 												{item.folderId ? 'Stored in folder' : 'Loose photo'}
 											</p>
 										</div>
@@ -273,9 +273,9 @@ export default function Photo() {
 										</span>
 									</div>
 
-									<div className='flex items-center justify-between border-t border-neutral-200 pt-3 text-sm text-neutral-500'>
+									<div className='flex items-center justify-between border-t border-border pt-3 text-sm text-muted-foreground'>
 										<span>{formatBytes(item.size)}</span>
-										<button className='cursor-pointer font-medium text-neutral-700 transition hover:text-neutral-900'>
+										<button className='cursor-pointer font-medium text-foreground transition hover:text-foreground'>
 											Open
 										</button>
 									</div>

@@ -91,7 +91,7 @@ const Upload = () => {
 								setIsOpenDropzone(false)
 								setUploadFiles([])
 							}}
-							className='text-neutral-400 hover:text-neutral-600'
+							className='text-muted-foreground hover:text-foreground'
 						>
 							<X size={20} />
 						</button>
@@ -109,13 +109,13 @@ const Upload = () => {
 								{uploadFiles.map((file, index) => (
 									<div
 										key={index}
-										className='flex items-center p-2  border border-neutral-200 rounded-md'
+										className='flex items-center p-2  border border-border rounded-md'
 									>
 										<FileText size={16} className='text-blue-500 mr-2' />
-										<span className='text-sm text-neutral-700 truncate flex-1'>
+										<span className='text-sm text-foreground truncate flex-1'>
 											{file.name}
 										</span>
-										<span className='text-[10px] text-neutral-400'>
+										<span className='text-[10px] text-muted-foreground'>
 											{(file.size / 1024).toFixed(1)} KB
 										</span>
 									</div>

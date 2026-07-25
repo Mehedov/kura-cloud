@@ -19,26 +19,26 @@ export function FoldersTemplate() {
 			</div>
 			<div className='flex items-center justify-between mb-3'>
 				<div className='flex items-center gap-3'>
-					<button className='flex items-center gap-2 border border-neutral-400 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100'>
+					<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100'>
 						Люди <ChevronDown size={15} />
 					</button>
 
 					<Popover>
 						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-neutral-500 rounded-lg px-4 py-1 cursor-pointer hover:bg-neutral-100 duration-100 font-normal'>
+							<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100 font-normal'>
 								По названию <ChevronDown size={15} />
 							</button>
 						</PopoverTrigger>
 						<PopoverContent className='w-45 '>
 							<div className='flex flex-col gap-3 items-start w-full'>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<Check size={20} className='text-neutral-600' /> Названию
+								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+									<Check size={20} className='text-foreground' /> Названию
 								</div>
 
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									Размеру
 								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-neutral-50 w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
 									Дате изменения
 								</div>
 							</div>

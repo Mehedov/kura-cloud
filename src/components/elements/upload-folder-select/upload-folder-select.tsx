@@ -26,7 +26,7 @@ export default function UploadFolderSelect({
 					key={folder.id}
 					className={cn(
 						`flex flex-col items-center gap-2 p-1 rounded-xl duration-200 hover:-translate-y-1`,
-						selectFolderId === folder.id && 'border-2 border-neutral-500',
+						selectFolderId === folder.id && 'border-2 border-border',
 					)}
 					style={{ width: '100px' }}
 				>
@@ -44,7 +44,7 @@ export default function UploadFolderSelect({
 
 	return (
 		<section>
-			<h2 className='text-md text-neutral-900 font-medium mb-4'>
+			<h2 className='text-md text-foreground font-medium mb-4'>
 				Select folders
 			</h2>
 			<div className='flex items-center flex-wrap gap-1'>{foldersRender}</div>
