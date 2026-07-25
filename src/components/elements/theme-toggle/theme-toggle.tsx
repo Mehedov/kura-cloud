@@ -1,8 +1,10 @@
 'use client'
 
-import useThemeStore, { type Theme } from '@/store/theme'
+import { type Theme } from '@/lib/theme'
+import useThemeStore from '@/store/theme'
 import { cn } from '@/utils/cn'
 import { Moon, Sun } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
 const options: { value: Theme; label: string; Icon: typeof Sun }[] = [
 	{ value: 'light', label: 'Светлая тема', Icon: Sun },
@@ -10,7 +12,13 @@ const options: { value: Theme; label: string; Icon: typeof Sun }[] = [
 ]
 
 export function ThemeToggle() {
-	const { theme, setTheme } = useThemeStore(state => state)
+	const { theme, isSaving, setTheme } = useThemeStore(state => state)
+	const router = useRouter()
+
+	const handleThemeChange = async (nextTheme: Theme) => {
+		const wasSaved = await setTheme(nextTheme)
+		if (wasSaved) router.refresh()
+	}
 
 	return (
 		<div
@@ -24,10 +32,12 @@ export function ThemeToggle() {
 					type='button'
 					aria-label={label}
 					aria-pressed={theme === value}
-					onClick={() => setTheme(value)}
+					disabled={isSaving}
+					onClick={() => void handleThemeChange(value)}
 					className={cn(
 						'flex size-9 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-						theme === value && 'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
+						theme === value &&
+							'bg-primary text-primary-foreground hover:bg-primary hover:text-primary-foreground',
 					)}
 				>
 					<Icon size={17} />

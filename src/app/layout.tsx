@@ -1,35 +1,28 @@
-
 import type { Metadata } from 'next'
+import { cookies } from 'next/headers'
 import './globals.css'
 
+import { parseTheme, THEME_COOKIE } from '@/lib/theme'
 import QueryProvider from '@/providers/query-provider'
 import { ThemeBootstrap } from '@/providers/theme-bootstrap'
-
-const themeBootstrapScript = `(() => {
-  try {
-    const savedTheme = localStorage.getItem('kura-theme');
-    const theme = ['light', 'dark'].includes(savedTheme) ? savedTheme : 'light';
-    document.documentElement.classList.toggle('dark', theme === 'dark');
-    document.documentElement.style.colorScheme = theme;
-  } catch {}
-})()`
 
 export const metadata: Metadata = {
 	title: 'Kura Drive',
 	description: 'Personal cloud storage',
 }
-export default function RootLayout({
+
+export default async function RootLayout({
 	children,
 }: Readonly<{
 	children: React.ReactNode
 }>) {
+	const cookieStore = await cookies()
+	const theme = parseTheme(cookieStore.get(THEME_COOKIE)?.value)
+
 	return (
-		<html lang='en' suppressHydrationWarning>
-			<head>
-				<script dangerouslySetInnerHTML={{ __html: themeBootstrapScript }} />
-			</head>
-			<body className='antialiased box-border h-full m-0'>
-				<ThemeBootstrap />
+		<html lang='ru' data-theme={theme} suppressHydrationWarning>
+			<body className='m-0 box-border h-full antialiased'>
+				<ThemeBootstrap theme={theme} />
 				<QueryProvider>{children}</QueryProvider>
 			</body>
 		</html>

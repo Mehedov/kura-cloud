@@ -1,49 +1,57 @@
 'use client'
 
+import { saveTheme } from '@/app/actions/theme'
+import { parseTheme, type Theme } from '@/lib/theme'
 import { create } from 'zustand'
 
-export type Theme = 'light' | 'dark'
-
-const THEME_STORAGE_KEY = 'kura-theme'
 const isBrowser = () => typeof document !== 'undefined'
 
 const applyTheme = (theme: Theme) => {
-	document.documentElement.classList.toggle('dark', theme === 'dark')
-	document.documentElement.style.colorScheme = theme
-	return theme
+	const root = document.documentElement
+	root.classList.add('theme-changing')
+	root.dataset.theme = theme
+	root.style.colorScheme = theme
+
+	requestAnimationFrame(() => {
+		requestAnimationFrame(() => root.classList.remove('theme-changing'))
+	})
 }
+
+const getDocumentTheme = (): Theme =>
+	isBrowser() ? parseTheme(document.documentElement.dataset.theme) : 'light'
 
 interface ThemeState {
 	theme: Theme
-	resolvedTheme: 'light' | 'dark'
-	isInitialized: boolean
-	initializeTheme: () => void
-	setTheme: (theme: Theme) => void
+	isSaving: boolean
+	initializeTheme: (theme: Theme) => void
+	setTheme: (theme: Theme) => Promise<boolean>
 }
 
 const useThemeStore = create<ThemeState>((set, get) => ({
-	theme: 'light',
-	resolvedTheme: 'light',
-	isInitialized: false,
-	initializeTheme: () => {
-		if (get().isInitialized || !isBrowser()) return
-
-		const storedTheme = localStorage.getItem(THEME_STORAGE_KEY)
-		const theme: Theme =
-			storedTheme === 'light' || storedTheme === 'dark'
-				? storedTheme
-				: 'light'
-
-		set({
-			theme,
-			resolvedTheme: applyTheme(theme),
-			isInitialized: true,
-		})
-	},
-	setTheme: theme => {
+	theme: getDocumentTheme(),
+	isSaving: false,
+	initializeTheme: theme => {
 		if (!isBrowser()) return
-		localStorage.setItem(THEME_STORAGE_KEY, theme)
-		set({ theme, resolvedTheme: applyTheme(theme) })
+		applyTheme(theme)
+		set({ theme })
+	},
+	setTheme: async theme => {
+		if (!isBrowser() || theme === get().theme) return true
+
+		const previousTheme = get().theme
+		applyTheme(theme)
+		set({ theme, isSaving: true })
+
+		try {
+			await saveTheme(theme)
+			return true
+		} catch {
+			applyTheme(previousTheme)
+			set({ theme: previousTheme })
+			return false
+		} finally {
+			set({ isSaving: false })
+		}
 	},
 }))
 

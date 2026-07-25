@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is([data-theme='dark'] *));
 
 @theme {
 	--padding-layout: 15px;
@@ -52,7 +52,8 @@
 	--color-folders: #ffc92a;
 }
 
-:root {
+:root,
+html[data-theme='light'] {
 	--radius: 0.625rem;
 	--background: oklch(0.985 0.004 255);
 	--foreground: oklch(0.285 0.022 260);
@@ -79,7 +80,7 @@
 	--chart-5: oklch(0.769 0.188 70.08);
 }
 
-.dark {
+html[data-theme='dark'] {
 	--background: #242424;
 	--foreground: #d6d6d6;
 	--card: #343434;
@@ -106,6 +107,13 @@
 }
 
 @layer base {
+	html.theme-changing,
+	html.theme-changing *,
+	html.theme-changing *::before,
+	html.theme-changing *::after {
+		transition: none !important;
+	}
+
 	* {
 		@apply border-border outline-ring/50;
 	}

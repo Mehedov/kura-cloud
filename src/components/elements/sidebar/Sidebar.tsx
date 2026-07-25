@@ -72,7 +72,7 @@ export function Sidebar() {
 			)}
 			<aside
 				className={cn(
-					'fixed inset-y-0 left-0 z-40 flex h-full shrink-0 flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-layout shadow-xl transition-all duration-200 lg:static lg:z-auto lg:translate-x-0 lg:shadow-none',
+					'fixed inset-y-0 left-0 z-40 flex h-full shrink-0 flex-col overflow-y-auto border-r border-sidebar-border bg-sidebar p-layout shadow-xl transition-[transform,width] duration-200 lg:static lg:z-auto lg:translate-x-0 lg:shadow-none',
 					isSidebarOpen ? 'translate-x-0' : '-translate-x-full',
 					isSidebarCollapsed ? 'w-18' : 'w-72',
 				)}
