@@ -7,6 +7,7 @@ import {
 	IFolderItemsResponse,
 	IFolderSummary,
 	ISuggestedFoldersResponse,
+	ITrashResponse,
 } from '@/types/folder.type'
 import type { AxiosResponse } from 'axios'
 
@@ -61,3 +62,11 @@ export const hardDeleteFolder = (payload: IDeleteFolder) => {
 		throw e
 	}
 }
+
+export const moveToTrash = (payload: IDeleteFolder) =>
+	$api.delete('/storage/delete', { data: payload })
+
+export const getTrash = () => $api.get<ITrashResponse>('/storage/trash')
+
+export const restoreFromTrash = (payload: IDeleteFolder) =>
+	$api.post('/storage/restore', payload)

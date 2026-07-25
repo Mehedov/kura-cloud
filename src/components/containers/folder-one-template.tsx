@@ -25,11 +25,14 @@ import {
 	ChevronLeft,
 	File as FileIcon,
 	Filter,
+	FolderPlus,
 	RefreshCw,
+	UploadCloud,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
 import { useMemo, useState } from 'react'
+import useDropzoneStore from '@/store/store'
 import { Button } from '../ui/button/Button'
 
 type ViewMode = 'menu' | 'grid'
@@ -43,6 +46,9 @@ const FILTER_LABELS = {
 
 export function FolderOneTemplate() {
 	const [viewMode, setViewMode] = useState<ViewMode>('grid')
+	const { setIsOpenCreateFolder, setIsOpenDropzone } = useDropzoneStore(
+		state => state,
+	)
 	const {
 		filters,
 		hasActiveFilters,
@@ -134,7 +140,19 @@ export function FolderOneTemplate() {
 						</Button>
 					)}
 				</div>
-				<div className='flex items-center gap-2'>
+				<div className='flex flex-wrap items-center gap-2'>
+					<Button
+						variant='secondary'
+						onClick={() => setIsOpenDropzone(true)}
+					>
+						<UploadCloud size={18} /> Загрузить
+					</Button>
+					<Button
+						variant='secondary'
+						onClick={() => setIsOpenCreateFolder(true)}
+					>
+						<FolderPlus size={18} /> Создать папку
+					</Button>
 					<ListingType activeBtn={viewMode} setActiveBtn={setViewMode} />
 				</div>
 			</div>

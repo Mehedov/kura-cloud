@@ -75,3 +75,8 @@ export interface IFolderItemsResponse {
 		totalPages: number
 	}
 }
+
+export interface ITrashResponse {
+	folders: IFolderSummary[]
+	files: IStorageFile[]
+}

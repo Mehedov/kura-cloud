@@ -6,7 +6,7 @@ import {
 } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
-import { hardDeleteFolder } from '@/services/folder.service'
+import { moveToTrash } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DownloadCloudIcon, FolderInput, SquarePen, Trash2 } from 'lucide-react'
@@ -68,9 +68,11 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 		const itemHref = `${pathname}/${id}`
 
 		const deleteFolder = useMutation({
-			mutationFn: hardDeleteFolder,
+			mutationFn: moveToTrash,
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.all })
+				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.root })
+				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.files })
 				queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
 			},
 		})

@@ -48,7 +48,7 @@ export function Sidebar() {
 		},
 		{
 			href: '/basket',
-			label: 'Delete files',
+			label: 'Корзина',
 			icon: Trash2Icon,
 		},
 		{

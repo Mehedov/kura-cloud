@@ -8,7 +8,8 @@ import { Button } from '@/components/ui/button/Button'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { createFolder } from '@/services/folder.service'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
-import {  useState } from 'react'
+import { useParams } from 'next/navigation'
+import { useState } from 'react'
 export default function CreateFolder() {
 	const queryClient = useQueryClient()
 
@@ -16,10 +17,13 @@ export default function CreateFolder() {
 		state => state,
 	)
 	const [name, setName] = useState('')
+	const params = useParams<{ folderId?: string }>()
 	const onCreateFolder = useMutation({
 		mutationFn: createFolder,
 		onSuccess: () => {
 			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.all })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.root })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.files })
 			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
 			setIsOpenCreateFolder(false)
 			setName('')
@@ -28,7 +32,7 @@ export default function CreateFolder() {
 
 	const handleCreate = () => {
 		if (name.trim()) {
-			onCreateFolder.mutate({ name })
+			onCreateFolder.mutate({ name: name.trim(), parentId: params.folderId })
 		}
 	}
 	if (!isOpenCreateFolder) return null

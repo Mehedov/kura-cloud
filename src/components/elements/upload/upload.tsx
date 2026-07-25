@@ -12,12 +12,15 @@ import { upload } from '@/services/upload.service'
 import { useQueryClient } from '@tanstack/react-query'
 import { Button } from '@/components/ui/button/Button'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { useParams } from 'next/navigation'
 
 const Upload = () => {
 	const [selectFolderId, setSelectFolderId] = useState('')
 	const { isOpenDropzone, setIsOpenDropzone } = useDropzoneStore(state => state)
 	const [uploadFiles, setUploadFiles] = useState<File[]>([])
 	const queryClient = useQueryClient()
+	const params = useParams<{ folderId?: string }>()
+	const targetFolderId = selectFolderId || params.folderId || ''
 
 	const dragCounter = useRef(0)
 
@@ -27,14 +30,15 @@ const Upload = () => {
 		dragCounter.current = 0
 	}
 	const handleUpload = async () => {
-		if (!selectFolderId || uploadFiles.length === 0) return
+		if (!targetFolderId || uploadFiles.length === 0) return
 
 		try {
-			await upload(uploadFiles, selectFolderId)
+			await upload(uploadFiles, targetFolderId)
 
 			setSelectFolderId('')
 			setUploadFiles([])
 			setIsOpenDropzone(false)
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.root })
 			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.files })
 			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
 		} catch (error) {
@@ -123,12 +127,12 @@ const Upload = () => {
 							</div>
 
 							<UploadFolderSelect
-								selectFolderId={selectFolderId}
+								selectFolderId={targetFolderId}
 								setSelectFolderId={setSelectFolderId}
 							/>
 						</div>
 					)}
-					{uploadFiles && selectFolderId !== '' && (
+					{uploadFiles.length > 0 && targetFolderId !== '' && (
 						<Button onClick={handleUpload} className='w-full mt-5'>
 							Загрузить
 						</Button>

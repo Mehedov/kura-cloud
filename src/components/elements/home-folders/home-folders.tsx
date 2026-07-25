@@ -1,6 +1,6 @@
 import { PAGES } from '@/config/page.config'
 import { FolderGrid } from '../folder/folder'
-import { getMyFolders } from '@/services/folder.service'
+import { getFolderItems } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
 import Link from 'next/link'
@@ -12,13 +12,22 @@ import {
 
 export default function HomeFolders() {
 	const { data, isPending, isError, error, refetch } = useQuery({
-		queryKey: FOLDER_KEYS.all,
-		queryFn: getMyFolders,
+		queryKey: FOLDER_KEYS.root,
+		queryFn: () =>
+			getFolderItems('root', {
+				kind: 'folders',
+				sort: 'name',
+				order: 'asc',
+				page: 1,
+				limit: 10,
+			}),
 	})
 
-	const folders = data?.data || []
+	const folders = (data?.data.items ?? []).filter(
+		item => item.kind === 'folder',
+	)
 
-	const foldersRender = folders.slice(0, 10).map(folder => (
+	const foldersRender = folders.map(folder => (
 		<FolderGrid
 			id={folder.id}
 			name={folder.name}
@@ -46,7 +55,7 @@ export default function HomeFolders() {
 					href='/folders'
 					className='text-md text-foreground font-medium mb-4 duration-200 ease-in-out hover:text-foreground'
 				>
-					Folders {folders.length > 10 && `more ${folders.length - 10}...`}
+					Folders {data?.data.pagination.total && data.data.pagination.total > 10 && `more ${data.data.pagination.total - 10}...`}
 				</Link>
 			</h2>
 			<div className='flex items-start flex-wrap gap-4'>{foldersRender}</div>

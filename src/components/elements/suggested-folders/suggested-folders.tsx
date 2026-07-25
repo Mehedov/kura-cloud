@@ -45,10 +45,7 @@ export default function SuggestedFolders() {
 					{folders.map(folder => (
 						<Link
 							key={folder.id}
-							href={{
-								pathname: `${PAGES.folders}/${folder.name}`,
-								query: { id: folder.id },
-							}}
+							href={`${PAGES.folders}/${folder.id}`}
 							className='flex w-full flex-col items-center justify-center rounded-lg border border-border bg-muted p-5 transition-colors hover:bg-muted'
 						>
 							<FolderIcon size={150} />

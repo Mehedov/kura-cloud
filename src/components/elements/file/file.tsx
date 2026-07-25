@@ -5,7 +5,7 @@ import {
 } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { getDownloadUrl } from '@/services/file.service'
-import { hardDeleteFolder } from '@/services/folder.service'
+import { moveToTrash } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
@@ -79,9 +79,11 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 		})
 
 		const deleteFile = useMutation({
-			mutationFn: hardDeleteFolder,
+			mutationFn: moveToTrash,
 			onSuccess: () => {
 				queryClient.invalidateQueries({ queryKey: ['FILES'] })
+				queryClient.invalidateQueries({ queryKey: ['home-folders'] })
+				queryClient.invalidateQueries({ queryKey: ['root-folders'] })
 			},
 		})
 
