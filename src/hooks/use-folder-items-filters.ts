@@ -12,14 +12,23 @@ import { useMemo } from 'react'
 
 type NavigationMode = 'push' | 'replace'
 
-export function useFolderItemsFilters() {
+interface UseFolderItemsFiltersOptions {
+	enableType?: boolean
+}
+
+export function useFolderItemsFilters({
+	enableType = true,
+}: UseFolderItemsFiltersOptions = {}) {
 	const router = useRouter()
 	const pathname = usePathname()
 	const searchParams = useSearchParams()
-	const filters = useMemo(
-		() => parseFolderItemsFilters(searchParams),
-		[searchParams],
-	)
+	const filters = useMemo(() => {
+		const parsedFilters = parseFolderItemsFilters(searchParams)
+		return {
+			...parsedFilters,
+			type: enableType ? parsedFilters.type : ('all' as const),
+		}
+	}, [enableType, searchParams])
 	const navigate = (
 		nextFilters: FolderItemsFilters,
 		mode: NavigationMode = 'push',

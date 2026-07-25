@@ -52,6 +52,7 @@ export type FolderItemsOrder = 'asc' | 'desc'
 export type FolderItemsType = 'photo' | 'video' | 'document' | 'other'
 
 export interface IFolderItemsParams {
+	kind?: 'folders' | 'files'
 	sort?: FolderItemsSort
 	order?: FolderItemsOrder
 	type?: FolderItemsType
