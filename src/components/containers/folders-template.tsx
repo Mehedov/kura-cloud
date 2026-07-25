@@ -11,6 +11,7 @@ import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
 
 export function FoldersTemplate() {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
+	const [sortBy, setSortBy] = useState<'name' | 'updatedAt'>('name')
 
 	return (
 		<section className='relative h-full flex flex-col'>
@@ -19,28 +20,27 @@ export function FoldersTemplate() {
 			</div>
 			<div className='flex items-center justify-between mb-3'>
 				<div className='flex items-center gap-3'>
-					<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100'>
-						Люди <ChevronDown size={15} />
-					</button>
-
 					<Popover>
 						<PopoverTrigger>
 							<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100 font-normal'>
-								По названию <ChevronDown size={15} />
+								{sortBy === 'name' ? 'По названию' : 'По дате'} <ChevronDown size={15} />
 							</button>
 						</PopoverTrigger>
 						<PopoverContent className='w-45 '>
 							<div className='flex flex-col gap-3 items-start w-full'>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<button
+									onClick={() => setSortBy('name')}
+									className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'
+								>
 									<Check size={20} className='text-foreground' /> Названию
-								</div>
+								</button>
 
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									Размеру
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
+								<button
+									onClick={() => setSortBy('updatedAt')}
+									className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'
+								>
 									Дате изменения
-								</div>
+								</button>
 							</div>
 						</PopoverContent>
 					</Popover>
@@ -49,7 +49,7 @@ export function FoldersTemplate() {
 				<ListingType activeBtn={activeBtn} setActiveBtn={setActiveBtn} />
 			</div>
 			<div className='flex-1 overflow-auto'>
-				<FolderList activeBtn={activeBtn} />
+				<FolderList activeBtn={activeBtn} sortBy={sortBy} />
 			</div>
 		</section>
 	)

@@ -1,218 +1,257 @@
 'use client'
 
-import {
-	Check,
-	ChevronDown,
-	File,
-	FileImage,
-	FilePen,
-	FilePlay,
-	FileText,
-	TextAlignStart,
-} from 'lucide-react'
-import { useState } from 'react'
-import { ListingType } from '../ui/ListingType'
-import { Popover } from '../ui/popover/popover'
-import { PopoverContent } from '../ui/popover/popover-content'
-import { PopoverTrigger } from '../ui/popover/popover-trigger'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
-import { useSearchParams } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
-import { getFolderContent } from '@/services/folder.service'
-import { FileGrid } from '../elements/file/file'
-import { BreadcrumbBasic } from '../ui/breadcrumbs/breadcrumb'
+import { FileGrid } from '@/components/elements/file/file'
+import { FolderBrowserSearch } from '@/components/elements/folder-browser/folder-browser-search'
+import { FolderGrid } from '@/components/elements/folder/folder'
+import { ListingType } from '@/components/ui/ListingType'
+import { BreadcrumbBasic } from '@/components/ui/breadcrumbs/breadcrumb'
 import {
 	EmptyState,
 	ErrorState,
 	LoadingState,
-} from '../ui/states/async-state'
+	NoResultsState,
+	ResourceNotFoundState,
+} from '@/components/ui/states/async-state'
+import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { getFolderItems } from '@/services/folder.service'
+import { useFolderItemsFilters } from '@/hooks/use-folder-items-filters'
+import type { IFolderItemsParams } from '@/types/folder.type'
+import { formatBytes } from '@/utils/formatBytes.util'
+import { formatDate } from '@/utils/formatDate.util'
+import { getHttpStatus } from '@/utils/getHttpStatus.util'
+import { useQuery } from '@tanstack/react-query'
+import {
+	ChevronLeft,
+	File as FileIcon,
+	Filter,
+	RefreshCw,
+} from 'lucide-react'
+import Link from 'next/link'
+import { useParams } from 'next/navigation'
+import { useMemo, useState } from 'react'
+import { Button } from '../ui/button/Button'
+
+type ViewMode = 'menu' | 'grid'
+const FILTER_LABELS = {
+	all: 'Все файлы',
+	photo: 'Изображения',
+	video: 'Видео',
+	document: 'Документы',
+	other: 'Остальные',
+} as const
 
 export function FolderOneTemplate() {
-	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
-	const searchParams = useSearchParams()
-	const folderId = searchParams.get('id')
+	const [viewMode, setViewMode] = useState<ViewMode>('grid')
 	const {
-		data: folderContent,
-		isPending,
-		isError,
-		error,
-		refetch,
-	} = useQuery({
-		queryKey: ['FILES', folderId],
-		queryFn: () => getFolderContent(folderId ?? ''),
-		enabled: !!folderId,
+		filters,
+		hasActiveFilters,
+		resetFilters,
+		setPage,
+		setSearch,
+		setSort,
+		setType,
+	} = useFolderItemsFilters()
+	const params = useParams<{ folderId: string }>()
+	const folderId = params.folderId
+	const queryParams = useMemo<IFolderItemsParams>(
+		() => ({
+			sort: filters.sort,
+			order: filters.order,
+			type: filters.type === 'all' ? undefined : filters.type,
+			q: filters.q || undefined,
+			page: filters.page,
+			limit: 50,
+		}),
+		[filters],
+	)
+
+	const { data, isPending, isError, error, refetch } = useQuery({
+		queryKey: [...FOLDER_KEYS.files, folderId, queryParams],
+		queryFn: () => getFolderItems(folderId, queryParams),
+		enabled: Boolean(folderId),
 	})
 
-	const files = folderContent?.data.files ?? []
-	const fileCards = files.map(file => (
-		<FileGrid
-			name={file.name}
-			id={file.id}
-			key={file.id}
-			imagePreview={file.thumbnailUrl}
-		/>
-	))
+	const response = data?.data
+	const items = response?.items ?? []
+	const folders = items.filter(item => item.kind === 'folder')
+	const files = items.filter(item => item.kind === 'file')
 
-	if (!folderId)
-		return (
-			<EmptyState
-				title='Папка не выбрана'
-				description='Вернитесь к списку папок и выберите нужную.'
-			/>
-		)
-	if (isPending) return <LoadingState title='Загружаем содержимое папки' />
-	if (isError)
-		return <ErrorState description={error.message} onRetry={() => void refetch()} />
-	if (files.length === 0)
-		return (
-			<EmptyState
-				title='В этой папке пока нет файлов'
-				description='Загрузите файл, чтобы он появился здесь.'
-			/>
-		)
-
+	if (!folderId) {
+		return <EmptyState title='Папка не выбрана' />
+	}
 	return (
-		<section className='h-full flex flex-col'>
-			<div className='flex items-center justify-between mb-5'>
+		<section className='flex h-full min-w-0 flex-col'>
+			<div className='mb-5 flex items-center justify-between'>
 				<BreadcrumbBasic />
+				<Link
+					href='/folders'
+					className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground'
+				>
+					<ChevronLeft size={16} /> Все папки
+				</Link>
 			</div>
-			<div className='flex justify-between items-center mb-2'>
-				<div className='flex gap-2 items-center'>
-					<Popover>
-						<PopoverTrigger>
-							<button className='w-40 flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100 font-normal'>
-								По названию <ChevronDown size={15} />
-							</button>
-						</PopoverTrigger>
-						<PopoverContent className='w-45 '>
-							<div className='flex flex-col gap-3 items-start w-full'>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<Check size={20} className='text-foreground' /> Названию
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									Типу
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									Размеру
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									Дате изменения
-								</div>
-							</div>
-						</PopoverContent>
-					</Popover>
-					<Popover>
-						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100 font-normal'>
-								Люди <ChevronDown size={15} />
-							</button>
-						</PopoverTrigger>
-						<PopoverContent className='w-60 '>
-							<div className='grid gap-4'>
-								<div className='space-y-2'>
-									<h4 className='leading-none font-medium'>Dimensions</h4>
-									<p className='text-muted-foreground text-sm'>
-										Set the dimensions for the layer.
-									</p>
-								</div>
-								<div className='grid gap-2'>
-									<div className='grid grid-cols-3 items-center gap-4'></div>
-									<div className='grid grid-cols-3 items-center gap-4'></div>
-									<div className='grid grid-cols-3 items-center gap-4'></div>
-									<div className='grid grid-cols-3 items-center gap-4'></div>
-								</div>
-							</div>
-						</PopoverContent>
-					</Popover>
-					<Popover>
-						<PopoverTrigger>
-							<button className='flex items-center gap-2 border border-border rounded-lg px-4 py-1 cursor-pointer hover:bg-muted duration-100 font-normal'>
-								<File size={18} className='text-foreground' />
-								Тип <ChevronDown size={15} />
-							</button>
-						</PopoverTrigger>
-						<PopoverContent className='w-45 '>
-							<div className='flex flex-col gap-3 items-start w-full'>
-								<div className='flex justify-between items-center bg-muted  hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<div className='flex items-center gap-2'>
-										<FolderIcon size={20} color='#525252' /> Папки
-									</div>
-									<Check size={20} className='text-foreground' />
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<FileImage size={20} className='text-red-600' />
-									Изображения
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<FileText size={20} className='text-red-600' />
-									Файлы PDF
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<File size={20} className='text-foreground' />
-									Файлы
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<FilePlay size={20} className='text-green-600' /> Видео
-								</div>
-								<div className='flex justify-start items-center gap-2 hover:bg-muted w-full cursor-pointer px-2 py-1 rounded-lg text-sm'>
-									<FilePen size={20} className='text-blue-600' />
-									Документы
-								</div>
-							</div>
-						</PopoverContent>
-					</Popover>
-				</div>
 
-				<ListingType activeBtn={activeBtn} setActiveBtn={setActiveBtn} />
+			<div className='mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+				<div className='flex flex-wrap items-center gap-2'>
+					<FolderBrowserSearch
+						key={filters.q}
+						initialValue={filters.q}
+						onSearch={setSearch}
+					/>
+					<label className='flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm'>
+						<Filter size={16} className='text-muted-foreground' />
+						<select
+							value={filters.type}
+							onChange={event => setType(event.target.value as keyof typeof FILTER_LABELS)}
+							className='bg-transparent text-foreground outline-none'
+						>
+							{Object.entries(FILTER_LABELS).map(([value, label]) => (
+								<option key={value} value={value}>
+									{label}
+								</option>
+							))}
+						</select>
+					</label>
+					<select
+						value={filters.sort}
+						onChange={event => setSort(event.target.value as typeof filters.sort)}
+						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
+					>
+						<option value='name'>По названию</option>
+						<option value='updatedAt'>По дате изменения</option>
+						<option value='size'>По размеру</option>
+					</select>
+					{hasActiveFilters && (
+						<Button
+							className='px-3'
+							variant='secondary'
+							onClick={resetFilters}
+							aria-label='Сбросить фильтры'
+							title='Сбросить фильтры'
+						>
+							<RefreshCw size={16} />
+						</Button>
+					)}
+				</div>
+				<div className='flex items-center gap-2'>
+					<ListingType activeBtn={viewMode} setActiveBtn={setViewMode} />
+				</div>
 			</div>
-			{activeBtn === 'menu' ? (
-				<div className='flex flex-col'>
-					<div className='w-full border-b border-border p-3 flex'>
-						<div className='w-[40%] font-normal'>Название</div>
-						<div className='w-[20%] font-normal'>Владелец</div>
-						<div className='w-[15%] font-normal'>Дата изменения</div>
-						<div className='w-[15%] font-normal'>Размер</div>
-						<div className='w-[10%]'>
-							<Popover>
-								<PopoverTrigger>
-									<button className='flex items-center gap-2 cursor-pointer font-normal'>
-										<TextAlignStart />
-										Сортировка
-									</button>
-								</PopoverTrigger>
-								<PopoverContent className='w-60  right-0'>
-									<div className='grid gap-4'>
-										<div className='space-y-2'>
-											<h4 className='leading-none font-medium'>Dimensions</h4>
-											<p className='text-muted-foreground text-sm'>
-												Set the dimensions for the layer.
-											</p>
-										</div>
-										<div className='grid gap-2'>
-											<div className='grid grid-cols-3 items-center gap-4'></div>
-											<div className='grid grid-cols-3 items-center gap-4'></div>
-											<div className='grid grid-cols-3 items-center gap-4'></div>
-											<div className='grid grid-cols-3 items-center gap-4'></div>
-										</div>
-									</div>
-								</PopoverContent>
-							</Popover>
+
+			{isPending ? (
+				<LoadingState title='Загружаем содержимое папки' />
+			) : isError && getHttpStatus(error) === 404 ? (
+				<ResourceNotFoundState
+					title='Папка не найдена'
+					description='Возможно, она была удалена или у вас больше нет к ней доступа.'
+				/>
+			) : isError ? (
+				<ErrorState
+					description={error.message}
+					onRetry={() => void refetch()}
+				/>
+			) : items.length === 0 && hasActiveFilters ? (
+				<NoResultsState
+					description='По текущему поиску и фильтрам файлов не найдено.'
+				/>
+			) : items.length === 0 ? (
+				<EmptyState
+					title='Папка пока пуста'
+					description='Загрузите файл или создайте вложенную папку.'
+				/>
+			) : viewMode === 'grid' ? (
+				<div className='grid grid-cols-[repeat(auto-fill,minmax(100px,1fr))] gap-5 py-3'>
+					{folders.map(folder => (
+						<FolderGrid
+							key={folder.id}
+							id={folder.id}
+							name={folder.name}
+							pathname='/folders'
+							size={90}
+						/>
+					))}
+					{files.map(file => (
+						<FileGrid
+							key={file.id}
+							id={file.id}
+							name={file.name}
+							imagePreview={file.thumbnailUrl}
+						/>
+					))}
+				</div>
+			) : (
+				<div className='overflow-x-auto rounded-xl border border-border'>
+					<div className='min-w-160 divide-y divide-border text-sm'>
+						<div className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_7rem] bg-muted px-4 py-3 font-medium text-muted-foreground'>
+							<span>Название</span>
+							<span>Тип</span>
+							<span>Изменено</span>
+							<span>Размер</span>
 						</div>
-					</div>
-					<div className='flex w-full flex-col'>
+						{folders.map(folder => (
+							<Link
+								key={folder.id}
+								href={`/folders/${folder.id}`}
+								className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_7rem] items-center px-4 py-3 hover:bg-accent'
+							>
+								<span className='flex items-center gap-3 font-medium'>
+									<FolderIcon size={24} />
+									{folder.name}
+								</span>
+								<span className='text-muted-foreground'>Папка</span>
+								<span className='text-muted-foreground'>
+									{formatDate(folder.updatedAt)}
+								</span>
+								<span className='text-muted-foreground'>—</span>
+							</Link>
+						))}
 						{files.map(file => (
 							<div
 								key={file.id}
-								className='flex items-center border-b border-border px-3 py-2 text-sm'
+								className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_7rem] items-center px-4 py-3 hover:bg-accent'
 							>
-								{file.name}
+								<span className='flex min-w-0 items-center gap-3 font-medium'>
+									<FileIcon
+										size={22}
+										className='shrink-0 text-muted-foreground'
+									/>
+									<span className='truncate'>{file.name}</span>
+								</span>
+								<span className='capitalize text-muted-foreground'>
+									{file.type}
+								</span>
+								<span className='text-muted-foreground'>
+									{formatDate(file.updatedAt)}
+								</span>
+								<span className='text-muted-foreground'>
+									{formatBytes(file.size)}
+								</span>
 							</div>
 						))}
 					</div>
 				</div>
-			) : (
-				<div className='flex items-start gap-6 flex-wrap mt-5'>
-					{fileCards}
+			)}
+
+			{response && response.pagination.totalPages > 1 && (
+				<div className='mt-5 flex items-center justify-end gap-3 text-sm'>
+					<button
+						disabled={filters.page === 1}
+						onClick={() => setPage(filters.page - 1)}
+						className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
+					>
+						Назад
+					</button>
+					<span className='text-muted-foreground'>
+						{filters.page} / {response.pagination.totalPages}
+					</span>
+					<button
+						disabled={filters.page >= response.pagination.totalPages}
+						onClick={() => setPage(filters.page + 1)}
+						className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
+					>
+						Вперёд
+					</button>
 				</div>
 			)}
 		</section>

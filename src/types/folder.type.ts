@@ -46,3 +46,31 @@ export interface IFolderContent {
 	files: IStorageFile[]
 	folders: IFolderSummary[]
 }
+
+export type FolderItemsSort = 'name' | 'updatedAt' | 'size'
+export type FolderItemsOrder = 'asc' | 'desc'
+export type FolderItemsType = 'photo' | 'video' | 'document' | 'other'
+
+export interface IFolderItemsParams {
+	sort?: FolderItemsSort
+	order?: FolderItemsOrder
+	type?: FolderItemsType
+	q?: string
+	page?: number
+	limit?: number
+}
+
+export type IFolderItem =
+	| (IFolderSummary & { kind: 'folder' })
+	| (IStorageFile & { kind: 'file' })
+
+export interface IFolderItemsResponse {
+	folder: Pick<IFolderSummary, 'id' | 'name' | 'parentId'> | null
+	items: IFolderItem[]
+	pagination: {
+		page: number
+		limit: number
+		total: number
+		totalPages: number
+	}
+}

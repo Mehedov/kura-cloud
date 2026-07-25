@@ -3,6 +3,8 @@ import {
 	ICreateFolder,
 	IDeleteFolder,
 	IFolderContent,
+	IFolderItemsParams,
+	IFolderItemsResponse,
 	IFolderSummary,
 	ISuggestedFoldersResponse,
 } from '@/types/folder.type'
@@ -44,6 +46,12 @@ export const getFolderContent = (
 		throw e
 	}
 }
+
+export const getFolderItems = (
+	folderId: string,
+	params: IFolderItemsParams,
+): Promise<AxiosResponse<IFolderItemsResponse>> =>
+	$api.get(`/storage/folders/${folderId}/items`, { params })
 
 export const hardDeleteFolder = (payload: IDeleteFolder) => {
 	try {

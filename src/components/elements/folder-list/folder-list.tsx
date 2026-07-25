@@ -1,6 +1,6 @@
 import { FolderGrid, FolderLine } from '@/components/elements/folder/folder'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
-import { getMyFolders } from '@/services/folder.service'
+import { getFolderItems } from '@/services/folder.service'
 import { useQuery } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import {
@@ -11,15 +11,23 @@ import {
 
 interface Props {
 	activeBtn?: 'menu' | 'grid'
+	sortBy: 'name' | 'updatedAt'
 }
 
-export function FolderList({ activeBtn }: Props) {
+export function FolderList({ activeBtn, sortBy }: Props) {
 	const { data, isPending, isError, error, refetch } = useQuery({
-		queryKey: FOLDER_KEYS.all,
-		queryFn: getMyFolders,
+		queryKey: [...FOLDER_KEYS.all, sortBy],
+		queryFn: () =>
+			getFolderItems('root', {
+				sort: sortBy,
+				order: sortBy === 'updatedAt' ? 'desc' : 'asc',
+				limit: 100,
+			}),
 	})
 
-	const folders = data?.data || []
+	const folders = (data?.data.items ?? []).filter(
+		item => item.kind === 'folder',
+	)
 	const pathname = usePathname()
 
 	const renderFoldersTypeMenu = () => {
@@ -29,6 +37,7 @@ export function FolderList({ activeBtn }: Props) {
 				name={folder.name}
 				key={folder.id}
 				id={folder.id}
+				updatedAt={folder.updatedAt}
 			/>
 		))
 	}

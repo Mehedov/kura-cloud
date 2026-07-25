@@ -19,6 +19,7 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	name: string
 	size?: number
 	id: string
+	updatedAt?: string
 	context?: PopoverContextProps | undefined
 }
 
@@ -64,10 +65,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 	) => {
 		const queryClient = useQueryClient()
 		const itemSize = size || 100
-		const itemHref = {
-			pathname: `${pathname}/${name}`,
-			query: { id },
-		} as const
+		const itemHref = `${pathname}/${id}`
 
 		const deleteFolder = useMutation({
 			mutationFn: hardDeleteFolder,
@@ -130,14 +128,13 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 			className,
 			pathname,
 			name,
+			id,
+			updatedAt,
 			...props
 		},
 		ref,
 	) => {
-		const slug = name
-			.toLowerCase()
-			.replace(/\s+/g, '-')
-			.replace(/[^a-z0-9-]/g, '')
+		const itemHref = `${pathname}/${id}`
 
 		return (
 			<Popover className='w-full'>
@@ -146,7 +143,7 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 						<>
 							<Link
 								ref={ref}
-								href={`${pathname}/${slug}`}
+								href={itemHref}
 								onContextMenu={e => {
 									e.preventDefault()
 									context?.setCoords({ x: e.clientX, y: e.clientY })
@@ -163,9 +160,15 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									<span className='line-clamp-1 text-sm'>{name}</span>
 								</div>
 								<span className='w-[20%] text-sm text-muted-foreground'>
-									20.02.2025
+									{updatedAt
+										? new Intl.DateTimeFormat('ru-RU', {
+												day: '2-digit',
+												month: 'short',
+												year: 'numeric',
+											}).format(new Date(updatedAt))
+										: '—'}
 								</span>
-								<span className='w-[20%] text-sm text-muted-foreground'>20 GB</span>
+								<span className='w-[20%] text-sm text-muted-foreground'>Папка</span>
 							</Link>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent />
