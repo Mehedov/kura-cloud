@@ -23,7 +23,15 @@ export interface ISuggestedFoldersResponse {
 
 export interface IDeleteFolder {
 	id: string
-	type: string
+	type: 'folder' | 'file'
+}
+
+export interface IRenameResource extends IDeleteFolder {
+	name: string
+}
+
+export interface IMoveResource extends IDeleteFolder {
+	targetFolderId: string | null
 }
 
 export interface IStorageFile {

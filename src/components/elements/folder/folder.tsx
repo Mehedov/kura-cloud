@@ -6,12 +6,16 @@ import {
 } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { FOLDER_KEYS } from '@/constants/queryKeys'
+import {
+	ResourceActionsDialogs,
+	type ResourceAction,
+} from '@/components/elements/resource-actions/resource-actions-dialogs'
 import { moveToTrash } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { DownloadCloudIcon, FolderInput, SquarePen, Trash2 } from 'lucide-react'
 import Link from 'next/link'
-import React, { forwardRef, memo } from 'react'
+import React, { forwardRef, memo, useState } from 'react'
 
 export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	pathname?: string
@@ -26,16 +30,24 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 export const ContextMenuContent: React.FC<{
 	onDelete?: (itemId: string) => void
 	itemId?: string
-}> = memo(({ onDelete, itemId }) => (
+	onRename?: () => void
+	onMove?: () => void
+}> = memo(({ onDelete, itemId, onRename, onMove }) => (
 	<div className='flex flex-col text-sm'>
 		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'>
 			<DownloadCloudIcon size={20} /> Скачать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'>
+		<button
+			className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+			onClick={onRename}
+		>
 			<SquarePen size={20} />
 			Переименовать
 		</button>
-		<button className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'>
+		<button
+			className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+			onClick={onMove}
+		>
 			<FolderInput size={20} /> Переместить
 		</button>
 		{onDelete && itemId ? (
@@ -64,6 +76,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 		ref,
 	) => {
 		const queryClient = useQueryClient()
+		const [action, setAction] = useState<ResourceAction>(null)
 		const itemSize = size || 100
 		const itemHref = `${pathname}/${id}`
 
@@ -112,8 +125,17 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								<ContextMenuContent
 									itemId={id}
 									onDelete={onDeleteFolder}
+									onRename={() => setAction('rename')}
+									onMove={() => setAction('move')}
 								/>
 							</PopoverContent>
+							<ResourceActionsDialogs
+								id={id}
+								type='folder'
+								name={name}
+								action={action}
+								onClose={() => setAction(null)}
+							/>
 						</>
 					)}
 				</PopoverContext.Consumer>
@@ -137,6 +159,7 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 		ref,
 	) => {
 		const itemHref = `${pathname}/${id}`
+		const [action, setAction] = useState<ResourceAction>(null)
 
 		return (
 			<Popover className='w-full'>
@@ -173,8 +196,18 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 								<span className='w-[20%] text-sm text-muted-foreground'>Папка</span>
 							</Link>
 							<PopoverContent isContextMenu>
-								<ContextMenuContent />
+								<ContextMenuContent
+									onRename={() => setAction('rename')}
+									onMove={() => setAction('move')}
+								/>
 							</PopoverContent>
+							<ResourceActionsDialogs
+								id={id}
+								type='folder'
+								name={name}
+								action={action}
+								onClose={() => setAction(null)}
+							/>
 						</>
 					)}
 				</PopoverContext.Consumer>

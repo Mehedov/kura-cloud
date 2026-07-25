@@ -5,6 +5,10 @@ import {
 } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { getDownloadUrl } from '@/services/file.service'
+import {
+	ResourceActionsDialogs,
+	type ResourceAction,
+} from '@/components/elements/resource-actions/resource-actions-dialogs'
 import { moveToTrash } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -18,7 +22,7 @@ import {
 	Trash2,
 	File as FileIcon,
 } from 'lucide-react'
-import React, { forwardRef, memo } from 'react'
+import React, { forwardRef, memo, useState } from 'react'
 import Image from 'next/image'
 
 export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
@@ -31,10 +35,12 @@ export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
 interface ContextMenuContentProps {
 	onDelete?: () => void
 	downloadUrl?: string
+	onRename?: () => void
+	onMove?: () => void
 }
 
 export const ContextMenuContent = memo(
-	({ onDelete, downloadUrl }: ContextMenuContentProps) => (
+	({ onDelete, downloadUrl, onRename, onMove }: ContextMenuContentProps) => (
 		<div className='flex flex-col text-sm'>
 			<button className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-muted rounded'>
 				<DownloadCloudIcon size={20} /> Просмотреть
@@ -47,11 +53,17 @@ export const ContextMenuContent = memo(
 					<DownloadCloudIcon size={20} /> Скачать
 				</a>
 			) : null}
-			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'>
+			<button
+				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+				onClick={onRename}
+			>
 				<SquarePen size={20} />
 				Переименовать
 			</button>
-			<button className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'>
+			<button
+				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+				onClick={onMove}
+			>
 				<FolderInput size={20} /> Переместить
 			</button>
 			<button
@@ -69,6 +81,7 @@ ContextMenuContent.displayName = 'ContextMenuContent'
 export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 	({ className, name, id, imagePreview, ...props }, ref) => {
 		const queryClient = useQueryClient()
+		const [action, setAction] = useState<ResourceAction>(null)
 
 		const fileId = id
 
@@ -140,8 +153,17 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 								<ContextMenuContent
 									onDelete={onDeleteFile}
 									downloadUrl={data?.downloadUrl}
+									onRename={() => setAction('rename')}
+									onMove={() => setAction('move')}
 								/>
 							</PopoverContent>
+							<ResourceActionsDialogs
+								id={id}
+								type='file'
+								name={name}
+								action={action}
+								onClose={() => setAction(null)}
+							/>
 						</>
 					)}
 				</PopoverContext.Consumer>

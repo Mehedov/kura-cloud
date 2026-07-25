@@ -6,6 +6,8 @@ import {
 	IFolderItemsParams,
 	IFolderItemsResponse,
 	IFolderSummary,
+	IMoveResource,
+	IRenameResource,
 	ISuggestedFoldersResponse,
 	ITrashResponse,
 } from '@/types/folder.type'
@@ -70,3 +72,9 @@ export const getTrash = () => $api.get<ITrashResponse>('/storage/trash')
 
 export const restoreFromTrash = (payload: IDeleteFolder) =>
 	$api.post('/storage/restore', payload)
+
+export const renameResource = (payload: IRenameResource) =>
+	$api.patch('/storage/rename', payload)
+
+export const moveResource = (payload: IMoveResource) =>
+	$api.patch('/storage/move', payload)
