@@ -1,289 +1,259 @@
 'use client'
 
-import { useState } from 'react'
-
-import Image from 'next/image'
-
-import { Card } from '@/components/ui/Card/card'
+import { EmptyState, ErrorState, LoadingState, NoResultsState } from '@/components/ui/states/async-state'
 import { Button } from '@/components/ui/button/Button'
-import Input from '@/components/ui/input/input'
-import { PHOTOS } from '@/constants/queryKeys'
-import { getPhotos } from '@/services/file.service'
-import { formatBytes } from '@/utils/formatBytes.util'
-import { useQuery } from '@tanstack/react-query'
+import { FolderBrowserSearch } from '@/components/elements/folder-browser/folder-browser-search'
+import { ResourceActionsDialogs } from '@/components/elements/resource-actions/resource-actions-dialogs'
+import ModalContainer from '@/components/elements/modal-container/modal-container'
+import { Card } from '@/components/ui/Card/card'
 import {
-	ArrowUpRight,
-	Camera,
-	Clock3,
-	Grid3X3,
-	ImageIcon,
-	ListFilter,
-	Search,
-	Share2,
-	Sparkles,
-} from 'lucide-react'
+	Popover,
+	PopoverContext,
+} from '@/components/ui/popover/popover'
+import { PopoverContent } from '@/components/ui/popover/popover-content'
+import { PHOTOS } from '@/constants/queryKeys'
+import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { useFolderItemsFilters } from '@/hooks/use-folder-items-filters'
+import { getPhotos, getPreviewUrl } from '@/services/file.service'
+import { moveToTrash } from '@/services/folder.service'
+import type { IFolderItemsParams } from '@/types/folder.type'
+import type { PhotoFileDto } from '@/types/file.type'
+import { formatFileName } from '@/utils/formatFileName.util'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { ExternalLink, ImageIcon, Pencil, RefreshCw, Trash2, X } from 'lucide-react'
+import Image from 'next/image'
+import Link from 'next/link'
+import { useMemo, useState } from 'react'
 
-const PHOTO_COLLECTIONS = [
-	{
-		title: 'UI Explorations',
-		count: '18 photos',
-		accent: 'from-orange-200 via-amber-100 to-white',
-	},
-	{
-		title: 'Dashboard Shots',
-		count: '12 photos',
-		accent: 'from-sky-200 via-cyan-100 to-white',
-	},
-	{
-		title: 'Brand References',
-		count: '9 photos',
-		accent: 'from-emerald-200 via-lime-100 to-white',
-	},
-] as const
-
-const PHOTO_ITEM_BADGES = {
-	Recent: 'bg-sky-100 text-sky-700',
-	Folder: 'bg-muted text-foreground',
-} as const
-
-export default function Photo() {
-	const [searchValue, setSearchValue] = useState('')
-
-	const {
-		data: photos = [],
-		isPending,
-		isError,
-		error,
-	} = useQuery({
-		queryKey: PHOTOS.photos,
-		queryFn: getPhotos,
+export default function PhotosPage() {
+	const queryClient = useQueryClient()
+	const [previewedPhoto, setPreviewedPhoto] = useState<PhotoFileDto | null>(null)
+	const [renamedPhoto, setRenamedPhoto] = useState<PhotoFileDto | null>(null)
+	const { filters, hasActiveFilters, resetFilters, setPage, setSearch, setSort } =
+		useFolderItemsFilters({ enableType: false })
+	const queryParams = useMemo<IFolderItemsParams>(
+		() => ({
+			q: filters.q || undefined,
+			sort: filters.sort,
+			order: filters.order,
+			page: filters.page,
+			limit: 24,
+		}),
+		[filters],
+	)
+	const { data, isPending, isError, error, refetch } = useQuery({
+		queryKey: [...PHOTOS.photos, queryParams],
+		queryFn: () => getPhotos(queryParams),
+	})
+	const { data: originalPreview, isPending: isOriginalPreviewPending } = useQuery({
+		queryKey: ['photo-preview', previewedPhoto?.id],
+		queryFn: () => getPreviewUrl(previewedPhoto!.id),
+		enabled: Boolean(previewedPhoto),
+	})
+	const photos = data?.items ?? []
+	const deletePhoto = useMutation({
+		mutationFn: moveToTrash,
+		onSuccess: () => {
+			queryClient.invalidateQueries({ queryKey: PHOTOS.photos })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.files })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.suggested })
+			queryClient.invalidateQueries({ queryKey: FOLDER_KEYS.storageStats })
+		},
 	})
 
-	const filteredPhotos = photos.filter(photo =>
-		photo.name.toLowerCase().includes(searchValue.toLowerCase()),
-	)
-
-	const storageUsed = photos.reduce(
-		(total, photo) => total + Number(photo.size || 0),
-		0,
-	)
-
-	const metrics = [
-		{
-			label: 'All photos',
-			value: String(photos.length),
-			icon: ImageIcon,
-		},
-		{
-			label: 'Shared',
-			value: String(Math.min(12, Math.max(0, Math.floor(photos.length / 3)))),
-			icon: Share2,
-		},
-	] as const
-
-	if (isPending) {
-		return (
-			<section className='flex w-full flex-col gap-4 pb-6'>
-				<Card className='rounded-[28px] bg-card p-8'>
-					<div className='text-lg font-medium text-foreground'>
-						Loading photo workspace...
-					</div>
-					<div className='mt-2 text-sm text-muted-foreground'>
-						Preparing gallery and visual previews.
-					</div>
-				</Card>
-			</section>
-		)
-	}
-
-	if (isError) {
-		return (
-			<section className='flex w-full flex-col gap-4 pb-6'>
-				<Card className='rounded-[28px] bg-card p-8'>
-					<div className='text-lg font-medium text-foreground'>
-						Failed to load photos
-					</div>
-					<div className='mt-2 text-sm text-muted-foreground'>
-						{error instanceof Error ? error.message : 'Unknown error'}
-					</div>
-				</Card>
-			</section>
-		)
-	}
-
 	return (
-		<section className='flex w-full flex-col gap-8 pb-6'>
-			<section className='relative overflow-hidden rounded-[28px] border border-border bg-linear-to-br from-neutral-900 via-neutral-800 to-neutral-700 px-7 py-7 text-white'>
-					<div className='absolute -top-12 right-10 h-44 w-44 rounded-full bg-white/10 blur-3xl' />
-					<div className='absolute bottom-0 right-0 h-52 w-52 translate-x-16 translate-y-16 rounded-full bg-amber-300/15 blur-3xl' />
+		<section className='flex min-w-0 flex-col gap-5 pb-6'>
+			<div>
+				<h1 className='text-2xl font-semibold text-foreground'>Фото</h1>
+				<p className='mt-1 text-sm text-muted-foreground'>
+					Все изображения из вашего хранилища.
+				</p>
+			</div>
 
-					<div className='relative grid gap-8 lg:grid-cols-[1.25fr_0.9fr] lg:items-end'>
-						<div className='max-w-2xl'>
-							<div className='mb-4 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-sm text-white/85 backdrop-blur-xs'>
-								<Sparkles size={16} />
-								Photo workspace
-							</div>
+			<div className='flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between'>
+				<div className='flex flex-wrap items-center gap-2'>
+					<FolderBrowserSearch
+						key={filters.q}
+						initialValue={filters.q}
+						onSearch={setSearch}
+					/>
+					<select
+						value={filters.sort}
+						onChange={event => setSort(event.target.value as typeof filters.sort)}
+						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
+					>
+						<option value='updatedAt'>По дате изменения</option>
+						<option value='name'>По названию</option>
+						<option value='size'>По размеру</option>
+					</select>
+					{hasActiveFilters && (
+						<Button
+							variant='secondary'
+							className='px-3'
+							onClick={resetFilters}
+							aria-label='Сбросить фильтры'
+							title='Сбросить фильтры'
+						>
+							<RefreshCw size={16} />
+						</Button>
+					)}
+				</div>
+				{data && <p className='text-sm text-muted-foreground'>Всего: {data.pagination.total}</p>}
+			</div>
 
-							<h1 className='text-3xl font-semibold tracking-tight text-white sm:text-4xl'>
-								All your visual references in one clean gallery
-							</h1>
-							<p className='mt-3 max-w-xl text-sm leading-6 text-neutral-300 sm:text-base'>
-								Sort, preview and group key design shots in the same calm
-								workspace language as the rest of Kura Drive.
-							</p>
-
-							<div className='mt-6 flex flex-wrap gap-3'>
-								<Button>
-									<Camera size={18} /> Add photos
-								</Button>
-							</div>
-						</div>
-
-						<div className='grid gap-3 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3'>
-							{PHOTO_COLLECTIONS.map(collection => (
-								<div
-									key={collection.title}
-									className={`rounded-2xl border border-white/10 bg-linear-to-br ${collection.accent} p-4 text-foreground shadow-sm`}
-								>
-									<div className='mb-8 inline-flex rounded-xl bg-card/85 p-2 text-foreground'>
-										<ImageIcon size={18} />
-									</div>
-									<div className='text-sm font-medium'>{collection.title}</div>
-									<div className='mt-1 text-xs text-foreground'>
-										{collection.count}
-									</div>
-								</div>
-							))}
-						</div>
-					</div>
-			</section>
-
-			<section className='grid gap-4 md:grid-cols-2'>
-					{metrics.map(metric => (
-						<Card key={metric.label} className='bg-card p-4'>
-							<div className='flex items-start justify-between'>
-								<div>
-									<p className='text-sm text-muted-foreground'>{metric.label}</p>
-									<p className='mt-2 text-3xl font-semibold text-foreground'>
-										{metric.value}
-									</p>
-								</div>
-								<div className='rounded-2xl bg-muted p-3 text-foreground'>
-									<metric.icon size={18} />
-								</div>
-							</div>
-						</Card>
-					))}
-			</section>
-
-			<section className='flex flex-col gap-4 rounded-[24px] border border-border bg-card p-5 shadow-[0_12px_40px_rgba(23,23,23,0.04)]'>
-					<div className='flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between'>
-						<div>
-							<h2 className='text-2xl font-semibold text-foreground'>
-								Photo gallery
-							</h2>
-							<p className='mt-1 text-sm text-muted-foreground'>
-								A curated overview of visuals, previews and active design shots.
-							</p>
-						</div>
-
-						<div className='flex flex-wrap gap-3'>
-							<Button variant='secondary'>
-								<Clock3 size={18} /> Recent
-							</Button>
-							<Button variant='secondary'>
-								<ListFilter size={18} /> Filter
-							</Button>
-							<Button variant='secondary'>
-								<Grid3X3 size={18} /> Grid view
-							</Button>
-						</div>
-					</div>
-
-					<div className='grid gap-4 lg:grid-cols-[minmax(0,1fr)_320px]'>
-						<Input
-							Icon={Search}
-							placeholder='Search photo or tag...'
-							className='bg-muted'
-							value={searchValue}
-							onChange={e => setSearchValue(e.target.value)}
-						/>
-
-						<Card className='flex items-center justify-between gap-4 bg-muted p-4'>
-							<div>
-								<p className='text-xs uppercase tracking-[0.18em] text-muted-foreground'>
-									Storage
-								</p>
-								<p className='mt-1 text-sm font-medium text-foreground'>
-									{formatBytes(storageUsed)} used in visual assets
-								</p>
-							</div>
-							<div className='flex h-11 w-11 items-center justify-center rounded-2xl bg-primary text-primary-foreground'>
-								<ArrowUpRight size={18} />
-							</div>
-						</Card>
-					</div>
-
-					<div className='grid gap-5 md:grid-cols-2 2xl:grid-cols-3'>
-						{filteredPhotos.map(item => (
-							<div
-								key={item.id}
-								className='overflow-hidden rounded-[24px] border border-border bg-card p-0 shadow-none'
-							>
-								<div className='group relative aspect-[4/3] overflow-hidden border-b border-border bg-muted'>
-									{item.thumbnailUrl ? (
-										<Image
-											src={item.thumbnailUrl}
-											alt={item.name}
-											fill
-											unoptimized
-											className='rounded-md object-cover object-top transition duration-300 group-hover:scale-[1.03]'
-										/>
-									) : (
-										<div className='flex h-full w-full items-center justify-center bg-linear-to-br from-neutral-100 to-neutral-200 text-sm font-medium text-muted-foreground'>
-											No preview
-										</div>
-									)}
-									<div className='absolute inset-0 bg-linear-to-t from-neutral-950/40 via-transparent to-transparent' />
-									<div className='absolute left-4 top-4 rounded-full bg-card/90 px-3 py-1 text-xs font-medium text-foreground backdrop-blur-xs'>
-										{item.name}
-									</div>
-								</div>
-
-								<div className='space-y-3 p-4'>
-									<div className='flex items-start justify-between gap-3'>
-										<div>
-											<h3 className='text-base font-medium text-foreground'>
-												{item.createdAt
-													? new Date(item.createdAt).toLocaleDateString()
-													: 'Recently updated'}
-											</h3>
-											<p className='mt-1 text-sm text-muted-foreground'>
-												{item.folderId ? 'Stored in folder' : 'Loose photo'}
-											</p>
-										</div>
-										<span
-											className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-												item.folderId
-													? PHOTO_ITEM_BADGES.Folder
-													: PHOTO_ITEM_BADGES.Recent
-											}`}
+			{isPending ? (
+				<LoadingState title='Загружаем фотографии' />
+			) : isError ? (
+				<ErrorState description={error.message} onRetry={() => void refetch()} />
+			) : photos.length === 0 && hasActiveFilters ? (
+				<NoResultsState description='По текущему поиску фотографий не найдено.' />
+			) : photos.length === 0 ? (
+				<EmptyState
+					title='Фотографий пока нет'
+					description='Загрузите изображения, чтобы они появились здесь.'
+				/>
+			) : (
+				<div className='columns-2 gap-2 sm:columns-3 xl:columns-4 2xl:columns-5'>
+					{photos.map(photo => (
+						<Popover key={photo.id}>
+							<PopoverContext.Consumer>
+								{context => (
+									<>
+										<article
+											onClick={() => setPreviewedPhoto(photo)}
+											onKeyDown={event => {
+												if (event.key === 'Enter' || event.key === ' ') {
+													event.preventDefault()
+													setPreviewedPhoto(photo)
+												}
+											}}
+											onContextMenu={event => {
+												event.preventDefault()
+												context?.setCoords({ x: event.clientX, y: event.clientY })
+												context?.setOpen(true)
+											}}
+											className='group relative mb-2 cursor-pointer break-inside-avoid overflow-hidden rounded-lg bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
+											role='button'
+											tabIndex={0}
+											aria-label={`Открыть ${formatFileName(photo.name)}`}
 										>
-											{item.folderId ? 'Folder' : 'Recent'}
-										</span>
-									</div>
+												{photo.thumbnailUrl ? (
+													// Native image keeps the stored thumbnail's natural aspect ratio for the masonry layout.
+													// eslint-disable-next-line @next/next/no-img-element
+													<img
+														src={photo.thumbnailUrl}
+														alt={formatFileName(photo.name)}
+														className='block h-auto w-full transition-transform duration-200 group-hover:scale-[1.02]'
+													/>
+												) : (
+													<div className='flex aspect-square items-center justify-center text-muted-foreground'>
+														<ImageIcon size={28} />
+													</div>
+												)}
+											<div className='pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-2 pt-8 opacity-0 transition-opacity group-hover:opacity-100'>
+												<p className='truncate text-sm font-medium text-white'>
+													{formatFileName(photo.name)}
+												</p>
+											</div>
+										</article>
+										<PopoverContent isContextMenu>
+											<div className='flex flex-col text-sm'>
+												<button
+													onClick={() => setPreviewedPhoto(photo)}
+													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
+												>
+													<ImageIcon size={18} /> Просмотреть
+												</button>
+												<button
+													onClick={() => setRenamedPhoto(photo)}
+													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
+												>
+													<Pencil size={18} /> Переименовать
+												</button>
+												<Link
+													href={photo.folderId ? `/folders/${photo.folderId}` : '/folders'}
+													className='flex items-center gap-2 rounded px-3 py-1.5 hover:bg-muted'
+												>
+													<ExternalLink size={18} />{' '}
+													{photo.folderId ? 'Перейти к папке' : 'Перейти к корню'}
+												</Link>
+												<button
+													onClick={() => deletePhoto.mutate({ id: photo.id, type: 'file' })}
+													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
+												>
+													<Trash2 size={18} /> Удалить
+												</button>
+											</div>
+										</PopoverContent>
+									</>
+								)}
+							</PopoverContext.Consumer>
+						</Popover>
+					))}
+				</div>
+			)}
 
-									<div className='flex items-center justify-between border-t border-border pt-3 text-sm text-muted-foreground'>
-										<span>{formatBytes(item.size)}</span>
-										<button className='cursor-pointer font-medium text-foreground transition hover:text-foreground'>
-											Open
-										</button>
-									</div>
-								</div>
+			{data && data.pagination.totalPages > 1 && (
+				<div className='flex items-center justify-end gap-3 text-sm'>
+					<Button
+						variant='secondary'
+						disabled={filters.page === 1}
+						onClick={() => setPage(filters.page - 1)}
+					>
+						Назад
+					</Button>
+					<span className='text-muted-foreground'>
+						{filters.page} / {data.pagination.totalPages}
+					</span>
+					<Button
+						variant='secondary'
+						disabled={filters.page >= data.pagination.totalPages}
+						onClick={() => setPage(filters.page + 1)}
+					>
+						Вперёд
+					</Button>
+				</div>
+			)}
+
+			{previewedPhoto && (
+				<ModalContainer isOpen onClose={() => setPreviewedPhoto(null)}>
+					<Card className='relative w-[min(90vw,48rem)] p-3'>
+						<button
+							onClick={() => setPreviewedPhoto(null)}
+							className='absolute right-5 top-5 z-10 rounded bg-card/80 p-1 text-foreground'
+							aria-label='Закрыть просмотр'
+						>
+							<X size={20} />
+						</button>
+						{isOriginalPreviewPending ? (
+							<div className='flex min-h-72 items-center justify-center text-sm text-muted-foreground'>
+								Загружаем оригинал…
 							</div>
-						))}
-					</div>
-			</section>
+						) : originalPreview?.previewUrl ? (
+							<Image
+								src={originalPreview.previewUrl}
+								alt={formatFileName(previewedPhoto.name)}
+								width={768}
+								height={768}
+								unoptimized
+								className='max-h-[75vh] w-full rounded-lg object-contain'
+							/>
+						) : null}
+					</Card>
+				</ModalContainer>
+			)}
+			{renamedPhoto && (
+				<ResourceActionsDialogs
+					id={renamedPhoto.id}
+					type='file'
+					name={renamedPhoto.name}
+					action='rename'
+					onClose={() => {
+						setRenamedPhoto(null)
+						queryClient.invalidateQueries({ queryKey: PHOTOS.photos })
+					}}
+				/>
+			)}
 		</section>
 	)
 }

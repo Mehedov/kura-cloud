@@ -13,3 +13,13 @@ export interface PhotoFileDto {
 	createdAt?: string
 	updatedAt?: string
 }
+
+export interface PhotosResponse {
+	items: PhotoFileDto[]
+	pagination: {
+		page: number
+		limit: number
+		total: number
+		totalPages: number
+	}
+}

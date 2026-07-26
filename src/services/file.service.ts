@@ -1,5 +1,6 @@
 import $api from '@/http/http'
-import { PhotoFileDto } from '@/types/file.type'
+import { PhotosResponse } from '@/types/file.type'
+import type { IFolderItemsParams } from '@/types/folder.type'
 
 export const getDownloadUrl = async (fileId: string) => {
 	const response = await $api.get<{ downloadUrl: string }>(
@@ -8,7 +9,14 @@ export const getDownloadUrl = async (fileId: string) => {
 	return response.data
 }
 
-export const getPhotos = async () => {
-	const response = await $api.get<PhotoFileDto[]>(`/storage/photos`)
+export const getPreviewUrl = async (fileId: string) => {
+	const response = await $api.get<{ previewUrl: string }>(
+		`/storage/preview/${fileId}`,
+	)
+	return response.data
+}
+
+export const getPhotos = async (params: IFolderItemsParams) => {
+	const response = await $api.get<PhotosResponse>(`/storage/photos`, { params })
 	return response.data
 }
