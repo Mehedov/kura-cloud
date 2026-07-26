@@ -97,7 +97,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 		}
 
 		return (
-			<Popover>
+			<Popover >
 				<PopoverContext.Consumer>
 					{context => (
 						<>

@@ -45,7 +45,7 @@ export interface IStorageFile {
 	size: string
 	thumbnailKey: string
 	thumbnailUrl: string
-	type: string
+	type: FolderItemsType
 	updatedAt: string
 	userId: string
 }

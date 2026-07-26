@@ -78,7 +78,53 @@ export function BasketTemplate() {
 					description='Удалённые файлы и папки появятся здесь.'
 				/>
 			) : (
-				<div className='overflow-x-auto rounded-xl border border-border'>
+				<>
+					<div className='space-y-2 md:hidden'>
+						{entries.map(item => {
+							const payload: IDeleteFolder = { id: item.id, type: item.type }
+							const isMutating =
+								restoreMutation.isPending || hardDeleteMutation.isPending
+
+							return (
+								<article
+									key={`${item.type}-${item.id}`}
+									className='rounded-xl border border-border bg-card p-4'
+								>
+									<div className='flex min-w-0 items-center gap-3 font-medium text-foreground'>
+										{item.type === 'folder' ? (
+											<FolderIcon size={22} className='shrink-0 text-muted-foreground' />
+										) : (
+											<FileText size={22} className='shrink-0 text-muted-foreground' />
+										)}
+										<span className='truncate'>{item.name}</span>
+									</div>
+									<p className='mt-2 text-sm text-muted-foreground'>
+										{item.type === 'folder' ? 'Папка' : 'Файл'} ·{' '}
+										{item.deletedAt ? formatDate(item.deletedAt) : '—'}
+									</p>
+									<div className='mt-4 flex flex-wrap gap-2'>
+										<Button
+											variant='secondary'
+											className='px-3 py-1.5 text-sm'
+											disabled={isMutating}
+											onClick={() => restoreMutation.mutate(payload)}
+										>
+											<RotateCcw size={16} /> Восстановить
+										</Button>
+										<Button
+											variant='ghost'
+											className='px-3 py-1.5 text-sm text-destructive hover:text-destructive'
+											disabled={isMutating}
+											onClick={() => handleHardDelete(payload)}
+										>
+											<Trash2 size={16} /> Удалить навсегда
+										</Button>
+									</div>
+								</article>
+							)
+						})}
+					</div>
+					<div className='hidden overflow-x-auto rounded-xl border border-border md:block'>
 					<div className='min-w-160 divide-y divide-border'>
 						<div className='grid grid-cols-[minmax(16rem,1fr)_8rem_10rem_15rem] bg-muted px-4 py-3 text-sm font-medium text-muted-foreground'>
 							<span>Название</span>
@@ -133,6 +179,7 @@ export function BasketTemplate() {
 						})}
 					</div>
 				</div>
+				</>
 			)}
 		</section>
 	)

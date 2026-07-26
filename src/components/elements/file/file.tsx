@@ -5,31 +5,30 @@ import {
 } from '@/components/ui/popover/popover'
 import { PopoverContent } from '@/components/ui/popover/popover-content'
 import { getDownloadUrl } from '@/services/file.service'
+import { FileVisual } from '@/components/elements/file/file-visual'
 import {
 	ResourceActionsDialogs,
 	type ResourceAction,
 } from '@/components/elements/resource-actions/resource-actions-dialogs'
 import { moveToTrash } from '@/services/folder.service'
 import { cn } from '@/utils/cn'
+import { formatFileName } from '@/utils/formatFileName.util'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
 	DownloadCloudIcon,
-	FilePen,
-	FilePlay,
-	FileText,
 	FolderInput,
 	SquarePen,
 	Trash2,
-	File as FileIcon,
 } from 'lucide-react'
 import React, { forwardRef, memo, useState } from 'react'
-import Image from 'next/image'
 
 export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
 	name: string
 	id: string
 	context?: PopoverContextProps | undefined
 	imagePreview?: string
+	type?: 'photo' | 'video' | 'document' | 'other'
+	size?: number
 }
 
 interface ContextMenuContentProps {
@@ -79,7 +78,15 @@ export const ContextMenuContent = memo(
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
-	({ className, name, id, imagePreview, ...props }, ref) => {
+	({
+		className,
+		name,
+		id,
+		imagePreview,
+		type = 'other',
+		size = 90,
+		...props
+	}, ref) => {
 		const queryClient = useQueryClient()
 		const [action, setAction] = useState<ResourceAction>(null)
 
@@ -118,35 +125,21 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 									context?.setOpen(true)
 								}}
 								className={cn(
-									'w-25 flex flex-col items-center duration-200 ease-in-out hover:-translate-y-1 cursor-pointer',
+									'flex flex-col items-center duration-200 ease-in-out hover:-translate-y-1 cursor-pointer',
 									className,
 								)}
+								style={{ width: `${size}px` }}
 								{...props}
 							>
-								{(name.endsWith('.jpg') ||
-									name.endsWith('.jpeg') ||
-									name.endsWith('.png') ||
-									name.endsWith('.svg')) && imagePreview ? (
-									<Image
-										src={imagePreview}
-										alt={name}
-										width={70}
-										height={70}
-										unoptimized
-										className='rounded-md'
-									/>
-								) : name.endsWith('.docx') ? (
-									<FilePen size={70} className='text-blue-600' />
-								) : name.endsWith('.pdf') ? (
-									<FileText size={70} className='text-red-600' />
-								) : name.endsWith('.mp4') || name.endsWith('.mp3') ? (
-									<FilePlay size={70} className='text-green-600' />
-								) : (
-									<FileIcon size={70} className='text-foreground' />
-								)}
+								<FileVisual
+									type={type}
+									thumbnailUrl={imagePreview}
+									alt={formatFileName(name)}
+									size={size}
+								/>
 
-								<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>
-									{name}
+									<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>
+									{formatFileName(name)}
 								</div>
 							</div>
 							<PopoverContent isContextMenu>

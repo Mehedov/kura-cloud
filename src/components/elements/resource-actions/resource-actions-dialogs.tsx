@@ -33,7 +33,7 @@ export function ResourceActionsDialogs({
 	const [targetFolderId, setTargetFolderId] = useState('')
 	const { data: foldersData, isPending: isFoldersPending } = useQuery({
 		queryKey: FOLDER_KEYS.all,
-		queryFn: getMyFolders,
+		queryFn: () => getMyFolders(),
 		enabled: action === 'move',
 	})
 

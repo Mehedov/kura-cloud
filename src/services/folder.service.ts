@@ -13,9 +13,12 @@ import {
 } from '@/types/folder.type'
 import type { AxiosResponse } from 'axios'
 
-export const getMyFolders = (): Promise<AxiosResponse<IFolderSummary[]>> => {
+export const getMyFolders = (params?: {
+	q?: string
+	limit?: number
+}): Promise<AxiosResponse<IFolderSummary[]>> => {
 	try {
-		return $api.get('/storage/folders')
+		return $api.get('/storage/folders', { params })
 	} catch (e) {
 		console.error('Get user error:', e)
 		throw e
@@ -55,6 +58,9 @@ export const getFolderItems = (
 	params: IFolderItemsParams,
 ): Promise<AxiosResponse<IFolderItemsResponse>> =>
 	$api.get(`/storage/folders/${folderId}/items`, { params })
+
+export const getAllFiles = (params: IFolderItemsParams) =>
+	$api.get<Omit<IFolderItemsResponse, 'folder'>>('/storage/files', { params })
 
 export const hardDeleteFolder = (payload: IDeleteFolder) => {
 	try {

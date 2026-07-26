@@ -3,10 +3,10 @@ import $api from '@/http/http'
 export const upload = async (
 	files: File[],
 	folderId: string | null,
-	onProgress: (fileName: string, percent: number) => void = () => {},
+	onProgress: (fileIndex: number, percent: number) => void = () => {},
 ) => {
 	const activityBatchId = crypto.randomUUID()
-	const uploadPromises = Array.from(files).map(async file => {
+	const uploadPromises = Array.from(files).map(async (file, fileIndex) => {
 		const formData = new FormData()
 		formData.append('file', file)
 		if (folderId) formData.append('folderId', folderId)
@@ -20,13 +20,13 @@ export const upload = async (
 						(progressEvent.loaded * 100) / total,
 					)
 
-					onProgress(file.name, percentCompleted)
-				},
-			})
-			return response.data
+						onProgress(fileIndex, percentCompleted)
+					},
+				})
+			return { fileIndex, status: 'success' as const, data: response.data }
 		} catch (error) {
 			console.error(`Ошибка при загрузке ${file.name}`, error)
-			throw error
+			return { fileIndex, status: 'error' as const, error }
 		}
 	})
 

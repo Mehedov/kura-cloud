@@ -24,10 +24,10 @@ export default function DragAndDrop({
 				<Plus size={24} className='text-foreground' />
 			</div>
 
-			<p className='font-medium text-md text-center'>
-				Click or drag files to upload
+			<p className='text-md text-center font-medium'>
+				Выберите или перетащите файлы
 			</p>
-			<p className='text-sm text-muted-foreground'>.csv or .xls (Max 20MB)</p>
+			<p className='text-sm text-muted-foreground'>До 2 GiB на файл</p>
 		</div>
 	)
 }

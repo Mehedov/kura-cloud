@@ -194,7 +194,9 @@ export function FolderOneTemplate() {
 							key={file.id}
 							id={file.id}
 							name={file.name}
+							type={file.type}
 							imagePreview={file.thumbnailUrl}
+							size={90}
 						/>
 					))}
 				</div>

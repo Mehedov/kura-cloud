@@ -1,9 +1,13 @@
 'use client'
 import { FolderIcon } from '@/assets/icons/FolderIcon'
 import { PAGES } from '@/config/page.config'
+import { FOLDER_KEYS } from '@/constants/queryKeys'
+import { getSuggestedFolders } from '@/services/folder.service'
+import { getStorageStats } from '@/services/stats.service'
 import useAuthStore from '@/store/auth'
 import useDropzoneStore from '@/store/store'
 import { cn } from '@/utils/cn'
+import { useQuery } from '@tanstack/react-query'
 import {
 	ChevronLeft,
 	ChevronRightIcon,
@@ -60,6 +64,23 @@ export function Sidebar() {
 	const pathname = usePathname()
 	const { setIsOpenProfile } = useDropzoneStore(state => state)
 	const closeSidebar = () => setIsSidebarOpen(false)
+	const { data: suggestedFoldersData } = useQuery({
+		queryKey: FOLDER_KEYS.suggested,
+		queryFn: getSuggestedFolders,
+	})
+	const { data: storageStatsData } = useQuery({
+		queryKey: FOLDER_KEYS.storageStats,
+		queryFn: getStorageStats,
+	})
+	const suggestedFolders = suggestedFoldersData?.data.items ?? []
+	const storageStats = storageStatsData?.data
+	const categoryColors = {
+		Photo: 'text-red-600',
+		Video: 'text-green-600',
+		Document: 'text-blue-600',
+		'Other files': 'text-amber-600',
+		'Free Storage': 'text-muted-foreground',
+	} as const
 
 	return (
 		<>
@@ -152,79 +173,63 @@ export function Sidebar() {
 					))}
 				</ul>
 			</nav>
-			{!isSidebarCollapsed && <div className='mb-2 p-3 text-md font-normal text-muted-foreground'>
-				<div className='mb-4 font-medium'>Folders</div>
-				<ul className='flex flex-col gap-2.5'>
-					<li>
-						<Link className='flex items-center gap-2.5' href='/'>
-							<FolderIcon size={25} />
-							Landing Page
-						</Link>
-					</li>
-					<li>
-						<Link className='flex items-center gap-2.5' href='/'>
-							<FolderIcon size={25} />
-							Mobile
-						</Link>
-					</li>
-					<li>
-						<Link className='flex items-center gap-2.5' href='/'>
-							<FolderIcon size={25} />
-							Dashboard
-						</Link>
-					</li>
-					<li>
-						<Link className='flex items-center gap-2.5' href='/'>
-							<FolderIcon size={25} />
-							Footer
-						</Link>
-					</li>
-				</ul>
-			</div>}
-			{!isSidebarCollapsed && <div className='mt-auto rounded-md border border-sidebar-border bg-card p-2'>
-				<div className='mb-1 border-b border-sidebar-border pb-2'>
-					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-2 text-[13px]'>
-							<Square size={15} className='text-red-600' /> Photo
-						</div>
-						<span className='text-[14px] font-medium text-muted-foreground'>
-							11 GB
-						</span>
-					</div>
-					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-2 text-[13px]'>
-							<Square size={15} className='text-green-600' /> Video
-						</div>
-						<span className='text-[14px] font-medium text-muted-foreground'>
-							19 GB
-						</span>
-					</div>
-					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-2 text-[13px]'>
-							<Square size={15} className='text-blue-600' /> Document
-						</div>
-						<span className='text-[14px] font-medium text-muted-foreground'>
-							25 GB
-						</span>
-					</div>
-					<div className='flex items-center justify-between'>
-						<div className='flex items-center gap-2 text-[13px]'>
-							<Square size={15} className='text-foreground' /> Free Storage
-						</div>
-						<span className='text-[14px] font-medium text-muted-foreground'>
-							45 GB
-						</span>
-					</div>
+			{!isSidebarCollapsed && (
+				<div className='mb-2 p-3 text-md font-normal text-muted-foreground'>
+					<div className='mb-4 font-medium'>Недавние папки</div>
+					{suggestedFolders.length > 0 ? (
+						<ul className='flex flex-col gap-2.5'>
+							{suggestedFolders.map(folder => (
+								<li key={folder.id}>
+									<Link
+										className='flex min-w-0 items-center gap-2.5 hover:text-foreground'
+										href={`${PAGES.folders}/${folder.id}`}
+										onClick={closeSidebar}
+									>
+										<FolderIcon size={25} />
+										<span className='truncate'>{folder.name}</span>
+									</Link>
+								</li>
+							))}
+						</ul>
+					) : (
+						<p className='text-sm'>Папок пока нет</p>
+					)}
 				</div>
+			)}
+			{!isSidebarCollapsed && (
+				<div className='mt-auto rounded-md border border-sidebar-border bg-card p-2'>
+					<div className='mb-1 border-b border-sidebar-border pb-2'>
+						{storageStats?.categories.map(category => (
+							<div key={category.label} className='flex items-center justify-between'>
+								<div className='flex items-center gap-2 text-[13px]'>
+									<Square size={15} className={categoryColors[category.label]} />
+									{category.label}
+								</div>
+								<span className='text-[14px] font-medium text-muted-foreground'>
+									{category.formattedValue}
+								</span>
+							</div>
+						))}
+					</div>
 
-				<div className='text-[13px] mb-1'>
-					<span className='font-medium text-muted-foreground'>
-						<span className='text-foreground'>56GB used </span>
-						of 100GB
-					</span>
+					<div className='mb-1 text-[13px]'>
+						<span className='font-medium text-muted-foreground'>
+							<span className='text-foreground'>
+								{storageStats ? `${storageStats.total.usedFormatted} занято ` : 'Загрузка…'}
+							</span>
+							{storageStats && `из ${storageStats.total.limitFormatted}`}
+						</span>
+					</div>
+					<div className='h-2 w-full overflow-hidden rounded-4xl bg-muted'>
+						<div
+							className='h-full rounded-4xl bg-primary transition-[width]'
+							style={{
+								width: `${storageStats?.total.percent ?? 0}%`,
+							}}
+						/>
+					</div>
 				</div>
-				<div className='w-full h-2 bg-linear-to-r from-neutral-500 to-neutral-800 rounded-4xl'></div>
-			</div>}
+			)}
 			</aside>
 		</>
 	)
