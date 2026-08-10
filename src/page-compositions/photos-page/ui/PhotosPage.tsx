@@ -12,6 +12,7 @@ import {
 	PopoverContext,
 } from '@/shared/ui/popover/popover'
 import { PopoverContent } from '@/shared/ui/popover/popover-content'
+import { ContextMenuTrigger } from '@/shared/ui/popover/context-menu-trigger'
 import { PHOTOS } from '@/shared/config/query-keys'
 import { useFolderItemsFilters } from '@/features/folder-filters/model/use-folder-filters'
 import { getPhotos, getPreviewUrl } from '@/entities/file/api/file.queries'
@@ -20,7 +21,7 @@ import type { IFolderItemsParams } from '@/entities/folder/model/folder.types'
 import type { PhotoFileDto } from '@/entities/file/model/file.types'
 import { formatFileName } from '@/shared/lib/formatFileName.util'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ExternalLink, ImageIcon, MoreVertical, Pencil, RefreshCw, Share2, Trash2, X } from 'lucide-react'
+import { ExternalLink, ImageIcon, Pencil, RefreshCw, Share2, Trash2, X } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
@@ -150,21 +151,9 @@ export default function PhotosPage() {
 											tabIndex={0}
 											aria-label={`Открыть ${formatFileName(photo.name)}`}
 										>
-											<button
-												type='button'
-												aria-label={`Действия с фото ${formatFileName(photo.name)}`}
-												aria-haspopup='menu'
-												aria-expanded={context?.open ?? false}
-												className='absolute right-2 top-2 z-20 rounded-md bg-black/55 p-1 text-white opacity-100 sm:opacity-0 sm:group-hover:opacity-100 sm:focus-visible:opacity-100'
-												onClick={event => {
-													event.stopPropagation()
-													const rect = event.currentTarget.getBoundingClientRect()
-													context?.setCoords({ x: rect.left, y: rect.bottom + 4 })
-													context?.setOpen(open => !open)
-												}}
-											>
-												<MoreVertical size={18} />
-											</button>
+											<ContextMenuTrigger
+												ariaLabel={`Действия с фото ${formatFileName(photo.name)}`}
+											/>
 												{photo.thumbnailUrl ? (
 													// Native image keeps the stored thumbnail's natural aspect ratio for the masonry layout.
 													// eslint-disable-next-line @next/next/no-img-element

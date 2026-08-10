@@ -11,7 +11,10 @@ import {
 	ResourceActionsDialogs,
 	type ResourceAction,
 } from '@/features/manage-resource/ui/ResourceActionsDialogs'
-import { moveToTrash, restoreFromTrash } from '@/entities/folder/api/folder.queries'
+import {
+	moveToTrash,
+	restoreFromTrash,
+} from '@/entities/folder/api/folder.queries'
 import { cn } from '@/shared/lib/cn'
 import { formatFileName } from '@/shared/lib/formatFileName.util'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
@@ -19,7 +22,6 @@ import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-querie
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import {
 	DownloadCloudIcon,
-	EllipsisVertical,
 	FolderInput,
 	Share2,
 	SquarePen,
@@ -52,7 +54,15 @@ interface ContextMenuContentProps {
 }
 
 export const ContextMenuContent = memo(
-	({ onDelete, downloadUrl, onRename, onMove, onShare, canEdit = true, canMove = true }: ContextMenuContentProps) => (
+	({
+		onDelete,
+		downloadUrl,
+		onRename,
+		onMove,
+		onShare,
+		canEdit = true,
+		canMove = true,
+	}: ContextMenuContentProps) => (
 		<div className='flex flex-col text-sm'>
 			{downloadUrl ? (
 				<a
@@ -62,31 +72,39 @@ export const ContextMenuContent = memo(
 					<DownloadCloudIcon size={20} /> Скачать
 				</a>
 			) : null}
-			{canEdit && onShare && <button
-				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
-				onClick={onShare}
-			>
-				<Share2 size={20} /> Поделиться
-			</button>}
-			{canEdit && <button
-				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
-				onClick={onRename}
-			>
-				<SquarePen size={20} />
-				Переименовать
-			</button>}
-			{canEdit && canMove && <button
-				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
-				onClick={onMove}
-			>
-				<FolderInput size={20} /> Переместить
-			</button>}
-			{canEdit && onDelete && <button
-				className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
-				onClick={onDelete}
-			>
-				<Trash2 size={20} /> Удалить
-			</button>}
+			{canEdit && onShare && (
+				<button
+					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+					onClick={onShare}
+				>
+					<Share2 size={20} /> Поделиться
+				</button>
+			)}
+			{canEdit && (
+				<button
+					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+					onClick={onRename}
+				>
+					<SquarePen size={20} />
+					Переименовать
+				</button>
+			)}
+			{canEdit && canMove && (
+				<button
+					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+					onClick={onMove}
+				>
+					<FolderInput size={20} /> Переместить
+				</button>
+			)}
+			{canEdit && onDelete && (
+				<button
+					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+					onClick={onDelete}
+				>
+					<Trash2 size={20} /> Удалить
+				</button>
+			)}
 		</div>
 	),
 )
@@ -94,20 +112,23 @@ export const ContextMenuContent = memo(
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
-	({
-		className,
-		name,
-		id,
-		imagePreview,
-		type = 'other',
-		size = 90,
+	(
+		{
+			className,
+			name,
+			id,
+			imagePreview,
+			type = 'other',
+			size = 90,
 			canEdit = true,
 			canMove = true,
-		canManageAccess = true,
+			canManageAccess = true,
 			canMoveToRoot = true,
 			canUndoDelete = true,
-		...props
-	}, ref) => {
+			...props
+		},
+		ref,
+	) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
 		const [action, setAction] = useState<ResourceAction>(null)
@@ -129,15 +150,21 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 				showToast(
 					`Файл «${formatFileName(name)}» перемещён в корзину`,
 					'success',
-					canUndoDelete ? {
-						label: 'Отменить',
-						onClick: () => void restoreFromTrash({ id: fileId, type: 'file' })
-							.then(() => invalidateStorageQueries(queryClient))
-							.catch(() => showToast('Не удалось восстановить файл', 'error')),
-					} : undefined,
+					canUndoDelete
+						? {
+								label: 'Отменить',
+								onClick: () =>
+									void restoreFromTrash({ id: fileId, type: 'file' })
+										.then(() => invalidateStorageQueries(queryClient))
+										.catch(() =>
+											showToast('Не удалось восстановить файл', 'error'),
+										),
+							}
+						: undefined,
 				)
 			},
-			onError: () => showToast('Не удалось переместить файл в корзину', 'error'),
+			onError: () =>
+				showToast('Не удалось переместить файл в корзину', 'error'),
 		})
 
 		const onDeleteFile = () => {
@@ -172,32 +199,30 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 									size={size}
 								/>
 
-									<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>
+								<div className='text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word w-full mt-2'>
 									{formatFileName(name)}
 								</div>
-								</div>
-								<button
-									type='button'
-									aria-label={`Действия с файлом ${formatFileName(name)}`}
-									aria-haspopup='menu'
-									aria-expanded={context?.open ?? false}
-									className='absolute right-1 top-1 z-20 rounded-md bg-card/90 p-1 text-muted-foreground shadow-sm hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-									onClick={event => {
-										const rect = event.currentTarget.getBoundingClientRect()
-										setShouldFetchDownload(true)
-										context?.setCoords({ x: rect.left, y: rect.bottom + 4 })
-										context?.setOpen(open => !open)
-									}}
-								>
-									<EllipsisVertical size={18} />
-								</button>
-								<PopoverContent isContextMenu>
+							</div>
+							<PopoverContent isContextMenu>
 								<ContextMenuContent
 									onDelete={onDeleteFile}
 									downloadUrl={data?.downloadUrl}
-									onRename={() => { context?.setOpen(false); setAction('rename') }}
-									onMove={() => { context?.setOpen(false); setAction('move') }}
-									onShare={canManageAccess ? () => { context?.setOpen(false); setIsShareOpen(true) } : undefined}
+									onRename={() => {
+										context?.setOpen(false)
+										setAction('rename')
+									}}
+									onMove={() => {
+										context?.setOpen(false)
+										setAction('move')
+									}}
+									onShare={
+										canManageAccess
+											? () => {
+													context?.setOpen(false)
+													setIsShareOpen(true)
+												}
+											: undefined
+									}
 									canEdit={canEdit}
 									canMove={canMove}
 								/>

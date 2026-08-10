@@ -10,13 +10,21 @@ import {
 	type ResourceAction,
 } from '@/features/manage-resource/ui/ResourceActionsDialogs'
 import { ShareResourceDialog } from '@/features/share-resource/ui/ShareResourceDialog'
-import { moveToTrash, restoreFromTrash } from '@/entities/folder/api/folder.queries'
+import {
+	moveToTrash,
+	restoreFromTrash,
+} from '@/entities/folder/api/folder.queries'
 import { cn } from '@/shared/lib/cn'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { EllipsisVertical, FolderInput, Share2, SquarePen, Trash2 } from 'lucide-react'
+import {
+	FolderInput,
+	Share2,
+	SquarePen,
+	Trash2,
+} from 'lucide-react'
 import Link from 'next/link'
 import React, { forwardRef, memo, useState } from 'react'
 
@@ -38,7 +46,9 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	}
 }
 
-export function FolderAvatarStack({ collaborators }: Pick<FolderProps, 'collaborators'>) {
+export function FolderAvatarStack({
+	collaborators,
+}: Pick<FolderProps, 'collaborators'>) {
 	if (!collaborators) return null
 	const users = [collaborators.owner, ...collaborators.editors].filter(
 		(user): user is NonNullable<typeof user> => Boolean(user),
@@ -57,7 +67,11 @@ export function FolderAvatarStack({ collaborators }: Pick<FolderProps, 'collabor
 					className='size-6 border-2 border-background text-[10px] text-white'
 				/>
 			))}
-			{hiddenCount > 0 && <span className='grid size-6 place-items-center rounded-full border-2 border-background bg-muted text-[10px] font-semibold text-foreground'>+{hiddenCount}</span>}
+			{hiddenCount > 0 && (
+				<span className='grid size-6 place-items-center rounded-full border-2 border-background bg-muted text-[10px] font-semibold text-foreground'>
+					+{hiddenCount}
+				</span>
+			)}
 		</div>
 	)
 }
@@ -71,39 +85,54 @@ export const ContextMenuContent: React.FC<{
 	canEdit?: boolean
 	canMove?: boolean
 	canManageAccess?: boolean
-}> = memo(({ onDelete, itemId, onRename, onMove, onShare, canEdit = true, canMove = true, canManageAccess = true }) => (
-	<div className='flex flex-col text-sm'>
-		{canEdit && <button
-			className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-			onClick={onRename}
-		>
-			<SquarePen size={20} />
-			Переименовать
-		</button>}
-		{canEdit && canMove && <button
-			className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-			onClick={onMove}
-		>
-			<FolderInput size={20} /> Переместить
-		</button>}
-		{canManageAccess && onShare && (
-			<button
-				className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-				onClick={onShare}
-			>
-				<Share2 size={20} /> Поделиться
-			</button>
-		)}
-		{canEdit && onDelete && itemId ? (
-			<button
-				className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-				onClick={() => onDelete(itemId)}
-			>
-				<Trash2 size={20} /> Удалить
-			</button>
-		) : null}
-	</div>
-))
+}> = memo(
+	({
+		onDelete,
+		itemId,
+		onRename,
+		onMove,
+		onShare,
+		canEdit = true,
+		canMove = true,
+		canManageAccess = true,
+	}) => (
+		<div className='flex flex-col text-sm'>
+			{canEdit && (
+				<button
+					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+					onClick={onRename}
+				>
+					<SquarePen size={20} />
+					Переименовать
+				</button>
+			)}
+			{canEdit && canMove && (
+				<button
+					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+					onClick={onMove}
+				>
+					<FolderInput size={20} /> Переместить
+				</button>
+			)}
+			{canManageAccess && onShare && (
+				<button
+					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+					onClick={onShare}
+				>
+					<Share2 size={20} /> Поделиться
+				</button>
+			)}
+			{canEdit && onDelete && itemId ? (
+				<button
+					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+					onClick={() => onDelete(itemId)}
+				>
+					<Trash2 size={20} /> Удалить
+				</button>
+			) : null}
+		</div>
+	),
+)
 
 ContextMenuContent.displayName = 'ContextMenuContent'
 
@@ -138,15 +167,21 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 				showToast(
 					`Папка «${name}» перемещена в корзину`,
 					'success',
-					canUndoDelete ? {
-						label: 'Отменить',
-						onClick: () => void restoreFromTrash({ id, type: 'folder' })
-							.then(() => invalidateStorageQueries(queryClient))
-							.catch(() => showToast('Не удалось восстановить папку', 'error')),
-					} : undefined,
+					canUndoDelete
+						? {
+								label: 'Отменить',
+								onClick: () =>
+									void restoreFromTrash({ id, type: 'folder' })
+										.then(() => invalidateStorageQueries(queryClient))
+										.catch(() =>
+											showToast('Не удалось восстановить папку', 'error'),
+										),
+							}
+						: undefined,
 				)
 			},
-			onError: () => showToast('Не удалось переместить папку в корзину', 'error'),
+			onError: () =>
+				showToast('Не удалось переместить папку в корзину', 'error'),
 		})
 
 		const onDeleteFolder = (folderId: string) => {
@@ -156,7 +191,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 		}
 
 		return (
-			<Popover >
+			<Popover>
 				<PopoverContext.Consumer>
 					{context => (
 						<>
@@ -180,28 +215,23 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 								<p className='mt-1 w-full text-center text-sm font-medium leading-tight line-clamp-2 wrap-break-word'>
 									{name}
 								</p>
-								</Link>
-								<button
-									type='button'
-									aria-label={`Действия с папкой ${name}`}
-									aria-haspopup='menu'
-									aria-expanded={context?.open ?? false}
-									className='absolute left-1 top-1 z-20 rounded-md bg-card/90 p-1 text-muted-foreground shadow-sm hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
-									onClick={event => {
-										const rect = event.currentTarget.getBoundingClientRect()
-										context?.setCoords({ x: rect.left, y: rect.bottom + 4 })
-										context?.setOpen(open => !open)
-									}}
-								>
-									<EllipsisVertical size={18} />
-								</button>
-								<PopoverContent isContextMenu>
+							</Link>
+							<PopoverContent isContextMenu>
 								<ContextMenuContent
 									itemId={id}
 									onDelete={onDeleteFolder}
-									onRename={() => { context?.setOpen(false); setAction('rename') }}
-									onMove={() => { context?.setOpen(false); setAction('move') }}
-									onShare={() => { context?.setOpen(false); setIsShareOpen(true) }}
+									onRename={() => {
+										context?.setOpen(false)
+										setAction('rename')
+									}}
+									onMove={() => {
+										context?.setOpen(false)
+										setAction('move')
+									}}
+									onShare={() => {
+										context?.setOpen(false)
+										setIsShareOpen(true)
+									}}
 									canEdit={canEdit}
 									canMove={canMove}
 									canManageAccess={canManageAccess}
@@ -233,17 +263,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 FolderGrid.displayName = 'FolderGrid'
 
 export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
-	(
-		{
-			className,
-			pathname,
-			name,
-			id,
-			updatedAt,
-			...props
-		},
-		ref,
-	) => {
+	({ className, pathname, name, id, updatedAt, ...props }, ref) => {
 		const itemHref = `${pathname}/${id}`
 		const [action, setAction] = useState<ResourceAction>(null)
 
@@ -279,7 +299,9 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 											}).format(new Date(updatedAt))
 										: '—'}
 								</span>
-								<span className='w-[20%] text-sm text-muted-foreground'>Папка</span>
+								<span className='w-[20%] text-sm text-muted-foreground'>
+									Папка
+								</span>
 							</Link>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent
