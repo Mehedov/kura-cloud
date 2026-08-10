@@ -50,7 +50,7 @@ const NAV_ITEMS = [
 		icon: Trash2Icon,
 	},
 	{
-		href: '/settings',
+		href: PAGES.settings,
 		label: 'Settings',
 		icon: Settings,
 	},
@@ -86,7 +86,7 @@ export function Sidebar() {
 		queryFn: getStorageStats,
 	})
 	const suggestedFolders = suggestedFoldersData?.data.items ?? []
-	const storageStats = storageStatsData?.data
+	const storageStats = storageStatsData
 
 	return (
 		<>
