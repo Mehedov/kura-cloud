@@ -1,7 +1,12 @@
 'use client'
 
 import { FolderBrowserSearch } from '@/widgets/folder-browser/ui/FolderToolbar'
-import { EmptyState, ErrorState, LoadingState, NoResultsState } from '@/shared/ui/states/async-state'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+	NoResultsState,
+} from '@/shared/ui/states/async-state'
 import { Button } from '@/shared/ui/button/Button'
 import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { useFolderItemsFilters } from '@/features/folder-filters/model/use-folder-filters'
@@ -16,10 +21,40 @@ import { Avatar } from '@/shared/ui/avatar/Avatar'
 import { Filter, RefreshCw } from 'lucide-react'
 import { useMemo } from 'react'
 
-function FileEditors({ file }: { file: { editors?: Array<{ id: string; name: string; avatarUrl: string | null; avatarColor: 'sky' | 'violet' | 'emerald' | 'rose' | 'amber' | null }> } }) {
+function FileEditors({
+	file,
+}: {
+	file: {
+		editors?: Array<{
+			id: string
+			name: string
+			avatarUrl: string | null
+			avatarColor: 'sky' | 'violet' | 'emerald' | 'rose' | 'amber' | null
+		}>
+	}
+}) {
 	const editors = file.editors ?? []
 	if (!editors.length) return <span className='text-muted-foreground'>—</span>
-	return <div className='flex -space-x-2'>{editors.slice(0, 3).map(editor => <Avatar key={editor.id} name={editor.name} avatarUrl={editor.avatarUrl} avatarColor={editor.avatarColor} id={editor.id} title={editor.name} className='size-7 border-2 border-card text-xs' />)}{editors.length > 3 && <span className='grid size-7 place-items-center rounded-full border-2 border-card bg-muted text-[10px] text-foreground'>+{editors.length - 3}</span>}</div>
+	return (
+		<div className='flex -space-x-2'>
+			{editors.slice(0, 3).map(editor => (
+				<Avatar
+					key={editor.id}
+					name={editor.name}
+					avatarUrl={editor.avatarUrl}
+					avatarColor={editor.avatarColor}
+					id={editor.id}
+					title={editor.name}
+					className='size-7 border-2 border-card text-xs'
+				/>
+			))}
+			{editors.length > 3 && (
+				<span className='grid size-7 place-items-center rounded-full border-2 border-card bg-muted text-[10px] text-foreground'>
+					+{editors.length - 3}
+				</span>
+			)}
+		</div>
+	)
 }
 
 const FILTER_LABELS = {
@@ -86,7 +121,9 @@ export function HomeFiles() {
 					</label>
 					<select
 						value={filters.sort}
-						onChange={event => setSort(event.target.value as typeof filters.sort)}
+						onChange={event =>
+							setSort(event.target.value as typeof filters.sort)
+						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
 						<option value='name'>По названию</option>
@@ -110,7 +147,10 @@ export function HomeFiles() {
 			{isPending ? (
 				<LoadingState title='Загружаем файлы' />
 			) : isError ? (
-				<ErrorState description={error.message} onRetry={() => void refetch()} />
+				<ErrorState
+					description={error.message}
+					onRetry={() => void refetch()}
+				/>
 			) : files.length === 0 && hasActiveFilters ? (
 				<NoResultsState description='По текущему поиску и фильтрам файлов не найдено.' />
 			) : files.length === 0 ? (
@@ -121,7 +161,7 @@ export function HomeFiles() {
 			) : (
 				<>
 					<div className='hidden overflow-x-auto rounded-xl border border-border md:block'>
-							<div className='min-w-190 divide-y divide-border text-sm'>
+						<div className='min-w-190 divide-y divide-border text-sm'>
 							<div className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_9rem] bg-muted px-4 py-3 font-medium text-muted-foreground'>
 								<span>Название</span>
 								<span>Редакторы</span>
@@ -140,11 +180,17 @@ export function HomeFiles() {
 											alt={formatFileName(file.name)}
 											size={36}
 										/>
-										<span className='truncate'>{formatFileName(file.name)}</span>
+										<span className='truncate'>
+											{formatFileName(file.name)}
+										</span>
 									</span>
 									<FileEditors file={file} />
-									<span className='text-muted-foreground'>{formatBytes(file.size)}</span>
-									<span className='text-muted-foreground'>{formatDate(file.updatedAt)}</span>
+									<span className='text-muted-foreground'>
+										{formatBytes(file.size)}
+									</span>
+									<span className='text-muted-foreground'>
+										{formatDate(file.updatedAt)}
+									</span>
 								</div>
 							))}
 						</div>
