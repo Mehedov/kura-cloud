@@ -7,6 +7,7 @@ export interface IFolderSummary {
 	id: string
 	name: string
 	parentId: string | null
+	isFavorite?: boolean
 	createdAt?: string
 	updatedAt?: string
 	deletedBy?: { id: string; name: string; avatarUrl: string | null; avatarColor: string | null } | null
@@ -45,6 +46,7 @@ export interface IStorageFile {
 	folderId: string
 	id: string
 	isDeleted: boolean
+	isFavorite?: boolean
 	name: string
 	s3Key: string
 	size: string

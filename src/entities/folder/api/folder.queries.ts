@@ -69,6 +69,9 @@ export const getFavorites = () =>
 		files: IStorageFile[]
 	}>('/storage/favorites')
 
+export const toggleFavorite = (payload: IDeleteFolder) =>
+	$api.patch('/storage/favorite', payload)
+
 export const restoreFromTrash = (payload: IDeleteFolder) =>
 	$api.post('/storage/restore', payload)
 

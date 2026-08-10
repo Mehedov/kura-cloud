@@ -1,27 +1,42 @@
 'use client'
 
-import { EmptyState, ErrorState, LoadingState, NoResultsState } from '@/shared/ui/states/async-state'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+	NoResultsState,
+} from '@/shared/ui/states/async-state'
 import { Button } from '@/shared/ui/button/Button'
 import { FolderBrowserSearch } from '@/widgets/folder-browser/ui/FolderToolbar'
 import { ResourceActionsDialogs } from '@/features/manage-resource/ui/ResourceActionsDialogs'
 import { ShareResourceDialog } from '@/features/share-resource/ui/ShareResourceDialog'
 import ModalContainer from '@/shared/ui/modal/Modal'
 import { Card } from '@/shared/ui/Card/card'
-import {
-	Popover,
-	PopoverContext,
-} from '@/shared/ui/popover/popover'
+import { Popover, PopoverContext } from '@/shared/ui/popover/popover'
 import { PopoverContent } from '@/shared/ui/popover/popover-content'
 import { ContextMenuTrigger } from '@/shared/ui/popover/context-menu-trigger'
 import { PHOTOS } from '@/shared/config/query-keys'
 import { useFolderItemsFilters } from '@/features/folder-filters/model/use-folder-filters'
 import { getPhotos, getPreviewUrl } from '@/entities/file/api/file.queries'
-import { moveToTrash, restoreFromTrash } from '@/entities/folder/api/folder.queries'
+import {
+	moveToTrash,
+	restoreFromTrash,
+	toggleFavorite,
+} from '@/entities/folder/api/folder.queries'
 import type { IFolderItemsParams } from '@/entities/folder/model/folder.types'
 import type { PhotoFileDto } from '@/entities/file/model/file.types'
 import { formatFileName } from '@/shared/lib/formatFileName.util'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { ExternalLink, ImageIcon, Pencil, RefreshCw, Share2, Trash2, X } from 'lucide-react'
+import {
+	ExternalLink,
+	ImageIcon,
+	Pencil,
+	RefreshCw,
+	Share2,
+	Star,
+	Trash2,
+	X,
+} from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
@@ -31,11 +46,19 @@ import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 export default function PhotosPage() {
 	const queryClient = useQueryClient()
 	const showToast = useToastStore(state => state.show)
-	const [previewedPhoto, setPreviewedPhoto] = useState<PhotoFileDto | null>(null)
+	const [previewedPhoto, setPreviewedPhoto] = useState<PhotoFileDto | null>(
+		null,
+	)
 	const [renamedPhoto, setRenamedPhoto] = useState<PhotoFileDto | null>(null)
 	const [sharedPhoto, setSharedPhoto] = useState<PhotoFileDto | null>(null)
-	const { filters, hasActiveFilters, resetFilters, setPage, setSearch, setSort } =
-		useFolderItemsFilters({ enableType: false })
+	const {
+		filters,
+		hasActiveFilters,
+		resetFilters,
+		setPage,
+		setSearch,
+		setSort,
+	} = useFolderItemsFilters({ enableType: false })
 	const queryParams = useMemo<IFolderItemsParams>(
 		() => ({
 			q: filters.q || undefined,
@@ -67,12 +90,27 @@ export default function PhotosPage() {
 			void invalidateStorageQueries(queryClient)
 			showToast('Фото перемещено в корзину', 'success', {
 				label: 'Отменить',
-				onClick: () => void restoreFromTrash(variables)
-					.then(() => invalidateStorageQueries(queryClient))
-					.catch(() => showToast('Не удалось восстановить фото', 'error')),
+				onClick: () =>
+					void restoreFromTrash(variables)
+						.then(() => invalidateStorageQueries(queryClient))
+						.catch(() => showToast('Не удалось восстановить фото', 'error')),
 			})
 		},
 		onError: () => showToast('Не удалось переместить фото в корзину', 'error'),
+	})
+	const favoritePhoto = useMutation({
+		mutationFn: toggleFavorite,
+		onSuccess: (_data, variables) => {
+			void invalidateStorageQueries(queryClient)
+			const photo = photos.find(item => item.id === variables.id)
+			showToast(
+				photo?.isFavorite
+					? `Фото «${formatFileName(photo.name)}» удалено из избранного`
+					: `Фото «${formatFileName(photo?.name ?? '')}» добавлено в избранное`,
+				'success',
+			)
+		},
+		onError: () => showToast('Не удалось изменить избранное', 'error'),
 	})
 
 	return (
@@ -93,7 +131,9 @@ export default function PhotosPage() {
 					/>
 					<select
 						value={filters.sort}
-						onChange={event => setSort(event.target.value as typeof filters.sort)}
+						onChange={event =>
+							setSort(event.target.value as typeof filters.sort)
+						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
 						<option value='updatedAt'>По дате изменения</option>
@@ -112,13 +152,20 @@ export default function PhotosPage() {
 						</Button>
 					)}
 				</div>
-				{data && <p className='text-sm text-muted-foreground'>Всего: {data.pagination.total}</p>}
+				{data && (
+					<p className='text-sm text-muted-foreground'>
+						Всего: {data.pagination.total}
+					</p>
+				)}
 			</div>
 
 			{isPending ? (
 				<LoadingState title='Загружаем фотографии' />
 			) : isError ? (
-				<ErrorState description={error.message} onRetry={() => void refetch()} />
+				<ErrorState
+					description={error.message}
+					onRetry={() => void refetch()}
+				/>
 			) : photos.length === 0 && hasActiveFilters ? (
 				<NoResultsState description='По текущему поиску фотографий не найдено.' />
 			) : photos.length === 0 ? (
@@ -143,7 +190,10 @@ export default function PhotosPage() {
 											}}
 											onContextMenu={event => {
 												event.preventDefault()
-												context?.setCoords({ x: event.clientX, y: event.clientY })
+												context?.setCoords({
+													x: event.clientX,
+													y: event.clientY,
+												})
 												context?.setOpen(true)
 											}}
 											className='group relative mb-2 cursor-pointer break-inside-avoid overflow-hidden rounded-lg bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
@@ -154,19 +204,19 @@ export default function PhotosPage() {
 											<ContextMenuTrigger
 												ariaLabel={`Действия с фото ${formatFileName(photo.name)}`}
 											/>
-												{photo.thumbnailUrl ? (
-													// Native image keeps the stored thumbnail's natural aspect ratio for the masonry layout.
-													// eslint-disable-next-line @next/next/no-img-element
-													<img
-														src={photo.thumbnailUrl}
-														alt={formatFileName(photo.name)}
-														className='block h-auto w-full transition-transform duration-200 group-hover:scale-[1.02]'
-													/>
-												) : (
-													<div className='flex aspect-square items-center justify-center text-muted-foreground'>
-														<ImageIcon size={28} />
-													</div>
-												)}
+											{photo.thumbnailUrl ? (
+												// Native image keeps the stored thumbnail's natural aspect ratio for the masonry layout.
+												// eslint-disable-next-line @next/next/no-img-element
+												<img
+													src={photo.thumbnailUrl}
+													alt={formatFileName(photo.name)}
+													className='block h-auto w-full transition-transform duration-200 group-hover:scale-[1.02]'
+												/>
+											) : (
+												<div className='flex aspect-square items-center justify-center text-muted-foreground'>
+													<ImageIcon size={28} />
+												</div>
+											)}
 											<div className='pointer-events-none absolute inset-x-0 bottom-0 bg-linear-to-t from-black/60 to-transparent px-3 pb-2 pt-8 opacity-0 transition-opacity group-hover:opacity-100'>
 												<p className='truncate text-sm font-medium text-white'>
 													{formatFileName(photo.name)}
@@ -176,33 +226,63 @@ export default function PhotosPage() {
 										<PopoverContent isContextMenu>
 											<div className='flex flex-col text-sm'>
 												<button
-												onClick={() => { context?.setOpen(false); setPreviewedPhoto(photo) }}
+													onClick={() => {
+														context?.setOpen(false)
+														setPreviewedPhoto(photo)
+													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
 													<ImageIcon size={18} /> Просмотреть
 												</button>
 												<button
-												onClick={() => { context?.setOpen(false); setSharedPhoto(photo) }}
+													onClick={() => {
+														context?.setOpen(false)
+														setSharedPhoto(photo)
+													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
 													<Share2 size={18} /> Поделиться
 												</button>
 												<button
-												onClick={() => { context?.setOpen(false); setRenamedPhoto(photo) }}
+													onClick={() => {
+														context?.setOpen(false)
+														favoritePhoto.mutate({ id: photo.id, type: 'file' })
+													}}
+													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
+												>
+													<Star size={18} />{' '}
+													{photo.isFavorite
+														? 'Удалить из избранного'
+														: 'Добавить в избранное'}
+												</button>
+												<button
+													onClick={() => {
+														context?.setOpen(false)
+														setRenamedPhoto(photo)
+													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
 													<Pencil size={18} /> Переименовать
 												</button>
 												<Link
-													href={photo.folderId ? `/folders/${photo.folderId}` : '/folders'}
+													href={
+														photo.folderId
+															? `/folders/${photo.folderId}`
+															: '/folders'
+													}
 													className='flex items-center gap-2 rounded px-3 py-1.5 hover:bg-muted'
 												>
 													<ExternalLink size={18} />{' '}
-													{photo.folderId ? 'Перейти к папке' : 'Перейти к корню'}
+													{photo.folderId
+														? 'Перейти к папке'
+														: 'Перейти к корню'}
 												</Link>
 												<button
-												disabled={deletePhoto.isPending}
-												onClick={() => { context?.setOpen(false); deletePhoto.mutate({ id: photo.id, type: 'file' }) }}
+													disabled={deletePhoto.isPending}
+													onClick={() => {
+														context?.setOpen(false)
+														deletePhoto.mutate({ id: photo.id, type: 'file' })
+													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
 													<Trash2 size={18} /> Удалить
@@ -240,7 +320,11 @@ export default function PhotosPage() {
 			)}
 
 			{previewedPhoto && (
-				<ModalContainer isOpen onClose={() => setPreviewedPhoto(null)} ariaLabel={`Просмотр ${formatFileName(previewedPhoto.name)}`}>
+				<ModalContainer
+					isOpen
+					onClose={() => setPreviewedPhoto(null)}
+					ariaLabel={`Просмотр ${formatFileName(previewedPhoto.name)}`}
+				>
 					<Card className='relative w-[min(90vw,48rem)] p-3'>
 						<button
 							onClick={() => setPreviewedPhoto(null)}
@@ -256,7 +340,12 @@ export default function PhotosPage() {
 						) : isOriginalPreviewError ? (
 							<div className='flex min-h-72 flex-col items-center justify-center gap-3 text-sm text-muted-foreground'>
 								Не удалось загрузить оригинал.
-								<Button variant='secondary' onClick={() => void refetchOriginalPreview()}>Повторить</Button>
+								<Button
+									variant='secondary'
+									onClick={() => void refetchOriginalPreview()}
+								>
+									Повторить
+								</Button>
 							</div>
 						) : originalPreview?.previewUrl ? (
 							<Image

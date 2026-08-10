@@ -5,27 +5,26 @@ import {
 	PopoverContextProps,
 } from '@/shared/ui/popover/popover'
 import { PopoverContent } from '@/shared/ui/popover/popover-content'
+import { ContextMenuTrigger } from '@/shared/ui/popover/context-menu-trigger'
 import {
 	ResourceActionsDialogs,
 	type ResourceAction,
 } from '@/features/manage-resource/ui/ResourceActionsDialogs'
 import { ShareResourceDialog } from '@/features/share-resource/ui/ShareResourceDialog'
 import {
+	getFavorites,
 	moveToTrash,
 	restoreFromTrash,
+	toggleFavorite,
 } from '@/entities/folder/api/folder.queries'
+import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { cn } from '@/shared/lib/cn'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
 import { useResourceAccess } from '@/entities/resource/model/resource-access'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-	FolderInput,
-	Share2,
-	SquarePen,
-	Trash2,
-} from 'lucide-react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { FolderInput, Share2, SquarePen, Star, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { forwardRef, memo, useState } from 'react'
 
@@ -79,63 +78,65 @@ export const ContextMenuContent: React.FC<{
 	onRename?: () => void
 	onMove?: () => void
 	onShare?: () => void
-}> = memo(({ onDelete, itemId, onRename, onMove, onShare }) => {
+	onFavorite?: () => void
+	isFavorite?: boolean
+}> = memo(
+	({ onDelete, itemId, onRename, onMove, onShare, onFavorite, isFavorite }) => {
 		const { canEdit, canMove, canManageAccess } = useResourceAccess()
 
 		return (
 			<div className='flex flex-col text-sm'>
-			{canEdit && (
-				<button
-					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-					onClick={onRename}
-				>
-					<SquarePen size={20} />
-					Переименовать
-				</button>
-			)}
-			{canEdit && canMove && (
-				<button
-					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-					onClick={onMove}
-				>
-					<FolderInput size={20} /> Переместить
-				</button>
-			)}
-			{canManageAccess && onShare && (
-				<button
-					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-					onClick={onShare}
-				>
-					<Share2 size={20} /> Поделиться
-				</button>
-			)}
-			{canEdit && onDelete && itemId ? (
-				<button
-					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
-					onClick={() => onDelete(itemId)}
-				>
-					<Trash2 size={20} /> Удалить
-				</button>
-			) : null}
+				{canEdit && (
+					<button
+						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+						onClick={onRename}
+					>
+						<SquarePen size={20} />
+						Переименовать
+					</button>
+				)}
+				{canEdit && canMove && (
+					<button
+						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+						onClick={onMove}
+					>
+						<FolderInput size={20} /> Переместить
+					</button>
+				)}
+				{canManageAccess && onShare && (
+					<button
+						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+						onClick={onShare}
+					>
+						<Share2 size={20} /> Поделиться
+					</button>
+				)}
+				{onFavorite && (
+					<button
+						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+						onClick={onFavorite}
+					>
+						<Star size={20} />{' '}
+						{isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+					</button>
+				)}
+				{canEdit && onDelete && itemId ? (
+					<button
+						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
+						onClick={() => onDelete(itemId)}
+					>
+						<Trash2 size={20} /> Удалить
+					</button>
+				) : null}
 			</div>
 		)
-	})
+	},
+)
 
 ContextMenuContent.displayName = 'ContextMenuContent'
 
 export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
-	(
-		{
-			className,
-			name,
-			pathname,
-			id,
-			size,
-			collaborators,
-			...props
-		},
-		ref,
-	) => {
+	({ className, name, pathname, id, size, collaborators, ...props }, ref) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
 		const { canUndoDelete } = useResourceAccess()
@@ -143,6 +144,12 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 		const [isShareOpen, setIsShareOpen] = useState(false)
 		const itemSize = size || 100
 		const itemHref = `${pathname}/${id}`
+		const { data: favorites } = useQuery({
+			queryKey: FOLDER_KEYS.favorites,
+			queryFn: async () => (await getFavorites()).data,
+		})
+		const isFavorite =
+			favorites?.folders.some(folder => folder.id === id) ?? false
 
 		const deleteFolder = useMutation({
 			mutationFn: moveToTrash,
@@ -166,6 +173,21 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 			},
 			onError: () =>
 				showToast('Не удалось переместить папку в корзину', 'error'),
+		})
+
+		const favoriteFolder = useMutation({
+			mutationFn: toggleFavorite,
+			onSuccess: () => {
+				void invalidateStorageQueries(queryClient)
+				showToast(
+					isFavorite
+						? `Папка «${name}» удалена из избранного`
+						: `Папка «${name}» добавлена в избранное`,
+					'success',
+				)
+			},
+			onError: () =>
+				showToast('Не удалось добавить папку в избранное', 'error'),
 		})
 
 		const onDeleteFolder = (folderId: string) => {
@@ -216,6 +238,11 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 										context?.setOpen(false)
 										setIsShareOpen(true)
 									}}
+									onFavorite={() => {
+										context?.setOpen(false)
+										favoriteFolder.mutate({ id, type: 'folder' })
+									}}
+									isFavorite={isFavorite}
 								/>
 							</PopoverContent>
 							<ResourceActionsDialogs
@@ -245,8 +272,26 @@ FolderGrid.displayName = 'FolderGrid'
 
 export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 	({ className, pathname, name, id, updatedAt, ...props }, ref) => {
+		const queryClient = useQueryClient()
+		const showToast = useToastStore(state => state.show)
 		const itemHref = `${pathname}/${id}`
 		const [action, setAction] = useState<ResourceAction>(null)
+		const { data: favorites } = useQuery({
+			queryKey: FOLDER_KEYS.favorites,
+			queryFn: async () => (await getFavorites()).data,
+		})
+		const isFavorite =
+			favorites?.folders.some(folder => folder.id === id) ?? false
+
+		const favoriteFolder = useMutation({
+			mutationFn: toggleFavorite,
+			onSuccess: () => {
+				void invalidateStorageQueries(queryClient)
+				showToast(`Папка «${name}» добавлена в избранное`, 'success')
+			},
+			onError: () =>
+				showToast('Не удалось добавить папку в избранное', 'error'),
+		})
 
 		return (
 			<Popover className='w-full'>
@@ -284,10 +329,19 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									Папка
 								</span>
 							</Link>
+							<ContextMenuTrigger
+								ariaLabel={`Действия с папкой ${name}`}
+								className='absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground'
+							/>
 							<PopoverContent isContextMenu>
 								<ContextMenuContent
 									onRename={() => setAction('rename')}
 									onMove={() => setAction('move')}
+									onFavorite={() => {
+										context?.setOpen(false)
+										favoriteFolder.mutate({ id, type: 'folder' })
+									}}
+									isFavorite={isFavorite}
 								/>
 							</PopoverContent>
 							<ResourceActionsDialogs

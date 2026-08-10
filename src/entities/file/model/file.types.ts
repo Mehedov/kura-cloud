@@ -6,6 +6,7 @@ export interface PhotoFileDto {
 	s3Key: string
 	thumbnailKey: string | null
 	thumbnailUrl?: string
+	isFavorite?: boolean
 	isDeleted: boolean
 	deletedAt: string | null
 	userId?: string

@@ -12,9 +12,12 @@ import {
 	type ResourceAction,
 } from '@/features/manage-resource/ui/ResourceActionsDialogs'
 import {
+	getFavorites,
 	moveToTrash,
 	restoreFromTrash,
+	toggleFavorite,
 } from '@/entities/folder/api/folder.queries'
+import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { cn } from '@/shared/lib/cn'
 import { formatFileName } from '@/shared/lib/formatFileName.util'
 import { useResourceAccess } from '@/entities/resource/model/resource-access'
@@ -26,6 +29,7 @@ import {
 	FolderInput,
 	Share2,
 	SquarePen,
+	Star,
 	Trash2,
 } from 'lucide-react'
 import React, { forwardRef, memo, useState } from 'react'
@@ -45,6 +49,8 @@ interface ContextMenuContentProps {
 	onRename?: () => void
 	onMove?: () => void
 	onShare?: () => void
+	onFavorite?: () => void
+	isFavorite?: boolean
 }
 
 export const ContextMenuContent = memo(
@@ -54,6 +60,8 @@ export const ContextMenuContent = memo(
 		onRename,
 		onMove,
 		onShare,
+		onFavorite,
+		isFavorite,
 	}: ContextMenuContentProps) => {
 		const { canEdit, canMove, canManageAccess } = useResourceAccess()
 
@@ -73,6 +81,15 @@ export const ContextMenuContent = memo(
 					onClick={onShare}
 				>
 					<Share2 size={20} /> Поделиться
+				</button>
+			)}
+			{onFavorite && (
+				<button
+					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
+					onClick={onFavorite}
+				>
+					<Star size={20} />{' '}
+					{isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
 				</button>
 			)}
 			{canEdit && (
@@ -115,7 +132,7 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 			id,
 			imagePreview,
 			type = 'other',
-			size = 90,
+		size = 90,
 			...props
 		},
 		ref,
@@ -128,6 +145,11 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 		const [shouldFetchDownload, setShouldFetchDownload] = useState(false)
 
 		const fileId = id
+		const { data: favorites } = useQuery({
+			queryKey: FOLDER_KEYS.favorites,
+			queryFn: async () => (await getFavorites()).data,
+		})
+		const isFavorite = favorites?.files.some(file => file.id === fileId) ?? false
 
 		const { data } = useQuery({
 			queryKey: ['downloadUrl', fileId],
@@ -157,6 +179,20 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 			},
 			onError: () =>
 				showToast('Не удалось переместить файл в корзину', 'error'),
+		})
+
+		const favoriteFile = useMutation({
+			mutationFn: toggleFavorite,
+			onSuccess: () => {
+				void invalidateStorageQueries(queryClient)
+				showToast(
+					isFavorite
+						? `Файл «${formatFileName(name)}» удалён из избранного`
+						: `Файл «${formatFileName(name)}» добавлен в избранное`,
+					'success',
+				)
+			},
+			onError: () => showToast('Не удалось добавить файл в избранное', 'error'),
 		})
 
 		const onDeleteFile = () => {
@@ -213,8 +249,13 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 													context?.setOpen(false)
 													setIsShareOpen(true)
 												}
-											: undefined
+										: undefined
 									}
+									onFavorite={() => {
+										context?.setOpen(false)
+										favoriteFile.mutate({ id: fileId, type: 'file' })
+									}}
+									isFavorite={isFavorite}
 								/>
 							</PopoverContent>
 							<ResourceActionsDialogs
