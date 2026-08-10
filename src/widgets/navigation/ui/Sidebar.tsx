@@ -27,6 +27,43 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 
+const NAV_ITEMS = [
+	{
+		href: '/',
+		label: 'All files',
+		icon: LayoutGrid,
+	},
+	{
+		href: '/photos',
+		label: 'Photo',
+		icon: ImageIcon,
+	},
+	{ href: '/favorite', label: 'Favorite', icon: Star },
+	{
+		href: '/shared',
+		label: 'Shared Files',
+		icon: Share,
+	},
+	{
+		href: '/basket',
+		label: 'Корзина',
+		icon: Trash2Icon,
+	},
+	{
+		href: '/settings',
+		label: 'Settings',
+		icon: Settings,
+	},
+] as const
+
+const CATEGORY_COLORS = {
+	Photo: 'text-red-600',
+	Video: 'text-green-600',
+	Document: 'text-blue-600',
+	'Other files': 'text-amber-600',
+	'Free Storage': 'text-muted-foreground',
+} as const
+
 export function Sidebar() {
 	const { user } = useAuthStore()
 	const {
@@ -35,34 +72,7 @@ export function Sidebar() {
 		setIsSidebarOpen,
 		toggleSidebarCollapsed,
 	} = useDropzoneStore()
-	const NAV_ITEMS = [
-		{
-			href: '/',
-			label: 'All files',
-			icon: LayoutGrid,
-		},
-		{
-			href: '/photos',
-			label: 'Photo',
-			icon: ImageIcon,
-		},
-		{ href: '/favorite', label: 'Favorite', icon: Star },
-		{
-			href: '/shared',
-			label: 'Shared Files',
-			icon: Share,
-		},
-		{
-			href: '/basket',
-			label: 'Корзина',
-			icon: Trash2Icon,
-		},
-		{
-			href: '/settings',
-			label: 'Settings',
-			icon: Settings,
-		},
-	] as const
+
 	const pathname = usePathname()
 	const { setIsOpenProfile } = useModalStore(state => state)
 	const closeSidebar = () => setIsSidebarOpen(false)
@@ -76,13 +86,6 @@ export function Sidebar() {
 	})
 	const suggestedFolders = suggestedFoldersData?.data.items ?? []
 	const storageStats = storageStatsData?.data
-	const categoryColors = {
-		Photo: 'text-red-600',
-		Video: 'text-green-600',
-		Document: 'text-blue-600',
-		'Other files': 'text-amber-600',
-		'Free Storage': 'text-muted-foreground',
-	} as const
 
 	return (
 		<>
@@ -222,7 +225,7 @@ export function Sidebar() {
 									<div className='flex items-center gap-2 text-[13px]'>
 										<Square
 											size={15}
-											className={categoryColors[category.label]}
+											className={CATEGORY_COLORS[category.label]}
 										/>
 										{category.label}
 									</div>
