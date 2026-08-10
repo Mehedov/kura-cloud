@@ -17,6 +17,7 @@ import { formatDate } from '@/shared/lib/formatDate.util'
 import { FolderIcon } from '@/shared/assets/icons/FolderIcon'
 import { File as FileIcon } from 'lucide-react'
 import Link from 'next/link'
+import { ResourceAccessProvider } from '@/entities/resource/model/resource-access'
 
 type ViewMode = 'menu' | 'grid'
 
@@ -31,11 +32,6 @@ interface FolderItemsCollectionProps {
 	hasActiveFilters: boolean
 	onPageChange: (page: number) => void
 	pathname?: string
-	canEdit?: boolean
-	canMove?: boolean
-	canManageAccess?: boolean
-	canMoveToRoot?: boolean
-	canUndoDelete?: boolean
 }
 
 export function FolderItemsCollection({
@@ -49,11 +45,6 @@ export function FolderItemsCollection({
 	hasActiveFilters,
 	onPageChange,
 	pathname = '/folders',
-	canEdit = true,
-	canMove = true,
-	canManageAccess = true,
-	canMoveToRoot = true,
-	canUndoDelete = true,
 }: FolderItemsCollectionProps) {
 	const items = response?.items ?? []
 	const folders = items.filter(item => item.kind === 'folder')
@@ -100,10 +91,6 @@ export function FolderItemsCollection({
 						name={folder.name}
 						pathname={pathname}
 						size={90}
-						canEdit={canEdit}
-						canMove={canMove}
-						canManageAccess={canManageAccess}
-						canUndoDelete={canUndoDelete}
 						collaborators={folder.collaborators}
 					/>
 				))}
@@ -115,11 +102,6 @@ export function FolderItemsCollection({
 						type={file.type}
 						imagePreview={file.thumbnailUrl}
 						size={90}
-						canEdit={canEdit}
-						canMove={canMove}
-						canManageAccess={canManageAccess}
-						canMoveToRoot={canMoveToRoot}
-						canUndoDelete={canUndoDelete}
 					/>
 				))}
 			</div>
@@ -177,6 +159,7 @@ export function FolderItemsCollection({
 		)
 
 	return (
+		<ResourceAccessProvider permission={response?.folder?.permission ?? 'owner'}>
 		<>
 			{content}
 			{response && response.pagination.totalPages > 1 && (
@@ -201,5 +184,6 @@ export function FolderItemsCollection({
 				</div>
 			)}
 		</>
+		</ResourceAccessProvider>
 	)
 }

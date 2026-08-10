@@ -19,6 +19,7 @@ import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { useModalStore } from '@/widgets/global-modals/model/modal.store'
 import { Button } from '@/shared/ui/button/Button'
+import { getResourceAccess } from '@/entities/resource/model/resource-access'
 
 const FILTER_LABELS = {
 	all: 'Все файлы',
@@ -49,8 +50,7 @@ export function FolderOneTemplate() {
 		filters,
 	})
 	const response = data?.data
-	const canEdit = response?.folder?.permission !== 'viewer'
-	const isOwner = response?.folder?.permission === 'owner'
+	const { canEdit } = getResourceAccess(response?.folder?.permission ?? 'owner')
 
 	if (!folderId) return <EmptyState title='Папка не выбрана' />
 
@@ -140,11 +140,6 @@ export function FolderOneTemplate() {
 				filters={filters}
 				hasActiveFilters={hasActiveFilters}
 				onPageChange={setPage}
-				canEdit={canEdit}
-				canMove={isOwner}
-				canManageAccess={isOwner}
-				canMoveToRoot={isOwner}
-				canUndoDelete={isOwner}
 			/>
 		</section>
 	)

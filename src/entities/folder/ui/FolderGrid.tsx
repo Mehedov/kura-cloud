@@ -16,6 +16,7 @@ import {
 } from '@/entities/folder/api/folder.queries'
 import { cn } from '@/shared/lib/cn'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
+import { useResourceAccess } from '@/entities/resource/model/resource-access'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
@@ -35,10 +36,6 @@ export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	size?: number
 	id: string
 	updatedAt?: string
-	canEdit?: boolean
-	canMove?: boolean
-	canManageAccess?: boolean
-	canUndoDelete?: boolean
 	context?: PopoverContextProps | undefined
 	collaborators?: {
 		owner: { id: string; name: string; avatarUrl?: string | null } | null
@@ -82,21 +79,11 @@ export const ContextMenuContent: React.FC<{
 	onRename?: () => void
 	onMove?: () => void
 	onShare?: () => void
-	canEdit?: boolean
-	canMove?: boolean
-	canManageAccess?: boolean
-}> = memo(
-	({
-		onDelete,
-		itemId,
-		onRename,
-		onMove,
-		onShare,
-		canEdit = true,
-		canMove = true,
-		canManageAccess = true,
-	}) => (
-		<div className='flex flex-col text-sm'>
+}> = memo(({ onDelete, itemId, onRename, onMove, onShare }) => {
+		const { canEdit, canMove, canManageAccess } = useResourceAccess()
+
+		return (
+			<div className='flex flex-col text-sm'>
 			{canEdit && (
 				<button
 					className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
@@ -130,9 +117,9 @@ export const ContextMenuContent: React.FC<{
 					<Trash2 size={20} /> Удалить
 				</button>
 			) : null}
-		</div>
-	),
-)
+			</div>
+		)
+	})
 
 ContextMenuContent.displayName = 'ContextMenuContent'
 
@@ -145,16 +132,13 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 			id,
 			size,
 			collaborators,
-			canEdit = true,
-			canMove = true,
-			canManageAccess = true,
-			canUndoDelete = true,
 			...props
 		},
 		ref,
 	) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
+		const { canUndoDelete } = useResourceAccess()
 		const [action, setAction] = useState<ResourceAction>(null)
 		const [isShareOpen, setIsShareOpen] = useState(false)
 		const itemSize = size || 100
@@ -232,9 +216,6 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 										context?.setOpen(false)
 										setIsShareOpen(true)
 									}}
-									canEdit={canEdit}
-									canMove={canMove}
-									canManageAccess={canManageAccess}
 								/>
 							</PopoverContent>
 							<ResourceActionsDialogs

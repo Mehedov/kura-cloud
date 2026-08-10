@@ -17,6 +17,7 @@ import {
 } from '@/entities/folder/api/folder.queries'
 import { cn } from '@/shared/lib/cn'
 import { formatFileName } from '@/shared/lib/formatFileName.util'
+import { useResourceAccess } from '@/entities/resource/model/resource-access'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -36,11 +37,6 @@ export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
 	imagePreview?: string
 	type?: 'photo' | 'video' | 'document' | 'other'
 	size?: number
-	canEdit?: boolean
-	canMove?: boolean
-	canManageAccess?: boolean
-	canMoveToRoot?: boolean
-	canUndoDelete?: boolean
 }
 
 interface ContextMenuContentProps {
@@ -49,8 +45,6 @@ interface ContextMenuContentProps {
 	onRename?: () => void
 	onMove?: () => void
 	onShare?: () => void
-	canEdit?: boolean
-	canMove?: boolean
 }
 
 export const ContextMenuContent = memo(
@@ -60,9 +54,10 @@ export const ContextMenuContent = memo(
 		onRename,
 		onMove,
 		onShare,
-		canEdit = true,
-		canMove = true,
-	}: ContextMenuContentProps) => (
+	}: ContextMenuContentProps) => {
+		const { canEdit, canMove, canManageAccess } = useResourceAccess()
+
+		return (
 		<div className='flex flex-col text-sm'>
 			{downloadUrl ? (
 				<a
@@ -72,7 +67,7 @@ export const ContextMenuContent = memo(
 					<DownloadCloudIcon size={20} /> Скачать
 				</a>
 			) : null}
-			{canEdit && onShare && (
+			{canManageAccess && onShare && (
 				<button
 					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
 					onClick={onShare}
@@ -106,7 +101,8 @@ export const ContextMenuContent = memo(
 				</button>
 			)}
 		</div>
-	),
+		)
+	},
 )
 
 ContextMenuContent.displayName = 'ContextMenuContent'
@@ -120,17 +116,13 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 			imagePreview,
 			type = 'other',
 			size = 90,
-			canEdit = true,
-			canMove = true,
-			canManageAccess = true,
-			canMoveToRoot = true,
-			canUndoDelete = true,
 			...props
 		},
 		ref,
 	) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
+		const { canManageAccess, canMoveToRoot, canUndoDelete } = useResourceAccess()
 		const [action, setAction] = useState<ResourceAction>(null)
 		const [isShareOpen, setIsShareOpen] = useState(false)
 		const [shouldFetchDownload, setShouldFetchDownload] = useState(false)
@@ -223,8 +215,6 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 												}
 											: undefined
 									}
-									canEdit={canEdit}
-									canMove={canMove}
 								/>
 							</PopoverContent>
 							<ResourceActionsDialogs
