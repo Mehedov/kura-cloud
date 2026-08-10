@@ -2,9 +2,9 @@ import type { Metadata } from 'next'
 import { cookies } from 'next/headers'
 import './globals.css'
 
-import { parseTheme, THEME_COOKIE } from '@/lib/theme'
-import QueryProvider from '@/providers/query-provider'
-import { ThemeBootstrap } from '@/providers/theme-bootstrap'
+import { parseTheme, THEME_COOKIE } from '@/shared/theme/lib/theme'
+import QueryProvider from '@/shared/providers/query-provider'
+import { ThemeBootstrap } from '@/shared/providers/theme-bootstrap'
 
 export const metadata: Metadata = {
 	title: 'Kura Drive',

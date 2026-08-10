@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
-import { isPublicRoute } from './src/config/routes'
+import { isPublicRoute } from './src/shared/config/routes'
 
 export function proxy(request: NextRequest) {
 	const hasSession = Boolean(

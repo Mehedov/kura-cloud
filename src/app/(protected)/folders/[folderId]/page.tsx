@@ -1,5 +1,5 @@
 
-import { FolderOneTemplate } from '@/components/containers/folder-one-template'
+import { FolderOneTemplate } from '@/page-compositions/folder-page/ui/FolderPage'
 
 export default function page() {
 	return <FolderOneTemplate />
