@@ -5,6 +5,7 @@ import { FolderAvatarStack } from '@/entities/folder/ui/FolderGrid'
 import { PAGES } from '@/shared/config/page.config'
 import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { getSuggestedFolders } from '@/entities/folder/api/folder.queries'
+import useAuthStore from '@/entities/session/model/session.store'
 import { useQuery } from '@tanstack/react-query'
 import Link from 'next/link'
 import {
@@ -14,9 +15,11 @@ import {
 } from '@/shared/ui/states/async-state'
 
 export default function SuggestedFolders() {
+	const userId = useAuthStore(state => state.user?.id)
 	const { data, isPending, isError, refetch } = useQuery({
-		queryKey: FOLDER_KEYS.suggested,
+		queryKey: FOLDER_KEYS.suggestedForUser(userId ?? ''),
 		queryFn: getSuggestedFolders,
+		enabled: Boolean(userId),
 	})
 
 	const folders = data?.data.items || []

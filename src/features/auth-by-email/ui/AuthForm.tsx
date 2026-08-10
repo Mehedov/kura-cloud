@@ -4,12 +4,14 @@ import { Button } from '@/shared/ui/button/Button'
 import Input from '@/shared/ui/input/input'
 import useAuthStore from '@/entities/session/model/session.store'
 import axios from 'axios'
+import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 export default function Auth() {
 	const router = useRouter()
 	const { login, register } = useAuthStore()
+	const queryClient = useQueryClient()
 
 	const [isLogin, setIsLogin] = useState(true)
 	const [formData, setFormData] = useState({
@@ -29,6 +31,9 @@ export default function Auth() {
 		setError(null)
 
 		try {
+			await queryClient.cancelQueries()
+			queryClient.clear()
+
 			if (isLogin) {
 				await login({ email: formData.email, password: formData.password })
 			} else {

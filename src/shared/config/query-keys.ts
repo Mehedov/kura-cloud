@@ -2,6 +2,7 @@ export const FOLDER_KEYS = {
 	all: ['home-folders'],
 	root: ['root-folders'],
 	suggested: ['suggested-folders'],
+	suggestedForUser: (userId: string) => ['suggested-folders', userId] as const,
 	storageStats: ['storage-stats'],
 	shares: ['shares'],
 	favorites: ['favorites'],

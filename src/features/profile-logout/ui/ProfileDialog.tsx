@@ -17,10 +17,11 @@ export default function Profile() {
 
 	const onLogout = useMutation({
 		mutationFn: logout,
-		onSuccess: () => {
-			queryClient.clear()
-			setIsOpenProfile(false)
+		onSuccess: async () => {
 			setIsAuth(false)
+			setIsOpenProfile(false)
+			await queryClient.cancelQueries()
+			queryClient.clear()
 		},
 	})
 

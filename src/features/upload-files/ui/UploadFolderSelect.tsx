@@ -6,6 +6,7 @@ import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { cn } from '@/shared/lib/cn'
 import { FolderIcon } from '@/shared/assets/icons/FolderIcon'
 import { FolderAvatarStack } from '@/entities/folder/ui/FolderGrid'
+import useAuthStore from '@/entities/session/model/session.store'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import { HardDrive, LoaderCircle, Search } from 'lucide-react'
 import { useState } from 'react'
@@ -19,12 +20,14 @@ export default function UploadFolderSelect({
 	selectFolderId,
 	setSelectFolderId,
 }: Props) {
+	const userId = useAuthStore(state => state.user?.id)
 	const [search, setSearch] = useState('')
 	const debouncedSearch = useDebouncedValue(search.trim())
 	const isSearchDebouncing = search.trim() !== debouncedSearch
 	const { data: suggestedData, isPending: isSuggestedPending } = useQuery({
-		queryKey: FOLDER_KEYS.suggested,
+		queryKey: FOLDER_KEYS.suggestedForUser(userId ?? ''),
 		queryFn: getSuggestedFolders,
+		enabled: Boolean(userId),
 	})
 	const { data: searchData, isPending: isSearchPending, isError } = useQuery({
 		queryKey: ['folder-search', debouncedSearch],

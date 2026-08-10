@@ -77,8 +77,9 @@ export function Sidebar() {
 	const { setIsOpenProfile } = useModalStore(state => state)
 	const closeSidebar = () => setIsSidebarOpen(false)
 	const { data: suggestedFoldersData } = useQuery({
-		queryKey: FOLDER_KEYS.suggested,
+		queryKey: FOLDER_KEYS.suggestedForUser(user?.id ?? ''),
 		queryFn: getSuggestedFolders,
+		enabled: Boolean(user?.id),
 	})
 	const { data: storageStatsData } = useQuery({
 		queryKey: FOLDER_KEYS.storageStats,
