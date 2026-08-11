@@ -18,6 +18,7 @@ import { FolderIcon } from '@/shared/assets/icons/FolderIcon'
 import { File as FileIcon } from 'lucide-react'
 import Link from 'next/link'
 import { ResourceAccessProvider } from '@/entities/resource/model/resource-access'
+import useLanguage from '@/shared/language/model'
 
 type ViewMode = 'menu' | 'grid'
 
@@ -46,16 +47,25 @@ export function FolderItemsCollection({
 	onPageChange,
 	pathname = '/folders',
 }: FolderItemsCollectionProps) {
+	const language = useLanguage(state => state.language)
+	const { loadingFolderContents, resourceNotFound, resourceNotFoundDescription, noFileResults, emptyFolder, emptyFolderDescription, name, type, modified, size, folder: folderLabel, previousPage, nextPage } = useLanguage(state => state.t)
+	const { fileTypePhoto, fileTypeVideo, fileTypeDocument, fileTypeOther } = useLanguage(state => state.t)
+	const fileTypeLabels = {
+		photo: fileTypePhoto,
+		video: fileTypeVideo,
+		document: fileTypeDocument,
+		other: fileTypeOther,
+	}
 	const items = response?.items ?? []
 	const folders = items.filter(item => item.kind === 'folder')
 	const files = items.filter(item => item.kind === 'file')
 
-	if (isPending) return <LoadingState title='Загружаем содержимое папки' />
+	if (isPending) return <LoadingState title={loadingFolderContents} />
 	if (isError && getHttpStatus(error) === 404) {
 		return (
 			<ResourceNotFoundState
-				title='Папка не найдена'
-				description='Возможно, она была удалена или у вас больше нет к ней доступа.'
+				title={resourceNotFound}
+				description={resourceNotFoundDescription}
 			/>
 		)
 	}
@@ -69,14 +79,14 @@ export function FolderItemsCollection({
 	}
 	if (items.length === 0 && hasActiveFilters) {
 		return (
-			<NoResultsState description='По текущему поиску и фильтрам файлов не найдено.' />
+			<NoResultsState description={noFileResults} />
 		)
 	}
 	if (items.length === 0) {
 		return (
 			<EmptyState
-				title='Папка пока пуста'
-				description='Загрузите файл или создайте вложенную папку.'
+				title={emptyFolder}
+				description={emptyFolderDescription}
 			/>
 		)
 	}
@@ -109,10 +119,10 @@ export function FolderItemsCollection({
 			<div className='overflow-x-auto rounded-xl border border-border'>
 				<div className='min-w-160 divide-y divide-border text-sm'>
 					<div className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_7rem] bg-muted px-4 py-3 font-medium text-muted-foreground'>
-						<span>Название</span>
-						<span>Тип</span>
-						<span>Изменено</span>
-						<span>Размер</span>
+						<span>{name}</span>
+						<span>{type}</span>
+						<span>{modified}</span>
+						<span>{size}</span>
 					</div>
 					{folders.map(folder => (
 						<Link
@@ -124,9 +134,9 @@ export function FolderItemsCollection({
 								<FolderIcon size={24} />
 								{folder.name}
 							</span>
-							<span className='text-muted-foreground'>Папка</span>
+							<span className='text-muted-foreground'>{folderLabel}</span>
 							<span className='text-muted-foreground'>
-								{formatDate(folder.updatedAt)}
+								{formatDate(folder.updatedAt, language)}
 							</span>
 							<span className='text-muted-foreground'>—</span>
 						</Link>
@@ -144,10 +154,10 @@ export function FolderItemsCollection({
 								<span className='truncate'>{file.name}</span>
 							</span>
 							<span className='capitalize text-muted-foreground'>
-								{file.type}
+								{fileTypeLabels[file.type]}
 							</span>
 							<span className='text-muted-foreground'>
-								{formatDate(file.updatedAt)}
+								{formatDate(file.updatedAt, language)}
 							</span>
 							<span className='text-muted-foreground'>
 								{formatBytes(file.size)}
@@ -169,7 +179,7 @@ export function FolderItemsCollection({
 						onClick={() => onPageChange(filters.page - 1)}
 						className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
 					>
-						Назад
+						{previousPage}
 					</button>
 					<span className='text-muted-foreground'>
 						{filters.page} / {response.pagination.totalPages}
@@ -179,7 +189,7 @@ export function FolderItemsCollection({
 						onClick={() => onPageChange(filters.page + 1)}
 						className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
 					>
-						Вперёд
+						{nextPage}
 					</button>
 				</div>
 			)}

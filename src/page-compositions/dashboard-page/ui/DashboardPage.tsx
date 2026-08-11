@@ -7,6 +7,7 @@ import useAuthStore from '@/entities/session/model/session.store'
 import HomeFolders from '@/widgets/dashboard/ui/HomeFolders'
 import SuggestedFolders from '@/widgets/dashboard/ui/SuggestedFolders'
 import { HomeFiles } from '@/widgets/dashboard/ui/HomeFiles'
+import useLanguage from '@/shared/language/model'
 
 interface HomeTemplatesProps {
 	breadcrumbsRoutes?: string[]
@@ -16,16 +17,17 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 	const { setIsOpenDropzone, setIsOpenCreateFolder } = useModalStore(state => state)
 
 	const { user } = useAuthStore()
+	const { welcomeBack, dashboardSubtitle, uploadOrDrop, createFolder } = useLanguage(state => state.t)
 
 	return (
 		<section className='flex flex-col gap-8 w-full'>
 			<section className='flex flex-col gap-4 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between'>
 				<div>
 					<h1 className='text-2xl font-semibold text-foreground'>
-						Welcome back, {user?.name}
+						{welcomeBack.replace('{name}', user?.name ?? '')}
 					</h1>
 					<p className='text-sm text-muted-foreground'>
-						Welcome back! Let’s continue your activity on the dashboard.
+						{dashboardSubtitle}
 					</p>
 				</div>
 
@@ -35,14 +37,14 @@ export default function HomeTemplate({}: HomeTemplatesProps) {
 						className='h-13'
 						onClick={() => setIsOpenDropzone(true)}
 					>
-						<UploadCloud size={20} /> Upload or drop
+						<UploadCloud size={20} /> {uploadOrDrop}
 					</Button>
 					<Button
 						variant='secondary'
 						className='h-13'
 						onClick={() => setIsOpenCreateFolder(true)}
 					>
-						<FolderPlus size={20} /> Create folder
+						<FolderPlus size={20} /> {createFolder}
 					</Button>
 				</div>
 			</section>

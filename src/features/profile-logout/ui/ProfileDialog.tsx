@@ -9,9 +9,12 @@ import useAuthStore from '@/entities/session/model/session.store'
 import { useModalStore } from '@/widgets/global-modals/model/modal.store'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 export default function Profile() {
 	const { isOpenProfile, setIsOpenProfile } = useModalStore(state => state)
+	const language = useLanguage(state => state.language)
 	const { user, setIsAuth } = useAuthStore()
 	const queryClient = useQueryClient()
 
@@ -33,7 +36,7 @@ export default function Profile() {
 
 	return (
 		<section>
-			<ModalContainer isOpen={isOpenProfile} onClose={setIsOpenProfile} ariaLabel='Профиль'>
+				<ModalContainer isOpen={isOpenProfile} onClose={setIsOpenProfile} ariaLabel={translate(language, 'profile')}>
 				<Card className='w-[min(calc(100vw-2rem),32rem)]'>
 					<div className='mb-8 flex flex-col items-center gap-3 sm:flex-row sm:items-start'>
 						<Avatar
@@ -44,13 +47,13 @@ export default function Profile() {
 							className='size-20 border border-border text-3xl'
 						/>
 						<div className='flex min-w-0 flex-col gap-1 text-center sm:text-left'>
-							<div className='text-sm font-medium'>Профиль</div>
+							<div className='text-sm font-medium'>{translate(language, 'profile')}</div>
 							<div className='truncate text-xs text-muted-foreground'>{user?.email}</div>
 						</div>
 					</div>
 					<div className='mb-8 flex flex-col gap-3'>
 						<div className='flex flex-col space-y-2'>
-							<label htmlFor='profile-name' className='font-medium'>Имя</label>
+							<label htmlFor='profile-name' className='font-medium'>{translate(language, 'nameField')}</label>
 							<Input
 								id='profile-name'
 								className='shadow-xs font-medium'
@@ -61,7 +64,7 @@ export default function Profile() {
 					</div>
 					{errorMessage && <p className='mb-3 text-sm text-destructive'>{errorMessage}</p>}
 					<Button className='w-full' onClick={handleLogout} disabled={onLogout.isPending}>
-						{onLogout.isPending ? 'Выходим…' : 'Выйти'}
+					{translate(language, onLogout.isPending ? 'loggingOut' : 'logout')}
 					</Button>
 				</Card>
 			</ModalContainer>

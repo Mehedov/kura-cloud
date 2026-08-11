@@ -3,6 +3,7 @@
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import { Search } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import useLanguage from '@/shared/language/model'
 
 interface FolderBrowserSearchProps {
 	initialValue: string
@@ -13,6 +14,7 @@ export function FolderBrowserSearch({
 	initialValue,
 	onSearch,
 }: FolderBrowserSearchProps) {
+	const { searchFolder } = useLanguage(state => state.t)
 	const [value, setValue] = useState(initialValue)
 	const debouncedValue = useDebouncedValue(value)
 
@@ -26,7 +28,7 @@ export function FolderBrowserSearch({
 			<input
 				value={value}
 				onChange={event => setValue(event.target.value)}
-				placeholder='Поиск в папке'
+				placeholder={searchFolder}
 				className='w-36 bg-transparent text-foreground outline-none placeholder:text-muted-foreground sm:w-52'
 			/>
 		</label>

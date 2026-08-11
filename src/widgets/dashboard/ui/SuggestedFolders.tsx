@@ -13,9 +13,11 @@ import {
 	ErrorState,
 	LoadingState,
 } from '@/shared/ui/states/async-state'
+import useLanguage from '@/shared/language/model'
 
 export default function SuggestedFolders() {
 	const userId = useAuthStore(state => state.user?.id)
+	const { recentFolders, loadError, noFoldersYet, loadingSuggestedFolders, suggestedFoldersEmptyDescription } = useLanguage(state => state.t)
 	const { data, isPending, isError, refetch } = useQuery({
 		queryKey: FOLDER_KEYS.suggestedForUser(userId ?? ''),
 		queryFn: getSuggestedFolders,
@@ -27,21 +29,21 @@ export default function SuggestedFolders() {
 	return (
 		<section>
 			<h2 className='mb-4 text-md font-medium text-foreground'>
-				Suggested based on your activity
+				{recentFolders}
 			</h2>
 
 			{isPending ? (
-				<LoadingState title='Подбираем папки' className='min-h-32' />
+				<LoadingState title={loadingSuggestedFolders} className='min-h-32' />
 			) : isError ? (
 				<ErrorState
-					title='Не удалось подобрать папки'
+					title={loadError}
 					onRetry={() => void refetch()}
 					className='min-h-32'
 				/>
 			) : folders.length === 0 ? (
 				<EmptyState
-					title='Недавних папок пока нет'
-					description='Откройте папку или добавьте в неё файл — она появится здесь.'
+					title={noFoldersYet}
+					description={suggestedFoldersEmptyDescription}
 					className='min-h-32'
 				/>
 			) : (

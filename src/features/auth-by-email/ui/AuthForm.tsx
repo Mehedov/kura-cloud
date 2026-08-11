@@ -7,11 +7,13 @@ import axios from 'axios'
 import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import useLanguage from '@/shared/language/model'
 
 export default function Auth() {
 	const router = useRouter()
 	const { login, register } = useAuthStore()
 	const queryClient = useQueryClient()
+	const { loginError, login: loginLabel, registration, nameField, email, password, signIn, signUp, noAccount, hasAccount } = useLanguage(state => state.t)
 
 	const [isLogin, setIsLogin] = useState(true)
 	const [formData, setFormData] = useState({
@@ -50,8 +52,8 @@ export default function Auth() {
 			console.error('Auth error:', e)
 			setError(
 				axios.isAxiosError(e)
-					? (e.response?.data?.error ?? 'Произошла ошибка при входе')
-					: 'Произошла ошибка при входе',
+					? (e.response?.data?.error ?? loginError)
+					: loginError,
 			)
 		}
 	}
@@ -61,7 +63,7 @@ export default function Auth() {
 			<div className='w-full max-w-md space-y-8'>
 				<div>
 					<h2 className='mt-6 text-center text-3xl font-extrabold text-foreground'>
-						{isLogin ? 'Вход' : 'Регистрация'}
+						{isLogin ? loginLabel : registration}
 					</h2>
 					{error && (
 						<p className='text-red-500 text-center text-sm mt-2'>{error}</p>
@@ -75,7 +77,7 @@ export default function Auth() {
 								htmlFor='name'
 								className='block text-sm font-medium text-foreground'
 							>
-								Имя
+								{nameField}
 							</label>
 							<input
 								id='name'
@@ -95,7 +97,7 @@ export default function Auth() {
 							htmlFor='email'
 							className='block text-sm font-medium text-foreground'
 						>
-							Электронная почта
+							{email}
 						</label>
 						<Input
 							id='email'
@@ -113,7 +115,7 @@ export default function Auth() {
 							htmlFor='password'
 							className='block text-sm font-medium text-foreground'
 						>
-							Пароль
+							{password}
 						</label>
 						<Input
 							id='password'
@@ -127,15 +129,15 @@ export default function Auth() {
 					</div>
 
 					<Button className='w-full'>
-						{isLogin ? 'Войти' : 'Зарегистрироваться'}
+						{isLogin ? signIn : signUp}
 					</Button>
 				</form>
 
 				<div className='text-center mt-4'>
 					<Button variant='ghost' onClick={toggleForm} className='m-auto'>
 						{isLogin
-							? 'Нет аккаунта? Зарегистрируйтесь'
-							: 'Уже есть аккаунт? Войдите'}
+							? noAccount
+							: hasAccount}
 					</Button>
 				</div>
 			</div>

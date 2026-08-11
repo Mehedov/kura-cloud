@@ -2,18 +2,20 @@
 
 import { type Theme } from '@/shared/theme/lib/theme'
 import useThemeStore from '@/shared/theme/model'
+import useLanguage from '@/shared/language/model'
 import { cn } from '@/shared/lib/cn'
 import { Moon, Sun } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 const options: { value: Theme; label: string; Icon: typeof Sun }[] = [
-	{ value: 'light', label: 'Светлая тема', Icon: Sun },
-	{ value: 'dark', label: 'Тёмная тема', Icon: Moon },
+	{ value: 'light', label: 'lightTheme', Icon: Sun },
+	{ value: 'dark', label: 'darkTheme', Icon: Moon },
 ]
 
 export function ThemeToggle() {
 	const { theme, isSaving, setTheme } = useThemeStore(state => state)
 	const router = useRouter()
+	const { themeSelection, lightTheme, darkTheme } = useLanguage(state => state.t)
 
 	const handleThemeChange = async (nextTheme: Theme) => {
 		const wasSaved = await setTheme(nextTheme)
@@ -24,13 +26,13 @@ export function ThemeToggle() {
 		<div
 			className='flex items-center rounded-lg border border-border bg-card p-1'
 			role='group'
-			aria-label='Выбор темы'
+			aria-label={themeSelection}
 		>
 			{options.map(({ value, label, Icon }) => (
 				<button
 					key={value}
 					type='button'
-					aria-label={label}
+					aria-label={label === 'lightTheme' ? lightTheme : darkTheme}
 					aria-pressed={theme === value}
 					disabled={isSaving}
 					onClick={() => void handleThemeChange(value)}

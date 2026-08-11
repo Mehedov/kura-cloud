@@ -10,8 +10,11 @@ import { createFolder } from '@/features/create-folder/api/create-folder.api'
 import { useParams } from 'next/navigation'
 import { useState } from 'react'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 export default function CreateFolder() {
 	const queryClient = useQueryClient()
+	const language = useLanguage(state => state.language)
 
 	const { isOpenCreateFolder, setIsOpenCreateFolder } = useModalStore(
 		state => state,
@@ -39,7 +42,7 @@ export default function CreateFolder() {
 		<ModalContainer
 			isOpen={isOpenCreateFolder}
 			onClose={setIsOpenCreateFolder}
-			ariaLabel='Создание папки'
+			ariaLabel={translate(language, 'createFolderDialog')}
 		>
 			<form
 				onSubmit={event => {
@@ -48,10 +51,10 @@ export default function CreateFolder() {
 				}}
 			>
 				<Card className='flex w-[min(calc(100vw-2rem),30rem)] flex-col gap-5'>
-					<label htmlFor='create-folder-name' className='text-2xl'>Новая папка</label>
+						<label htmlFor='create-folder-name' className='text-2xl'>{translate(language, 'newFolder')}</label>
 					<Input
 						id='create-folder-name'
-						placeholder='Без названия'
+							placeholder={translate(language, 'unnamed')}
 						value={name}
 						onChange={e => setName(e.target.value)}
 						autoFocus
@@ -60,10 +63,10 @@ export default function CreateFolder() {
 					{errorMessage && <p className='text-sm text-destructive'>{errorMessage}</p>}
 					<div className='flex justify-end gap-2'>
 						<Button type='button' variant='ghost' onClick={() => setIsOpenCreateFolder(false)}>
-							Отмена
+							{translate(language, 'cancel')}
 						</Button>
 						<Button type='submit' variant='primary' disabled={!name.trim() || onCreateFolder.isPending}>
-							{onCreateFolder.isPending ? 'Создание' : 'Создать'}
+							{translate(language, onCreateFolder.isPending ? 'creating' : 'create')}
 						</Button>
 					</div>
 				</Card>

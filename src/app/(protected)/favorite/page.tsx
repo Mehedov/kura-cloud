@@ -7,12 +7,14 @@ import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { EmptyState, ErrorState, LoadingState } from '@/shared/ui/states/async-state'
 import { useQuery } from '@tanstack/react-query'
 import { Star } from 'lucide-react'
+import useLanguage from '@/shared/language/model'
 
 export default function FavoritePage() {
 	const { data, isPending, isError, error, refetch } = useQuery({
 		queryKey: FOLDER_KEYS.favorites,
 		queryFn: async () => (await getFavorites()).data,
 	})
+	const { favorite, objects, folders: foldersLabel, files: filesLabel, favoriteDescription, loadingFavorites, favoriteEmpty, favoriteEmptyDescription } = useLanguage(state => state.t)
 
 	const folders = data?.folders ?? []
 	const files = data?.files ?? []
@@ -23,33 +25,33 @@ export default function FavoritePage() {
 			<div className='flex items-start justify-between gap-4'>
 				<div>
 					<h1 className='flex items-center gap-2 text-2xl font-semibold text-foreground'>
-						<Star className='text-amber-500' size={24} /> Избранное
+						<Star className='text-amber-500' size={24} /> {favorite}
 					</h1>
 					<p className='mt-1 text-sm text-muted-foreground'>
-						Важные папки и файлы для быстрого доступа.
+						{favoriteDescription}
 					</p>
 				</div>
 				{!isPending && !isError && (
 					<span className='rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground'>
-						{total} объектов
+						{total} {objects}
 					</span>
 				)}
 			</div>
 
 			{isPending ? (
-				<LoadingState title='Загружаем избранное' />
+				<LoadingState title={loadingFavorites} />
 			) : isError ? (
 				<ErrorState description={error.message} onRetry={() => void refetch()} />
 			) : total === 0 ? (
 				<EmptyState
-					title='В избранном пока пусто'
-					description='Добавьте сюда важные папки и файлы.'
+					title={favoriteEmpty}
+					description={favoriteEmptyDescription}
 				/>
 			) : (
 				<>
 					{folders.length > 0 && (
 						<div>
-							<h2 className='mb-4 text-base font-medium text-foreground'>Папки</h2>
+					<h2 className='mb-4 text-base font-medium text-foreground'>{foldersLabel}</h2>
 							<div className='grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-5'>
 								{folders.map(folder => (
 									<FolderGrid
@@ -67,7 +69,7 @@ export default function FavoritePage() {
 
 					{files.length > 0 && (
 						<div>
-							<h2 className='mb-4 text-base font-medium text-foreground'>Файлы</h2>
+						<h2 className='mb-4 text-base font-medium text-foreground'>{filesLabel}</h2>
 							<div className='grid grid-cols-[repeat(auto-fill,minmax(110px,1fr))] gap-5'>
 								{files.map(file => (
 									<FileGrid

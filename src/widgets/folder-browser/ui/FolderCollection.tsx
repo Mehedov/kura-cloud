@@ -13,6 +13,7 @@ import { FolderGrid, FolderLine } from '@/entities/folder/ui/FolderGrid'
 import { useQuery } from '@tanstack/react-query'
 import { usePathname } from 'next/navigation'
 import type { ReactNode } from 'react'
+import useLanguage from '@/shared/language/model'
 
 interface FolderCollectionProps {
 	activeBtn?: 'menu' | 'grid'
@@ -39,10 +40,11 @@ export function FolderCollection({
 	showPagination = true,
 	gridClassName = 'grid grid-cols-[repeat(auto-fill,minmax(5rem,1fr))] gap-8',
 	header,
-	emptyTitle = 'Здесь пока нет папок',
-	emptyDescription = 'Создайте первую папку, чтобы начать организовывать файлы.',
-	noResultsDescription = 'По текущему поиску папок ничего не найдено.',
+	emptyTitle,
+	emptyDescription,
+	noResultsDescription,
 }: FolderCollectionProps) {
+	const { loadingFolders, noFolders, noFoldersDescription, noFolderResults, previousPage, nextPage } = useLanguage(state => state.t)
 	const currentPathname = usePathname()
 	const pathname = pathnameProp ?? currentPathname
 	const { data, isPending, isError, error, refetch } = useQuery({
@@ -61,17 +63,17 @@ export function FolderCollection({
 	const response = data?.data
 	const folders = (response?.items ?? []).filter(item => item.kind === 'folder')
 
-	if (isPending) return <LoadingState title='Загружаем папки' />
+	if (isPending) return <LoadingState title={loadingFolders} />
 	if (isError) {
 		return (
 			<ErrorState description={error.message} onRetry={() => void refetch()} />
 		)
 	}
 	if (folders.length === 0 && hasActiveFilters) {
-		return <NoResultsState description={noResultsDescription} />
+		return <NoResultsState description={noResultsDescription ?? noFolderResults} />
 	}
 	if (folders.length === 0) {
-		return <EmptyState title={emptyTitle} description={emptyDescription} />
+		return <EmptyState title={emptyTitle ?? noFolders} description={emptyDescription ?? noFoldersDescription} />
 	}
 
 	const content =
@@ -116,7 +118,7 @@ export function FolderCollection({
 							onClick={() => onPageChange((filters?.page ?? 1) - 1)}
 							className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
 						>
-							Назад
+							{previousPage}
 						</button>
 						<span className='text-muted-foreground'>
 							{filters?.page ?? 1} / {response.pagination.totalPages}
@@ -128,7 +130,7 @@ export function FolderCollection({
 							onClick={() => onPageChange((filters?.page ?? 1) + 1)}
 							className='rounded-lg border border-border px-3 py-2 disabled:opacity-50'
 						>
-							Вперёд
+								{nextPage}
 						</button>
 					</div>
 				)}

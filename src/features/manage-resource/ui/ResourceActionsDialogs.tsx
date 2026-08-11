@@ -15,6 +15,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect, useRef, useState } from 'react'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 export type ResourceAction = 'rename' | 'move' | null
 
@@ -35,6 +37,7 @@ export function ResourceActionsDialogs({
 }: ResourceActionsDialogsProps) {
 	const queryClient = useQueryClient()
 	const showToast = useToastStore(state => state.show)
+	const language = useLanguage(state => state.language)
 	const hasShownNoDestination = useRef(false)
 	const [targetFolderId, setTargetFolderId] = useState('')
 	const { data: foldersData, isPending: isFoldersPending } = useQuery({
@@ -65,10 +68,10 @@ export function ResourceActionsDialogs({
 		if (action !== 'move' || isFoldersPending || allowRoot || hasShownNoDestination.current) return
 		if ((foldersData?.data ?? []).length === 0) {
 			hasShownNoDestination.current = true
-			showToast('Нет доступных папок для перемещения', 'error')
+				showToast(translate(language, 'noMoveDestinations'), 'error')
 			onClose()
 		}
-	}, [action, allowRoot, foldersData?.data, isFoldersPending, onClose, showToast])
+	}, [action, allowRoot, foldersData?.data, isFoldersPending, language, onClose, showToast])
 	useEffect(() => { hasShownNoDestination.current = false }, [action])
 
 	if (!action) return null
@@ -90,27 +93,27 @@ export function ResourceActionsDialogs({
 						className='space-y-4'
 					>
 						<div>
-							<h2 className='text-lg font-semibold text-foreground'>Переименовать</h2>
+							<h2 className='text-lg font-semibold text-foreground'>{translate(language, 'rename')}</h2>
 							<p className='mt-1 text-sm text-muted-foreground'>
-								Укажите новое название.
+								{translate(language, 'renameDescription')}
 							</p>
 						</div>
 						<Input name='name' defaultValue={name} autoFocus maxLength={255} />
 						<div className='flex justify-end gap-2'>
 							<Button type='button' variant='secondary' onClick={onClose}>
-								Отмена
+								{translate(language, 'cancel')}
 							</Button>
 							<Button type='submit' disabled={renameMutation.isPending}>
-								Сохранить
+								{translate(language, 'save')}
 							</Button>
 						</div>
 					</form>
 				) : (
 					<div className='space-y-4'>
 						<div>
-							<h2 className='text-lg font-semibold text-foreground'>Переместить</h2>
+							<h2 className='text-lg font-semibold text-foreground'>{translate(language, 'move')}</h2>
 							<p className='mt-1 text-sm text-muted-foreground'>
-								Выберите папку назначения.
+								{translate(language, 'destinationFolder')}
 							</p>
 						</div>
 						<select
@@ -119,7 +122,7 @@ export function ResourceActionsDialogs({
 							disabled={isFoldersPending}
 							className='w-full rounded-lg border border-border bg-card px-3 py-2 text-foreground outline-none'
 						>
-							{allowRoot && <option value=''>Корень хранилища</option>}
+							{allowRoot && <option value=''>{translate(language, 'moveToRoot')}</option>}
 							{(foldersData?.data ?? [])
 								.filter(folder => folder.id !== id)
 								.map(folder => (
@@ -130,7 +133,7 @@ export function ResourceActionsDialogs({
 						</select>
 						<div className='flex justify-end gap-2'>
 							<Button variant='secondary' onClick={onClose}>
-								Отмена
+								{translate(language, 'cancel')}
 							</Button>
 							<Button
 								disabled={moveMutation.isPending || isFoldersPending}
@@ -138,7 +141,7 @@ export function ResourceActionsDialogs({
 									moveMutation.mutate({ id, type, targetFolderId: targetFolderId || null })
 								}
 							>
-								Переместить
+										{translate(language, 'move')}
 							</Button>
 						</div>
 					</div>

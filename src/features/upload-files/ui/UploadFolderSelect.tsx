@@ -10,6 +10,8 @@ import useAuthStore from '@/entities/session/model/session.store'
 import { useDebouncedValue } from '@/shared/hooks/use-debounced-value'
 import { HardDrive, LoaderCircle, Search } from 'lucide-react'
 import { useState } from 'react'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 interface Props {
 	selectFolderId: string
@@ -21,6 +23,7 @@ export default function UploadFolderSelect({
 	setSelectFolderId,
 }: Props) {
 	const userId = useAuthStore(state => state.user?.id)
+	const language = useLanguage(state => state.language)
 	const [search, setSearch] = useState('')
 	const debouncedSearch = useDebouncedValue(search.trim())
 	const isSearchDebouncing = search.trim() !== debouncedSearch
@@ -41,9 +44,9 @@ export default function UploadFolderSelect({
 	return (
 		<section className='space-y-3'>
 			<div>
-				<h2 className='text-md font-medium text-foreground'>Куда загрузить?</h2>
+					<h2 className='text-md font-medium text-foreground'>{translate(language, 'whereToUpload')}</h2>
 					<p className='mt-1 text-sm text-muted-foreground'>
-						По умолчанию файлы попадут в корень хранилища.
+						{translate(language, 'uploadDefaultDescription')}
 					</p>
 				</div>
 				<button
@@ -54,23 +57,23 @@ export default function UploadFolderSelect({
 						selectFolderId === '' && 'bg-accent ring-1 ring-border',
 					)}
 				>
-					<HardDrive size={17} /> Корень хранилища
+						<HardDrive size={17} /> {translate(language, 'moveToRoot')}
 				</button>
 			<label className='flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-muted-foreground'>
 				<Search size={16} />
 				<input
 					value={search}
 					onChange={event => setSearch(event.target.value)}
-					placeholder='Поиск папки'
+						placeholder={translate(language, 'searchFolder')}
 					className='w-full bg-transparent text-foreground outline-none placeholder:text-muted-foreground'
 				/>
 				{isSearchDebouncing && <LoaderCircle size={16} className='animate-spin' />}
 			</label>
 			{debouncedSearch ? (
 				isError ? (
-					<p className='text-sm text-destructive'>Не удалось найти папки.</p>
+						<p className='text-sm text-destructive'>{translate(language, 'foldersSearchError')}</p>
 				) : searchResults.length === 0 && !isSearchPending ? (
-					<p className='text-sm text-muted-foreground'>Папки не найдены.</p>
+						<p className='text-sm text-muted-foreground'>{translate(language, 'foldersNotFound')}</p>
 				) : (
 					<div className='grid grid-cols-5 gap-2'>
 						{searchResults.map(folder => (
@@ -117,7 +120,7 @@ export default function UploadFolderSelect({
 							))}
 						</div>
 					) : (
-						<p className='text-sm text-muted-foreground'>Активных папок пока нет.</p>
+							<p className='text-sm text-muted-foreground'>{translate(language, 'noActiveFolders')}</p>
 					)}
 				</div>
 			)}

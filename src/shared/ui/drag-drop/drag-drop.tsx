@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react'
 import React from 'react'
 import { DropzoneInputProps, DropzoneRootProps } from 'react-dropzone'
+import useLanguage from '@/shared/language/model'
 
 interface Props {
 	isDragActive: boolean
@@ -13,6 +14,7 @@ export default function DragAndDrop({
 	getInputProps,
 	isDragActive,
 }: Props) {
+	const { selectOrDropFiles, maxFileSize } = useLanguage(state => state.t)
 	return (
 		<div
 			{...getRootProps()}
@@ -25,9 +27,9 @@ export default function DragAndDrop({
 			</div>
 
 			<p className='text-md text-center font-medium'>
-				Выберите или перетащите файлы
+				{selectOrDropFiles}
 			</p>
-			<p className='text-sm text-muted-foreground'>До 2 GiB на файл</p>
+			<p className='text-sm text-muted-foreground'>{maxFileSize.replace('{size}', '2 GiB')}</p>
 		</div>
 	)
 }

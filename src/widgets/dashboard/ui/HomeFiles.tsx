@@ -20,6 +20,7 @@ import { FileVisual } from '@/entities/file/ui/FileVisual'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
 import { Filter, RefreshCw } from 'lucide-react'
 import { useMemo } from 'react'
+import useLanguage from '@/shared/language/model'
 
 function FileEditors({
 	file,
@@ -57,15 +58,13 @@ function FileEditors({
 	)
 }
 
-const FILTER_LABELS = {
-	all: 'Все файлы',
-	photo: 'Изображения',
-	video: 'Видео',
-	document: 'Документы',
-	other: 'Остальные',
-} as const
+const FILTER_KEYS = ['all', 'photo', 'video', 'document', 'other'] as const
 
 export function HomeFiles() {
+	const language = useLanguage(state => state.language)
+	const t = useLanguage(state => state.t)
+	const { files: filesLabel, byName, byDate, bySize, resetFilters: resetFiltersLabel, name, editors, size, modified, fileTypeAll, fileTypePhoto, fileTypeVideo, fileTypeDocument, fileTypeOther, loadingFiles, noFileResults, noRootFiles, noRootFilesDescription, previousPage, nextPage } = t
+	const filterLabels = { all: fileTypeAll, photo: fileTypePhoto, video: fileTypeVideo, document: fileTypeDocument, other: fileTypeOther } as const
 	const {
 		filters,
 		hasActiveFilters,
@@ -95,7 +94,7 @@ export function HomeFiles() {
 
 	return (
 		<section>
-			<h2 className='mb-4 text-md font-medium text-foreground'>Ваши файлы</h2>
+			<h2 className='mb-4 text-md font-medium text-foreground'>{filesLabel}</h2>
 			<div className='mb-4 flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between'>
 				<div className='flex flex-wrap items-center gap-2'>
 					<FolderBrowserSearch
@@ -108,13 +107,13 @@ export function HomeFiles() {
 						<select
 							value={filters.type}
 							onChange={event =>
-								setType(event.target.value as keyof typeof FILTER_LABELS)
+								setType(event.target.value as keyof typeof filterLabels)
 							}
 							className='bg-transparent text-foreground outline-none'
 						>
-							{Object.entries(FILTER_LABELS).map(([value, label]) => (
+							{FILTER_KEYS.map(value => (
 								<option key={value} value={value}>
-									{label}
+									{filterLabels[value]}
 								</option>
 							))}
 						</select>
@@ -126,17 +125,17 @@ export function HomeFiles() {
 						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
-						<option value='name'>По названию</option>
-						<option value='updatedAt'>По дате изменения</option>
-						<option value='size'>По размеру</option>
+						<option value='name'>{byName}</option>
+						<option value='updatedAt'>{byDate}</option>
+						<option value='size'>{bySize}</option>
 					</select>
 					{hasActiveFilters && (
 						<Button
 							variant='secondary'
 							className='px-3'
 							onClick={resetFilters}
-							aria-label='Сбросить фильтры'
-							title='Сбросить фильтры'
+							aria-label={resetFiltersLabel}
+							title={resetFiltersLabel}
 						>
 							<RefreshCw size={16} />
 						</Button>
@@ -145,28 +144,28 @@ export function HomeFiles() {
 			</div>
 
 			{isPending ? (
-				<LoadingState title='Загружаем файлы' />
+				<LoadingState title={loadingFiles} />
 			) : isError ? (
 				<ErrorState
 					description={error.message}
 					onRetry={() => void refetch()}
 				/>
 			) : files.length === 0 && hasActiveFilters ? (
-				<NoResultsState description='По текущему поиску и фильтрам файлов не найдено.' />
+				<NoResultsState description={noFileResults} />
 			) : files.length === 0 ? (
 				<EmptyState
-					title='Файлов в корне пока нет'
-					description='Загрузите первый файл или откройте папку.'
+					title={noRootFiles}
+					description={noRootFilesDescription}
 				/>
 			) : (
 				<>
 					<div className='hidden overflow-x-auto rounded-xl border border-border md:block'>
 						<div className='min-w-190 divide-y divide-border text-sm'>
 							<div className='grid grid-cols-[minmax(16rem,1fr)_8rem_9rem_9rem] bg-muted px-4 py-3 font-medium text-muted-foreground'>
-								<span>Название</span>
-								<span>Редакторы</span>
-								<span>Размер</span>
-								<span>Изменено</span>
+								<span>{name}</span>
+								<span>{editors}</span>
+								<span>{size}</span>
+								<span>{modified}</span>
 							</div>
 							{files.map(file => (
 								<div
@@ -189,7 +188,7 @@ export function HomeFiles() {
 										{formatBytes(file.size)}
 									</span>
 									<span className='text-muted-foreground'>
-										{formatDate(file.updatedAt)}
+										{formatDate(file.updatedAt, language)}
 									</span>
 								</div>
 							))}
@@ -212,7 +211,7 @@ export function HomeFiles() {
 								</div>
 								<div className='mt-3 flex justify-between gap-4 text-sm text-muted-foreground'>
 									<span>{formatBytes(file.size)}</span>
-									<span>{formatDate(file.updatedAt)}</span>
+									<span>{formatDate(file.updatedAt, language)}</span>
 								</div>
 							</article>
 						))}
@@ -227,7 +226,7 @@ export function HomeFiles() {
 						disabled={filters.page === 1}
 						onClick={() => setPage(filters.page - 1)}
 					>
-						Назад
+						{previousPage}
 					</Button>
 					<span className='text-muted-foreground'>
 						{filters.page} / {data.data.pagination.totalPages}
@@ -237,7 +236,7 @@ export function HomeFiles() {
 						disabled={filters.page >= data.data.pagination.totalPages}
 						onClick={() => setPage(filters.page + 1)}
 					>
-						Вперёд
+						{nextPage}
 					</Button>
 				</div>
 			)}

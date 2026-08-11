@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/shared/lib/cn'
 import {
 	AlertCircle,
@@ -7,6 +9,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { ReactNode } from 'react'
+import useLanguage from '@/shared/language/model'
 
 interface StateProps {
 	title: string
@@ -40,13 +43,14 @@ function StateContainer({
 }
 
 export function LoadingState({
-	title = 'Загрузка...',
+	title,
 	description,
 	className,
 }: Omit<StateProps, 'children'>) {
+	const { loading } = useLanguage(state => state.t)
 	return (
 		<StateContainer
-			title={title}
+			title={title ?? loading}
 			description={description}
 			className={className}
 		>
@@ -78,14 +82,15 @@ interface NoResultsStateProps {
 }
 
 export function NoResultsState({
-	title = 'Ничего не найдено',
-	description = 'Измените запрос или сбросьте фильтры.',
+	title,
+	description,
 	className,
 }: NoResultsStateProps) {
+	const { noResults, changeQuery } = useLanguage(state => state.t)
 	return (
 		<StateContainer
-			title={title}
-			description={description}
+			title={title ?? noResults}
+			description={description ?? changeQuery}
 			className={className}
 		/>
 	)
@@ -97,16 +102,17 @@ interface ResourceNotFoundStateProps extends Omit<StateProps, 'children'> {
 }
 
 export function ResourceNotFoundState({
-	title = 'Ресурс не найден',
-	description = 'Возможно, он был удалён или у вас больше нет к нему доступа.',
+	title,
+	description,
 	className,
 	backHref = '/folders',
-	backLabel = 'Вернуться к папкам',
+	backLabel,
 }: ResourceNotFoundStateProps) {
+	const { resourceNotFound, resourceNotFoundDescription, backToFolders } = useLanguage(state => state.t)
 	return (
 		<StateContainer
-			title={title}
-			description={description}
+			title={title ?? resourceNotFound}
+			description={description ?? resourceNotFoundDescription}
 			className={className}
 		>
 			<FolderOpen className='text-muted-foreground' size={32} />
@@ -114,7 +120,7 @@ export function ResourceNotFoundState({
 				href={backHref}
 				className='mt-4 rounded-lg bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent'
 			>
-				{backLabel}
+				{backLabel ?? backToFolders}
 			</Link>
 		</StateContainer>
 	)
@@ -128,15 +134,16 @@ interface ErrorStateProps {
 }
 
 export function ErrorState({
-	title = 'Не удалось загрузить данные',
-	description = 'Проверьте подключение к интернету и попробуйте ещё раз.',
+	title,
+	description,
 	className,
 	onRetry,
 }: ErrorStateProps) {
+	const { loadError, networkError, retry } = useLanguage(state => state.t)
 	return (
 		<StateContainer
-			title={title}
-			description={description}
+			title={title ?? loadError}
+			description={description ?? networkError}
 			className={className}
 		>
 			<AlertCircle className='text-destructive' size={32} />
@@ -146,7 +153,7 @@ export function ErrorState({
 					onClick={onRetry}
 					className='mt-4 inline-flex items-center gap-2 rounded-lg bg-secondary px-3 py-2 text-sm font-medium text-secondary-foreground transition-colors hover:bg-accent'
 				>
-					<RefreshCw size={16} /> Повторить
+					<RefreshCw size={16} /> {retry}
 				</button>
 			)}
 		</StateContainer>

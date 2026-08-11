@@ -1,6 +1,7 @@
 'use client'
 
 import { ReactNode, useEffect, useRef } from 'react'
+import useLanguage from '@/shared/language/model'
 
 interface Props {
 	children: ReactNode
@@ -16,8 +17,9 @@ export default function ModalContainer({
 	children,
 	isOpen,
 	onClose,
-	ariaLabel = 'Диалог',
+	ariaLabel,
 }: Props) {
+	const { dialog } = useLanguage(state => state.t)
 	const modalRef = useRef<HTMLDivElement | null>(null)
 	const previousFocusRef = useRef<HTMLElement | null>(null)
 
@@ -79,7 +81,7 @@ export default function ModalContainer({
 				ref={modalRef}
 				role='dialog'
 				aria-modal='true'
-				aria-label={ariaLabel}
+				aria-label={ariaLabel ?? dialog}
 				tabIndex={-1}
 			>
 				{children}

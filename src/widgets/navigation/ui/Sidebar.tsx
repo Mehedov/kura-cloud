@@ -17,7 +17,6 @@ import {
 	CloudyIcon,
 	ImageIcon,
 	LayoutGrid,
-	Settings,
 	Share,
 	Square,
 	Star,
@@ -26,33 +25,29 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
+import useLanguage from '@/shared/language/model'
 
 const NAV_ITEMS = [
 	{
 		href: '/',
-		label: 'All files',
+		label: 'allFiles',
 		icon: LayoutGrid,
 	},
 	{
 		href: '/photos',
-		label: 'Photo',
+		label: 'photo',
 		icon: ImageIcon,
 	},
-	{ href: '/favorite', label: 'Favorite', icon: Star },
+	{ href: '/favorite', label: 'favorite', icon: Star },
 	{
 		href: '/shared',
-		label: 'Shared Files',
+		label: 'sharedFiles',
 		icon: Share,
 	},
 	{
 		href: '/basket',
-		label: 'Корзина',
+		label: 'trash',
 		icon: Trash2Icon,
-	},
-	{
-		href: '/settings',
-		label: 'Settings',
-		icon: Settings,
 	},
 ] as const
 
@@ -74,6 +69,9 @@ export function Sidebar() {
 	} = useDropzoneStore()
 
 	const pathname = usePathname()
+	const { closeNavigation, expandNavigation, collapseNavigation, allFiles, photo, favorite, sharedFiles, trash, recentFolders, noFoldersYet, storageUsed, loading, storageOf, video, documents, other, freeStorage } = useLanguage(state => state.t)
+	const categoryLabels = { Photo: photo, Video: video, Document: documents, 'Other files': other, 'Free Storage': freeStorage }
+	const navLabels = { allFiles, photo, favorite, sharedFiles, trash }
 	const { setIsOpenProfile } = useModalStore(state => state)
 	const closeSidebar = () => setIsSidebarOpen(false)
 	const { data: suggestedFoldersData } = useQuery({
@@ -94,7 +92,7 @@ export function Sidebar() {
 				<button
 					className='fixed inset-0 z-30 bg-black/40 lg:hidden'
 					onClick={closeSidebar}
-					aria-label='Close navigation'
+					aria-label={closeNavigation}
 				/>
 			)}
 			<aside
@@ -118,7 +116,7 @@ export function Sidebar() {
 					<button
 						className='rounded p-1 text-muted-foreground hover:bg-sidebar-accent lg:hidden'
 						onClick={closeSidebar}
-						aria-label='Close navigation'
+						aria-label={closeNavigation}
 					>
 						<X size={20} />
 					</button>
@@ -126,7 +124,7 @@ export function Sidebar() {
 						className='hidden rounded p-1 text-muted-foreground hover:bg-sidebar-accent lg:block'
 						onClick={toggleSidebarCollapsed}
 						aria-label={
-							isSidebarCollapsed ? 'Expand navigation' : 'Collapse navigation'
+							isSidebarCollapsed ? expandNavigation : collapseNavigation
 						}
 					>
 						{isSidebarCollapsed ? (
@@ -175,7 +173,7 @@ export function Sidebar() {
 									)}
 									href={item.href}
 									onClick={closeSidebar}
-									title={isSidebarCollapsed ? item.label : undefined}
+									title={isSidebarCollapsed ? navLabels[item.label] : undefined}
 								>
 									<item.icon
 										className={
@@ -185,7 +183,7 @@ export function Sidebar() {
 										}
 										size={20}
 									/>
-									{!isSidebarCollapsed && item.label}
+									{!isSidebarCollapsed && navLabels[item.label]}
 								</Link>
 							</li>
 						))}
@@ -193,7 +191,7 @@ export function Sidebar() {
 				</nav>
 				{!isSidebarCollapsed && (
 					<div className='mb-2 p-3 text-md font-normal text-muted-foreground'>
-						<div className='mb-4 font-medium'>Недавние папки</div>
+						<div className='mb-4 font-medium'>{recentFolders}</div>
 						{suggestedFolders.length > 0 ? (
 							<ul className='flex flex-col gap-2.5'>
 								{suggestedFolders.map(folder => (
@@ -211,7 +209,7 @@ export function Sidebar() {
 								))}
 							</ul>
 						) : (
-							<p className='text-sm'>Папок пока нет</p>
+							<p className='text-sm'>{noFoldersYet}</p>
 						)}
 					</div>
 				)}
@@ -228,7 +226,7 @@ export function Sidebar() {
 											size={15}
 											className={CATEGORY_COLORS[category.label]}
 										/>
-										{category.label}
+										{categoryLabels[category.label] ?? category.label}
 									</div>
 									<span className='text-[14px] font-medium text-muted-foreground'>
 										{category.formattedValue}
@@ -241,10 +239,10 @@ export function Sidebar() {
 							<span className='font-medium text-muted-foreground'>
 								<span className='text-foreground'>
 									{storageStats
-										? `${storageStats.total.usedFormatted} занято `
-										: 'Загрузка…'}
+												? `${storageStats.total.usedFormatted} ${storageUsed} `
+												: loading}
 								</span>
-								{storageStats && `из ${storageStats.total.limitFormatted}`}
+									{storageStats && `${storageOf} ${storageStats.total.limitFormatted}`}
 							</span>
 						</div>
 						<div className='h-2 w-full overflow-hidden rounded-4xl bg-muted'>

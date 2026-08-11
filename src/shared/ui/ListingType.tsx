@@ -1,5 +1,6 @@
 'use client'
 import { Grid2x2, Menu } from 'lucide-react'
+import useLanguage from '@/shared/language/model'
 
 interface Props {
 	activeBtn: 'menu' | 'grid'
@@ -7,9 +8,11 @@ interface Props {
 }
 
 export function ListingType({ activeBtn, setActiveBtn }: Props) {
+	const { listView, gridView } = useLanguage(state => state.t)
 	return (
 		<div className='flex h-full w-25 items-center overflow-hidden rounded-lg border border-border'>
 			<button
+				aria-label={listView}
 				className={`flex h-full w-[50%] cursor-pointer items-center justify-center p-2 ${
 					activeBtn === 'menu' ? 'bg-primary' : 'bg-transparent'
 				}`}
@@ -25,6 +28,7 @@ export function ListingType({ activeBtn, setActiveBtn }: Props) {
 				/>
 			</button>
 			<button
+				aria-label={gridView}
 				className={`flex h-full w-[50%] cursor-pointer items-center justify-center p-2 ${
 					activeBtn === 'grid' ? 'bg-primary' : 'bg-transparent'
 				}`}

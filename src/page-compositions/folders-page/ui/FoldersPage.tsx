@@ -8,9 +8,11 @@ import { useFolderItemsFilters } from '@/features/folder-filters/model/use-folde
 import { RefreshCw } from 'lucide-react'
 import { useState } from 'react'
 import { Button } from '@/shared/ui/button/Button'
+import useLanguage from '@/shared/language/model'
 
 export function FoldersTemplate() {
 	const [activeBtn, setActiveBtn] = useState<'menu' | 'grid'>('grid')
+	const { byName, byDate, resetFilters: resetFiltersLabel } = useLanguage(state => state.t)
 	const {
 		filters,
 		hasActiveFilters,
@@ -39,16 +41,16 @@ export function FoldersTemplate() {
 						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
-						<option value='name'>По названию</option>
-						<option value='updatedAt'>По дате изменения</option>
+						<option value='name'>{byName}</option>
+						<option value='updatedAt'>{byDate}</option>
 					</select>
 					{hasActiveFilters && (
 						<Button
 							className='px-3'
 							variant='secondary'
 							onClick={resetFilters}
-							aria-label='Сбросить фильтры'
-							title='Сбросить фильтры'
+							aria-label={resetFiltersLabel}
+							title={resetFiltersLabel}
 						>
 							<RefreshCw size={16} />
 						</Button>

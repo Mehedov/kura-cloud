@@ -8,16 +8,22 @@ import {
 } from '@/shared/ui/breadcrumb'
 import { usePathname } from 'next/navigation'
 import React from 'react'
+import useLanguage from '@/shared/language/model'
 
-export function BreadcrumbBasic() {
+interface BreadcrumbBasicProps {
+	currentPageTitle?: string
+}
+
+export function BreadcrumbBasic({ currentPageTitle }: BreadcrumbBasicProps) {
 	const pathname = usePathname()
+	const { home } = useLanguage(state => state.t)
 	const pathSegments = pathname.split('/').filter(segment => segment !== '')
 
 	return (
 		<Breadcrumb>
 			<BreadcrumbList>
 				<BreadcrumbItem>
-					<BreadcrumbLink href='/'>Home</BreadcrumbLink>
+					<BreadcrumbLink href='/'>{home}</BreadcrumbLink>
 				</BreadcrumbItem>
 				{pathSegments.length > 0 && <BreadcrumbSeparator />}
 				{pathSegments.map((segment, index) => {
@@ -26,9 +32,10 @@ export function BreadcrumbBasic() {
 
 					const decodedSegment = decodeURIComponent(segment)
 
-					const title =
-						decodedSegment.charAt(0) +
-						decodedSegment.slice(1).replace(/-/g, ' ')
+					const title = isLast && currentPageTitle
+						? currentPageTitle
+						: decodedSegment.charAt(0) +
+							decodedSegment.slice(1).replace(/-/g, ' ')
 
 					return (
 						<React.Fragment key={href}>

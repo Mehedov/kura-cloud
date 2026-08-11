@@ -33,6 +33,8 @@ import {
 	Trash2,
 } from 'lucide-react'
 import React, { forwardRef, memo, useState } from 'react'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 export type FileProps = React.HTMLAttributes<HTMLDivElement> & {
 	name: string
@@ -64,6 +66,7 @@ export const ContextMenuContent = memo(
 		isFavorite,
 	}: ContextMenuContentProps) => {
 		const { canEdit, canMove, canManageAccess } = useResourceAccess()
+		const language = useLanguage(state => state.language)
 
 		return (
 		<div className='flex flex-col text-sm'>
@@ -72,7 +75,7 @@ export const ContextMenuContent = memo(
 					href={downloadUrl}
 					className='cursor-pointer flex items-center gap-2 text-left px-3 py-1.5 hover:bg-muted rounded'
 				>
-					<DownloadCloudIcon size={20} /> Скачать
+					<DownloadCloudIcon size={20} /> {translate(language, 'download')}
 				</a>
 			) : null}
 			{canManageAccess && onShare && (
@@ -80,7 +83,7 @@ export const ContextMenuContent = memo(
 					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
 					onClick={onShare}
 				>
-					<Share2 size={20} /> Поделиться
+					<Share2 size={20} /> {translate(language, 'share')}
 				</button>
 			)}
 			{onFavorite && (
@@ -89,7 +92,7 @@ export const ContextMenuContent = memo(
 					onClick={onFavorite}
 				>
 					<Star size={20} />{' '}
-					{isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+					{translate(language, isFavorite ? 'removeFromFavorite' : 'addToFavorite')}
 				</button>
 			)}
 			{canEdit && (
@@ -98,7 +101,7 @@ export const ContextMenuContent = memo(
 					onClick={onRename}
 				>
 					<SquarePen size={20} />
-					Переименовать
+					{translate(language, 'rename')}
 				</button>
 			)}
 			{canEdit && canMove && (
@@ -106,7 +109,7 @@ export const ContextMenuContent = memo(
 					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
 					onClick={onMove}
 				>
-					<FolderInput size={20} /> Переместить
+					<FolderInput size={20} /> {translate(language, 'move')}
 				</button>
 			)}
 			{canEdit && onDelete && (
@@ -114,7 +117,7 @@ export const ContextMenuContent = memo(
 					className='cursor-pointer flex items-center gap-2 text-left text-md px-3 py-1.5 hover:bg-muted rounded'
 					onClick={onDelete}
 				>
-					<Trash2 size={20} /> Удалить
+					<Trash2 size={20} /> {translate(language, 'delete')}
 				</button>
 			)}
 		</div>
@@ -139,6 +142,7 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 	) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
+		const language = useLanguage(state => state.language)
 		const { canManageAccess, canMoveToRoot, canUndoDelete } = useResourceAccess()
 		const [action, setAction] = useState<ResourceAction>(null)
 		const [isShareOpen, setIsShareOpen] = useState(false)
@@ -162,23 +166,23 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 			onSuccess: () => {
 				void invalidateStorageQueries(queryClient)
 				showToast(
-					`Файл «${formatFileName(name)}» перемещён в корзину`,
+					translate(language, 'fileMovedToTrash', { name: formatFileName(name) }),
 					'success',
 					canUndoDelete
 						? {
-								label: 'Отменить',
+								label: translate(language, 'undo'),
 								onClick: () =>
 									void restoreFromTrash({ id: fileId, type: 'file' })
 										.then(() => invalidateStorageQueries(queryClient))
 										.catch(() =>
-											showToast('Не удалось восстановить файл', 'error'),
+										showToast(translate(language, 'restoreFileFailed'), 'error'),
 										),
 							}
 						: undefined,
 				)
 			},
 			onError: () =>
-				showToast('Не удалось переместить файл в корзину', 'error'),
+				showToast(translate(language, 'moveFileToTrashFailed'), 'error'),
 		})
 
 		const favoriteFile = useMutation({
@@ -187,12 +191,12 @@ export const FileGrid = forwardRef<HTMLDivElement, FileProps>(
 				void invalidateStorageQueries(queryClient)
 				showToast(
 					isFavorite
-						? `Файл «${formatFileName(name)}» удалён из избранного`
-						: `Файл «${formatFileName(name)}» добавлен в избранное`,
+						? translate(language, 'fileRemovedFromFavorites', { name: formatFileName(name) })
+						: translate(language, 'fileAddedToFavorites', { name: formatFileName(name) }),
 					'success',
 				)
 			},
-			onError: () => showToast('Не удалось добавить файл в избранное', 'error'),
+			onError: () => showToast(translate(language, 'fileFavoriteFailed'), 'error'),
 		})
 
 		const onDeleteFile = () => {

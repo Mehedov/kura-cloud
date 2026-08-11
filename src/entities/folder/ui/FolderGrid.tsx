@@ -23,10 +23,13 @@ import { Avatar } from '@/shared/ui/avatar/Avatar'
 import { useResourceAccess } from '@/entities/resource/model/resource-access'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
+import { formatDate } from '@/shared/lib/formatDate.util'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { FolderInput, Share2, SquarePen, Star, Trash2 } from 'lucide-react'
 import Link from 'next/link'
 import React, { forwardRef, memo, useState } from 'react'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 export type FolderProps = React.HTMLAttributes<HTMLAnchorElement> & {
 	pathname?: string
@@ -83,6 +86,7 @@ export const ContextMenuContent: React.FC<{
 }> = memo(
 	({ onDelete, itemId, onRename, onMove, onShare, onFavorite, isFavorite }) => {
 		const { canEdit, canMove, canManageAccess } = useResourceAccess()
+		const language = useLanguage(state => state.language)
 
 		return (
 			<div className='flex flex-col text-sm'>
@@ -92,7 +96,7 @@ export const ContextMenuContent: React.FC<{
 						onClick={onRename}
 					>
 						<SquarePen size={20} />
-						Переименовать
+						{translate(language, 'rename')}
 					</button>
 				)}
 				{canEdit && canMove && (
@@ -100,7 +104,7 @@ export const ContextMenuContent: React.FC<{
 						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
 						onClick={onMove}
 					>
-						<FolderInput size={20} /> Переместить
+						<FolderInput size={20} /> {translate(language, 'move')}
 					</button>
 				)}
 				{canManageAccess && onShare && (
@@ -108,7 +112,7 @@ export const ContextMenuContent: React.FC<{
 						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
 						onClick={onShare}
 					>
-						<Share2 size={20} /> Поделиться
+						<Share2 size={20} /> {translate(language, 'share')}
 					</button>
 				)}
 				{onFavorite && (
@@ -117,7 +121,7 @@ export const ContextMenuContent: React.FC<{
 						onClick={onFavorite}
 					>
 						<Star size={20} />{' '}
-						{isFavorite ? 'Удалить из избранного' : 'Добавить в избранное'}
+						{translate(language, isFavorite ? 'removeFromFavorite' : 'addToFavorite')}
 					</button>
 				)}
 				{canEdit && onDelete && itemId ? (
@@ -125,7 +129,7 @@ export const ContextMenuContent: React.FC<{
 						className='cursor-pointer flex items-center gap-2 rounded px-3 py-1.5 text-left text-md hover:bg-muted'
 						onClick={() => onDelete(itemId)}
 					>
-						<Trash2 size={20} /> Удалить
+						<Trash2 size={20} /> {translate(language, 'delete')}
 					</button>
 				) : null}
 			</div>
@@ -139,6 +143,7 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 	({ className, name, pathname, id, size, collaborators, ...props }, ref) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
+		const language = useLanguage(state => state.language)
 		const { canUndoDelete } = useResourceAccess()
 		const [action, setAction] = useState<ResourceAction>(null)
 		const [isShareOpen, setIsShareOpen] = useState(false)
@@ -156,23 +161,23 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 			onSuccess: () => {
 				void invalidateStorageQueries(queryClient)
 				showToast(
-					`Папка «${name}» перемещена в корзину`,
+					translate(language, 'folderMovedToTrash', { name }),
 					'success',
 					canUndoDelete
 						? {
-								label: 'Отменить',
+								label: translate(language, 'undo'),
 								onClick: () =>
 									void restoreFromTrash({ id, type: 'folder' })
 										.then(() => invalidateStorageQueries(queryClient))
 										.catch(() =>
-											showToast('Не удалось восстановить папку', 'error'),
+										showToast(translate(language, 'restoreFolderFailed'), 'error'),
 										),
 							}
 						: undefined,
 				)
 			},
 			onError: () =>
-				showToast('Не удалось переместить папку в корзину', 'error'),
+				showToast(translate(language, 'moveFolderToTrashFailed'), 'error'),
 		})
 
 		const favoriteFolder = useMutation({
@@ -181,13 +186,13 @@ export const FolderGrid = forwardRef<HTMLAnchorElement, FolderProps>(
 				void invalidateStorageQueries(queryClient)
 				showToast(
 					isFavorite
-						? `Папка «${name}» удалена из избранного`
-						: `Папка «${name}» добавлена в избранное`,
+						? translate(language, 'folderRemovedFromFavorites', { name })
+						: translate(language, 'folderAddedToFavorites', { name }),
 					'success',
 				)
 			},
 			onError: () =>
-				showToast('Не удалось добавить папку в избранное', 'error'),
+				showToast(translate(language, 'folderFavoriteFailed'), 'error'),
 		})
 
 		const onDeleteFolder = (folderId: string) => {
@@ -274,6 +279,7 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 	({ className, pathname, name, id, updatedAt, ...props }, ref) => {
 		const queryClient = useQueryClient()
 		const showToast = useToastStore(state => state.show)
+		const language = useLanguage(state => state.language)
 		const itemHref = `${pathname}/${id}`
 		const [action, setAction] = useState<ResourceAction>(null)
 		const { data: favorites } = useQuery({
@@ -287,10 +293,10 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 			mutationFn: toggleFavorite,
 			onSuccess: () => {
 				void invalidateStorageQueries(queryClient)
-				showToast(`Папка «${name}» добавлена в избранное`, 'success')
+				showToast(translate(language, 'folderAddedToFavorites', { name }), 'success')
 			},
 			onError: () =>
-				showToast('Не удалось добавить папку в избранное', 'error'),
+				showToast(translate(language, 'folderFavoriteFailed'), 'error'),
 		})
 
 		return (
@@ -317,20 +323,14 @@ export const FolderLine = forwardRef<HTMLAnchorElement, FolderProps>(
 									<span className='line-clamp-1 text-sm'>{name}</span>
 								</div>
 								<span className='w-[20%] text-sm text-muted-foreground'>
-									{updatedAt
-										? new Intl.DateTimeFormat('ru-RU', {
-												day: '2-digit',
-												month: 'short',
-												year: 'numeric',
-											}).format(new Date(updatedAt))
-										: '—'}
+									{formatDate(updatedAt, language)}
 								</span>
 								<span className='w-[20%] text-sm text-muted-foreground'>
-									Папка
+									{translate(language, 'folder')}
 								</span>
 							</Link>
 							<ContextMenuTrigger
-								ariaLabel={`Действия с папкой ${name}`}
+								ariaLabel={translate(language, 'folderActions', { name })}
 								className='absolute right-2 top-1/2 -translate-y-1/2 rounded-md p-1 text-muted-foreground hover:bg-muted hover:text-foreground'
 							/>
 							<PopoverContent isContextMenu>

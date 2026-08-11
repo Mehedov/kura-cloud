@@ -42,10 +42,14 @@ import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
 import { useToastStore } from '@/shared/ui/toast/model/toast.store'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 export default function PhotosPage() {
 	const queryClient = useQueryClient()
 	const showToast = useToastStore(state => state.show)
+	const language = useLanguage(state => state.language)
+	const t = useLanguage(state => state.t)
 	const [previewedPhoto, setPreviewedPhoto] = useState<PhotoFileDto | null>(
 		null,
 	)
@@ -88,15 +92,15 @@ export default function PhotosPage() {
 		mutationFn: moveToTrash,
 		onSuccess: (_data, variables) => {
 			void invalidateStorageQueries(queryClient)
-			showToast('Фото перемещено в корзину', 'success', {
-				label: 'Отменить',
+			showToast(t.photoMovedToTrash, 'success', {
+				label: t.undo,
 				onClick: () =>
 					void restoreFromTrash(variables)
 						.then(() => invalidateStorageQueries(queryClient))
-						.catch(() => showToast('Не удалось восстановить фото', 'error')),
+						.catch(() => showToast(t.restorePhotoFailed, 'error')),
 			})
 		},
-		onError: () => showToast('Не удалось переместить фото в корзину', 'error'),
+		onError: () => showToast(t.movePhotoToTrashFailed, 'error'),
 	})
 	const favoritePhoto = useMutation({
 		mutationFn: toggleFavorite,
@@ -105,20 +109,20 @@ export default function PhotosPage() {
 			const photo = photos.find(item => item.id === variables.id)
 			showToast(
 				photo?.isFavorite
-					? `Фото «${formatFileName(photo.name)}» удалено из избранного`
-					: `Фото «${formatFileName(photo?.name ?? '')}» добавлено в избранное`,
+					? translate(language, 'photoRemovedFromFavorites', { name: formatFileName(photo.name) })
+					: translate(language, 'photoAddedToFavorites', { name: formatFileName(photo?.name ?? '') }),
 				'success',
 			)
 		},
-		onError: () => showToast('Не удалось изменить избранное', 'error'),
+		onError: () => showToast(t.favoriteUpdateFailed, 'error'),
 	})
 
 	return (
 		<section className='flex min-w-0 flex-col gap-5 pb-6'>
 			<div>
-				<h1 className='text-2xl font-semibold text-foreground'>Фото</h1>
+				<h1 className='text-2xl font-semibold text-foreground'>{t.photos}</h1>
 				<p className='mt-1 text-sm text-muted-foreground'>
-					Все изображения из вашего хранилища.
+					{t.photosDescription}
 				</p>
 			</div>
 
@@ -136,17 +140,17 @@ export default function PhotosPage() {
 						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
-						<option value='updatedAt'>По дате изменения</option>
-						<option value='name'>По названию</option>
-						<option value='size'>По размеру</option>
+						<option value='updatedAt'>{t.byDate}</option>
+						<option value='name'>{t.byName}</option>
+						<option value='size'>{t.bySize}</option>
 					</select>
 					{hasActiveFilters && (
 						<Button
 							variant='secondary'
 							className='px-3'
 							onClick={resetFilters}
-							aria-label='Сбросить фильтры'
-							title='Сбросить фильтры'
+							aria-label={t.resetFilters}
+							title={t.resetFilters}
 						>
 							<RefreshCw size={16} />
 						</Button>
@@ -154,24 +158,24 @@ export default function PhotosPage() {
 				</div>
 				{data && (
 					<p className='text-sm text-muted-foreground'>
-						Всего: {data.pagination.total}
+						{t.total}: {data.pagination.total}
 					</p>
 				)}
 			</div>
 
 			{isPending ? (
-				<LoadingState title='Загружаем фотографии' />
+				<LoadingState title={t.loadingPhotos} />
 			) : isError ? (
 				<ErrorState
 					description={error.message}
 					onRetry={() => void refetch()}
 				/>
 			) : photos.length === 0 && hasActiveFilters ? (
-				<NoResultsState description='По текущему поиску фотографий не найдено.' />
+				<NoResultsState description={t.noPhotosSearch} />
 			) : photos.length === 0 ? (
 				<EmptyState
-					title='Фотографий пока нет'
-					description='Загрузите изображения, чтобы они появились здесь.'
+					title={t.noPhotos}
+					description={t.noPhotosDescription}
 				/>
 			) : (
 				<div className='columns-2 gap-2 sm:columns-3 xl:columns-4 2xl:columns-5'>
@@ -199,10 +203,10 @@ export default function PhotosPage() {
 											className='group relative mb-2 cursor-pointer break-inside-avoid overflow-hidden rounded-lg bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring'
 											role='button'
 											tabIndex={0}
-											aria-label={`Открыть ${formatFileName(photo.name)}`}
+											aria-label={translate(language, 'openPhoto', { name: formatFileName(photo.name) })}
 										>
 											<ContextMenuTrigger
-												ariaLabel={`Действия с фото ${formatFileName(photo.name)}`}
+												ariaLabel={translate(language, 'photoActions', { name: formatFileName(photo.name) })}
 											/>
 											{photo.thumbnailUrl ? (
 												// Native image keeps the stored thumbnail's natural aspect ratio for the masonry layout.
@@ -232,7 +236,7 @@ export default function PhotosPage() {
 													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
-													<ImageIcon size={18} /> Просмотреть
+															<ImageIcon size={18} /> {t.view}
 												</button>
 												<button
 													onClick={() => {
@@ -241,7 +245,7 @@ export default function PhotosPage() {
 													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
-													<Share2 size={18} /> Поделиться
+															<Share2 size={18} /> {t.share}
 												</button>
 												<button
 													onClick={() => {
@@ -252,8 +256,8 @@ export default function PhotosPage() {
 												>
 													<Star size={18} />{' '}
 													{photo.isFavorite
-														? 'Удалить из избранного'
-														: 'Добавить в избранное'}
+																? t.removeFromFavorite
+																: t.addToFavorite}
 												</button>
 												<button
 													onClick={() => {
@@ -262,7 +266,7 @@ export default function PhotosPage() {
 													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
-													<Pencil size={18} /> Переименовать
+															<Pencil size={18} /> {t.rename}
 												</button>
 												<Link
 													href={
@@ -274,8 +278,8 @@ export default function PhotosPage() {
 												>
 													<ExternalLink size={18} />{' '}
 													{photo.folderId
-														? 'Перейти к папке'
-														: 'Перейти к корню'}
+																? t.goToFolder
+																: t.goToRoot}
 												</Link>
 												<button
 													disabled={deletePhoto.isPending}
@@ -285,7 +289,7 @@ export default function PhotosPage() {
 													}}
 													className='flex items-center gap-2 rounded px-3 py-1.5 text-left hover:bg-muted'
 												>
-													<Trash2 size={18} /> Удалить
+															<Trash2 size={18} /> {t.delete}
 												</button>
 											</div>
 										</PopoverContent>
@@ -304,7 +308,7 @@ export default function PhotosPage() {
 						disabled={filters.page === 1}
 						onClick={() => setPage(filters.page - 1)}
 					>
-						Назад
+						{t.previousPage}
 					</Button>
 					<span className='text-muted-foreground'>
 						{filters.page} / {data.pagination.totalPages}
@@ -314,7 +318,7 @@ export default function PhotosPage() {
 						disabled={filters.page >= data.pagination.totalPages}
 						onClick={() => setPage(filters.page + 1)}
 					>
-						Вперёд
+						{t.nextPage}
 					</Button>
 				</div>
 			)}
@@ -323,28 +327,28 @@ export default function PhotosPage() {
 				<ModalContainer
 					isOpen
 					onClose={() => setPreviewedPhoto(null)}
-					ariaLabel={`Просмотр ${formatFileName(previewedPhoto.name)}`}
+					ariaLabel={translate(language, 'previewPhoto', { name: formatFileName(previewedPhoto.name) })}
 				>
 					<Card className='relative w-[min(90vw,48rem)] p-3'>
 						<button
 							onClick={() => setPreviewedPhoto(null)}
 							className='absolute right-5 top-5 z-10 rounded bg-card/80 p-1 text-foreground'
-							aria-label='Закрыть просмотр'
+							aria-label={t.closePreview}
 						>
 							<X size={20} />
 						</button>
 						{isOriginalPreviewPending ? (
 							<div className='flex min-h-72 items-center justify-center text-sm text-muted-foreground'>
-								Загружаем оригинал…
+								{t.loadingOriginal}
 							</div>
 						) : isOriginalPreviewError ? (
 							<div className='flex min-h-72 flex-col items-center justify-center gap-3 text-sm text-muted-foreground'>
-								Не удалось загрузить оригинал.
+								{t.originalLoadError}
 								<Button
 									variant='secondary'
 									onClick={() => void refetchOriginalPreview()}
 								>
-									Повторить
+									{t.retry}
 								</Button>
 							</div>
 						) : originalPreview?.previewUrl ? (

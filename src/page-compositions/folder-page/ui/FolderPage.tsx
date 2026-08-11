@@ -20,17 +20,14 @@ import { useState } from 'react'
 import { useModalStore } from '@/widgets/global-modals/model/modal.store'
 import { Button } from '@/shared/ui/button/Button'
 import { getResourceAccess } from '@/entities/resource/model/resource-access'
+import useLanguage from '@/shared/language/model'
 
-const FILTER_LABELS = {
-	all: 'Все файлы',
-	photo: 'Изображения',
-	video: 'Видео',
-	document: 'Документы',
-	other: 'Другие',
-} as const
+const FILTER_KEYS = ['all', 'photo', 'video', 'document', 'other'] as const
 
 export function FolderOneTemplate() {
 	const [viewMode, setViewMode] = useState<'menu' | 'grid'>('grid')
+	const { noFolderSelected, allFolders, byName, byDate, bySize, resetFilters: resetFiltersLabel, upload, createFolder, folder, loading, fileTypeAll, fileTypePhoto, fileTypeVideo, fileTypeDocument, fileTypeOther } = useLanguage(state => state.t)
+	const filterLabels = { all: fileTypeAll, photo: fileTypePhoto, video: fileTypeVideo, document: fileTypeDocument, other: fileTypeOther } as const
 	const { setIsOpenCreateFolder, setIsOpenDropzone } = useModalStore(
 		state => state,
 	)
@@ -52,17 +49,19 @@ export function FolderOneTemplate() {
 	const response = data?.data
 	const { canEdit } = getResourceAccess(response?.folder?.permission ?? 'owner')
 
-	if (!folderId) return <EmptyState title='Папка не выбрана' />
+	if (!folderId) return <EmptyState title={noFolderSelected} />
 
 	return (
 		<section className='flex h-full min-w-0 flex-col'>
 			<div className='mb-5 flex items-center justify-between'>
-				<BreadcrumbBasic />
+				<BreadcrumbBasic
+					currentPageTitle={response?.folder?.name ?? (isPending ? loading : folder)}
+				/>
 				<Link
 					href='/folders'
 					className='inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground'
 				>
-					<ChevronLeft size={16} /> Все папки
+					<ChevronLeft size={16} /> {allFolders}
 				</Link>
 			</div>
 
@@ -78,13 +77,13 @@ export function FolderOneTemplate() {
 						<select
 							value={filters.type}
 							onChange={event =>
-								setType(event.target.value as keyof typeof FILTER_LABELS)
+								setType(event.target.value as keyof typeof filterLabels)
 							}
 							className='bg-transparent text-foreground outline-none'
 						>
-							{Object.entries(FILTER_LABELS).map(([value, label]) => (
+							{FILTER_KEYS.map(value => (
 								<option key={value} value={value}>
-									{label}
+									{filterLabels[value]}
 								</option>
 							))}
 						</select>
@@ -96,17 +95,17 @@ export function FolderOneTemplate() {
 						}
 						className='rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground outline-none'
 					>
-						<option value='name'>По названию</option>
-						<option value='updatedAt'>По дате изменения</option>
-						<option value='size'>По размеру</option>
+							<option value='name'>{byName}</option>
+							<option value='updatedAt'>{byDate}</option>
+							<option value='size'>{bySize}</option>
 					</select>
 					{hasActiveFilters && (
 						<Button
 							className='px-3'
 							variant='secondary'
 							onClick={resetFilters}
-							aria-label='Сбросить фильтры'
-							title='Сбросить фильтры'
+							aria-label={resetFiltersLabel}
+							title={resetFiltersLabel}
 						>
 							<RefreshCw size={16} />
 						</Button>
@@ -115,7 +114,7 @@ export function FolderOneTemplate() {
 				<div className='flex flex-wrap items-center gap-2'>
 					{canEdit && (
 						<Button variant='secondary' onClick={() => setIsOpenDropzone(true)}>
-							<UploadCloud size={18} /> Загрузить
+						<UploadCloud size={18} /> {upload}
 						</Button>
 					)}
 					{canEdit && (
@@ -123,7 +122,7 @@ export function FolderOneTemplate() {
 							variant='secondary'
 							onClick={() => setIsOpenCreateFolder(true)}
 						>
-							<FolderPlus size={18} /> Создать папку
+							<FolderPlus size={18} /> {createFolder}
 						</Button>
 					)}
 					<ListingType activeBtn={viewMode} setActiveBtn={setViewMode} />

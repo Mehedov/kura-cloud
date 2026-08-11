@@ -12,6 +12,8 @@ import { useState } from 'react'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
 import { FOLDER_KEYS } from '@/shared/config/query-keys'
 import { Avatar } from '@/shared/ui/avatar/Avatar'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 interface ShareResourceDialogProps {
 	resourceId: string
@@ -27,6 +29,7 @@ export function ShareResourceDialog({
 	onClose,
 }: ShareResourceDialogProps) {
 	const queryClient = useQueryClient()
+	const language = useLanguage(state => state.language)
 	const [email, setEmail] = useState('')
 	const [selectedUser, setSelectedUser] = useState<IShareUser | null>(null)
 	const debouncedEmail = useDebouncedValue(email.trim())
@@ -66,7 +69,7 @@ export function ShareResourceDialog({
 					}}
 				>
 					<div>
-						<h2 className='text-lg font-semibold text-foreground'>Поделиться</h2>
+						<h2 className='text-lg font-semibold text-foreground'>{translate(language, 'share')}</h2>
 						<p className='mt-1 truncate text-sm text-muted-foreground'>{resourceName}</p>
 					</div>
 					{selectedUser ? (
@@ -89,7 +92,7 @@ export function ShareResourceDialog({
 								setEmail(event.target.value)
 								setSelectedUser(null)
 							}}
-							placeholder='email пользователя'
+								placeholder={translate(language, 'userEmailPlaceholder')}
 							autoFocus
 						/>
 						{debouncedEmail.length >= 2 && users.length > 0 && (
@@ -104,23 +107,23 @@ export function ShareResourceDialog({
 					)}
 					</div>}
 					<label className='block text-sm text-foreground'>
-						Уровень доступа
+							{translate(language, 'permissionLevel')}
 						<select
 							value={permission}
 							onChange={event => setPermission(event.target.value as SharePermission)}
 							className='mt-1 w-full rounded-lg border border-border bg-card px-3 py-2 outline-none'
 						>
-							<option value='viewer'>Просмотр</option>
-							<option value='editor'>Редактирование</option>
+								<option value='viewer'>{translate(language, 'viewer')}</option>
+								<option value='editor'>{translate(language, 'editor')}</option>
 						</select>
 					</label>
 					{errorMessage && <p className='text-sm text-destructive'>{errorMessage}</p>}
 					<div className='flex justify-end gap-2'>
 						<Button type='button' variant='secondary' onClick={onClose}>
-							Отмена
+							{translate(language, 'cancel')}
 						</Button>
 						<Button type='submit' disabled={shareMutation.isPending}>
-							Отправить доступ
+								{translate(language, 'sendAccess')}
 						</Button>
 					</div>
 				</form>

@@ -14,6 +14,8 @@ import { Button } from '@/shared/ui/button/Button'
 import { useParams } from 'next/navigation'
 import { formatBytes } from '@/shared/lib/formatBytes.util'
 import { invalidateStorageQueries } from '@/shared/lib/invalidate-storage-queries'
+import useLanguage from '@/shared/language/model'
+import { translate } from '@/shared/language/translations'
 
 type UploadStatus = 'pending' | 'uploading' | 'success' | 'error'
 
@@ -25,6 +27,7 @@ interface UploadItem {
 
 const Upload = () => {
 	const [selectFolderId, setSelectFolderId] = useState('')
+	const language = useLanguage(state => state.language)
 	const { isOpenDropzone, setIsOpenDropzone } = useModalStore(state => state)
 	const [uploadFiles, setUploadFiles] = useState<File[]>([])
 	const [uploadItems, setUploadItems] = useState<UploadItem[]>([])
@@ -148,7 +151,7 @@ const Upload = () => {
 			onClose={() => {
 				if (!isUploading) closeUpload()
 			}}
-			ariaLabel='Загрузка файлов'
+			ariaLabel={translate(language, 'uploadFilesDialog')}
 		>
 			<div className='pointer-events-auto w-full max-w-md'>
 				<Card className='w-[min(calc(100vw-2rem),25rem)]'>
@@ -156,6 +159,7 @@ const Upload = () => {
 						<button
 							onClick={() => !isUploading && closeUpload()}
 							className='text-muted-foreground hover:text-foreground'
+							aria-label={translate(language, 'close')}
 						>
 							<X size={20} />
 						</button>
@@ -197,8 +201,8 @@ const Upload = () => {
 													type='button'
 													onClick={() => removeFile(index)}
 													className='rounded p-0.5 text-muted-foreground hover:bg-muted hover:text-foreground'
-													aria-label={`Удалить ${item.file.name} из очереди`}
-													title='Удалить из очереди'
+										aria-label={translate(language, 'removeFileFromQueue', { name: item.file.name })}
+										title={translate(language, 'removeFromQueue')}
 												>
 													<X size={16} />
 												</button>
@@ -220,7 +224,7 @@ const Upload = () => {
 
 							{params.folderId ? (
 								<p className='rounded-lg bg-muted px-3 py-2 text-sm text-muted-foreground'>
-									Файлы будут загружены в текущую папку.
+									{translate(language, 'uploadToCurrentFolder')}
 								</p>
 							) : (
 								<UploadFolderSelect
@@ -233,15 +237,15 @@ const Upload = () => {
 					{isUploadFinished ? (
 						<div className='space-y-3'>
 							<p className='rounded-lg bg-green-500/10 px-3 py-2 text-sm text-green-700'>
-								Загрузка завершена: {uploadItems.filter(item => item.status === 'success').length} из {uploadItems.length} файлов.
+									{translate(language, 'uploadComplete', { success: uploadItems.filter(item => item.status === 'success').length, total: uploadItems.length })}
 							</p>
 							<Button onClick={closeUpload} className='w-full'>
-								Готово
+									{translate(language, 'done')}
 							</Button>
 						</div>
 					) : uploadFiles.length > 0 ? (
 						<Button onClick={handleUpload} disabled={isUploading} className='w-full mt-5'>
-							{isUploading ? 'Загружаем…' : 'Загрузить'}
+								{translate(language, isUploading ? 'uploading' : 'upload')}
 						</Button>
 					) : null}
 				</Card>
