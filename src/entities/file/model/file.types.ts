@@ -1,0 +1,26 @@
+export interface PhotoFileDto {
+	id: string
+	name: string
+	type: 'photo'
+	size: string | number
+	s3Key: string
+	thumbnailKey: string | null
+	thumbnailUrl?: string
+	isFavorite?: boolean
+	isDeleted: boolean
+	deletedAt: string | null
+	userId?: string
+	folderId?: string | null
+	createdAt?: string
+	updatedAt?: string
+}
+
+export interface PhotosResponse {
+	items: PhotoFileDto[]
+	pagination: {
+		page: number
+		limit: number
+		total: number
+		totalPages: number
+	}
+}

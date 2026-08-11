@@ -1,0 +1,68 @@
+'use client'
+
+import { FolderIcon } from '@/shared/assets/icons/FolderIcon'
+import { FolderAvatarStack } from '@/entities/folder/ui/FolderGrid'
+import { PAGES } from '@/shared/config/page.config'
+import { FOLDER_KEYS } from '@/shared/config/query-keys'
+import { getSuggestedFolders } from '@/entities/folder/api/folder.queries'
+import useAuthStore from '@/entities/session/model/session.store'
+import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
+import {
+	EmptyState,
+	ErrorState,
+	LoadingState,
+} from '@/shared/ui/states/async-state'
+import useLanguage from '@/shared/language/model'
+
+export default function SuggestedFolders() {
+	const userId = useAuthStore(state => state.user?.id)
+	const { recentFolders, loadError, noFoldersYet, loadingSuggestedFolders, suggestedFoldersEmptyDescription } = useLanguage(state => state.t)
+	const { data, isPending, isError, refetch } = useQuery({
+		queryKey: FOLDER_KEYS.suggestedForUser(userId ?? ''),
+		queryFn: getSuggestedFolders,
+		enabled: Boolean(userId),
+	})
+
+	const folders = data?.data.items || []
+
+	return (
+		<section>
+			<h2 className='mb-4 text-md font-medium text-foreground'>
+				{recentFolders}
+			</h2>
+
+			{isPending ? (
+				<LoadingState title={loadingSuggestedFolders} className='min-h-32' />
+			) : isError ? (
+				<ErrorState
+					title={loadError}
+					onRetry={() => void refetch()}
+					className='min-h-32'
+				/>
+			) : folders.length === 0 ? (
+				<EmptyState
+					title={noFoldersYet}
+					description={suggestedFoldersEmptyDescription}
+					className='min-h-32'
+				/>
+			) : (
+				<div className='grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5'>
+					{folders.map(folder => (
+						<Link
+							key={folder.id}
+							href={`${PAGES.folders}/${folder.id}`}
+							className='relative flex w-full flex-col items-center justify-center rounded-lg border border-border bg-muted p-5 transition-colors hover:bg-muted'
+						>
+							<FolderAvatarStack collaborators={folder.collaborators} />
+							<FolderIcon size={150} />
+							<p className='mt-2 w-full text-center line-clamp-2'>
+								{folder.name}
+							</p>
+						</Link>
+					))}
+				</div>
+			)}
+		</section>
+	)
+}
